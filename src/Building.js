@@ -31,7 +31,7 @@ function Building({ base, z, depth, onPointerDown, ...props }) {
   let origin = util.coordToPlane(model, originLng, originLat);
   shape.moveTo(0, 0);
 
-  base.forEach((v) => {
+  base.slice().reverse().forEach((v) => {
     let p = util.coordToPlane(model, v[0], v[1]);
     shape.lineTo(p.x - origin.x, p.y - origin.y);
   });

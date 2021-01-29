@@ -49,8 +49,8 @@ function pixelToPlane(model, px, py) {
   let w = (xyz.maxX - xyz.minX + 1) * sm.size,
     h = (xyz.maxY - xyz.minY + 1) * sm.size;
 
-  let x = px * (model.canvas.width / w) - model.canvas.width / 2,
-    y = py * (model.canvas.height / h) - model.canvas.height / 2;
+  let x = px * model.canvas.width / w - model.canvas.width / 2,
+    y = py * model.canvas.height / h - model.canvas.height / 2;
   // let x = px * (model.canvas.width / w) - model.canvas.width / 2,
   //   y = -(py * (model.canvas.height / h) - model.canvas.height / 2);
 
