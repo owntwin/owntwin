@@ -1,0 +1,54 @@
+{
+  "name": "owntwin",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": ".",
+  "dependencies": {
+    "@mdi/js": "^5.8.55",
+    "@react-three/drei": "^2.2.7",
+    "@testing-library/jest-dom": "^5.11.5",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "axios": "^0.21.1",
+    "jotai": "^0.11.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-scripts": "4.0.1",
+    "react-three-fiber": "^5.1.4",
+    "react-transition-group": "^4.4.1",
+    "styled-components": "^5.2.0",
+    "three": "^0.121.1",
+    "twin.macro": "^2.0.7",
+    "use-asset": "^0.2.0",
+    "web-vitals": "^0.2.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@mapbox/sphericalmercator": "^1.1.0",
+    "autoprefixer": "^10.1.0",
+    "postcss": "^8.2.1"
+  }
+}
