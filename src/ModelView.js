@@ -87,6 +87,7 @@ function ModelView({ model, basePath, ...props }) {
 
   return (
     <Canvas
+      id="model-view-canvas"
       colorManagement={false}
       pixelRatio={Math.min(2, window.devicePixelRatio)}
       gl={{ powerPreference: 'default', antialias: false }}

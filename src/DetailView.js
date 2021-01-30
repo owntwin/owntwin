@@ -275,6 +275,7 @@ function DetailView({ model, type, entity, ...props }) {
 
   return (
     <Canvas
+      id="detail-view-canvas"
       colorManagement={false}
       pixelRatio={Math.min(2, window.devicePixelRatio)}
       gl={{ powerPreference: 'default', antialias: false }}

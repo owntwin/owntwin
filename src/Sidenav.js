@@ -27,7 +27,10 @@ function Sidenav({ communityURL, ...props }) {
         <button
           css={[tw`focus:outline-none`]}
           onClick={() => {
-            document.body.requestFullscreen();
+            const requestFullscreen =
+              document.body.requestFullscreen ||
+              document.body.webkitRequestFullscreen;
+            requestFullscreen.call(document.body);
           }}
         >
           <svg style={{ width: '24px', height: '24px' }} viewBox="0 0 24 24">
