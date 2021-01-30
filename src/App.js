@@ -157,7 +157,8 @@ function App() {
                 css={[
                   tw`text-sm text-gray-600 px-2 py-2 cursor-pointer flex items-center bg-gray-50 hover:bg-gray-100`,
                 ]}
-                onClick={() => {
+                onClick={(ev) => {
+                  ev.stopPropagation();
                   if (detailEntity.id === entity.id) {
                     setDetailEntity(null);
                     setEntity(null);
