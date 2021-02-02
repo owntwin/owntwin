@@ -20,7 +20,7 @@ const terrainLevelZoom = 2;
 function BlankPlane({ width, height, color, ...props }) {
   const { model } = useContext(ModelContext);
 
-  const [coords, setCoords] = useState([]);
+  const [, setCoords] = useState([]);
 
   const [debug, setDebug] = useAtom(store.debugAtom);
 
@@ -39,8 +39,11 @@ function BlankPlane({ width, height, color, ...props }) {
             // console.log(point);
             let coord = util.planeToCoord(model, point.x, point.y);
             // setCoords((val) => [...val, `[${coord.lat}, ${coord.lng}, 0]`]);
-            setCoords((val) => [...val, `[${coord.lng}, ${coord.lat}]`]);
-            setDebug(`[${coords.join(', ')}]`);
+            setCoords((val) => {
+              let coords = [...val, `[${coord.lng}, ${coord.lat}]`];
+              setDebug(`[${coords.join(', ')}]`);
+              return coords;
+            });
           }
         }
       }}
