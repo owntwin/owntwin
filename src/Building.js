@@ -23,27 +23,30 @@ function Popup({ item, ...props }) {
 function Building({ base, z, depth, onPointerDown, ...props }) {
   const { model } = useContext(ModelContext);
 
-  const shape = useMemo(() => new THREE.Shape(), []);
-
-  let originLng = base[0][0],
+  const originLng = base[0][0],
     originLat = base[0][1];
 
-  let origin = util.coordToPlane(model, originLng, originLat);
-  shape.moveTo(0, 0);
-
-  base.slice().reverse().forEach((v) => {
-    let p = util.coordToPlane(model, v[0], v[1]);
-    shape.lineTo(p.x - origin.x, p.y - origin.y);
-  });
+  const origin = util.coordToPlane(model, originLng, originLat);
 
   const geom = useMemo(() => {
-    let extrudeSettings = {
+    const shape = new THREE.Shape();
+
+    shape.moveTo(0, 0);
+    base
+      .slice()
+      .reverse()
+      .forEach((v) => {
+        const p = util.coordToPlane(model, v[0], v[1]);
+        shape.lineTo(p.x - origin.x, p.y - origin.y);
+      });
+
+    const extrudeSettings = {
       steps: 1,
       depth: depth || 50,
       bevelEnabled: false,
     };
     return new THREE.ExtrudeBufferGeometry(shape, extrudeSettings);
-  }, [shape, depth]);
+  }, [model, base, origin.x, origin.y, depth]);
 
   const [hover, setHover] = useState(false);
 

@@ -53,24 +53,34 @@ function Building({ model, base, depth, floor, floors, ...props }) {
 
   const [entity, setEntity] = useAtom(store.entityAtom);
 
-  const shape = useMemo(() => new THREE.Shape(), []);
-
-  let originLng = base[0][0],
+  const originLng = base[0][0],
     originLat = base[0][1];
 
-  let origin = util.coordToLocalPlane(
+    const origin = util.coordToLocalPlane(
     model,
     originLng,
     originLat,
     planeWidth,
     planeHeight,
   );
-  shape.moveTo(0, 0);
 
-  base.forEach((v) => {
-    let p = util.coordToLocalPlane(model, v[0], v[1], planeWidth, planeHeight);
-    shape.lineTo(p.x - origin.x, p.y - origin.y);
-  });
+  const shape = useMemo(() => {
+    const shape = new THREE.Shape();
+    shape.moveTo(0, 0);
+
+    base.forEach((v) => {
+      const p = util.coordToLocalPlane(
+        model,
+        v[0],
+        v[1],
+        planeWidth,
+        planeHeight,
+      );
+      shape.lineTo(p.x - origin.x, p.y - origin.y);
+    });
+
+    return shape;
+  }, [base, model, origin.x, origin.y]);
 
   const geom = useMemo(() => {
     const extrudeSettings = {
