@@ -109,10 +109,24 @@ function App() {
   const transitionRef = useRef(null);
 
   return (
-    <div className="App">
+    <div
+      className="App"
+      id="App"
+      css={[tw`fixed top-0 bottom-0 left-0 right-0`]}
+    >
       <div
-        style={{ display: !detailEntity ? 'block' : 'none' }}
-        css={[tw`absolute top-0 bottom-0 left-0 right-0`]}
+        css={[
+          tw`absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center text-sm text-gray-400 pointer-events-none`,
+          !detailEntity ? tw`flex` : tw`hidden`,
+        ]}
+      >
+        <div>表示されない場合は再読み込み</div>
+      </div>
+      <div
+        css={[
+          tw`absolute top-0 bottom-0 left-0 right-0`,
+          !detailEntity ? tw`block` : tw`hidden`,
+        ]}
       >
         {modelLoaded && <ModelView model={model} basePath={model._basePath} />}
       </div>
