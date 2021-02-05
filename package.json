@@ -4,16 +4,13 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
+    "@mapbox/sphericalmercator": "^1.1.0",
     "@mdi/js": "^5.8.55",
     "@react-three/drei": "^2.2.7",
-    "@testing-library/jest-dom": "^5.11.5",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.1",
     "jotai": "^0.11.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-scripts": "4.0.1",
     "react-three-fiber": "^5.1.4",
     "react-transition-group": "^4.4.1",
     "styled-components": "^5.2.0",
@@ -47,7 +44,10 @@
     ]
   },
   "devDependencies": {
-    "@mapbox/sphericalmercator": "^1.1.0",
+    "@testing-library/jest-dom": "^5.11.5",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "react-scripts": "4.0.1",
     "autoprefixer": "^10.1.0",
     "postcss": "^8.2.1"
   }
