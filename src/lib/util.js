@@ -5,7 +5,7 @@ import SphericalMercator from '@mapbox/sphericalmercator';
 const sm = new SphericalMercator();
 
 const RES = 156543.03392804097;
-const SHIFT = 20037508.342789244;
+const EXTENT_SHIFT = 20037508.342789244;
 
 function planeToPixel(model, x, y) {
   const z = 18;
@@ -58,14 +58,14 @@ function pixelToPlane(model, px, py) {
 }
 
 function coordToPixel(lng, lat, z) {
-  let mx = (lng * SHIFT) / 180.0;
+  let mx = lng * EXTENT_SHIFT / 180.0;
   let my =
-    Math.log(Math.tan(((90 + lat) * Math.PI) / 360.0)) / (Math.PI / 180.0);
-  my = (my * SHIFT) / 180.0;
+    Math.log(Math.tan((90 + lat) * Math.PI / 360.0)) / (Math.PI / 180.0);
+  my = my * EXTENT_SHIFT / 180.0;
 
   const res = RES / 2 ** z;
-  const px = (mx + SHIFT) / res;
-  const py = (my + SHIFT) / res;
+  const px = (mx + EXTENT_SHIFT) / res;
+  const py = (my + EXTENT_SHIFT) / res;
 
   return [px, py];
 }
@@ -73,11 +73,11 @@ function coordToPixel(lng, lat, z) {
 function pixelToCoord(px, py, z) {
   const res = RES / 2 ** z;
 
-  const mx = px * res - SHIFT;
-  const my = py * res - SHIFT;
+  const mx = px * res - EXTENT_SHIFT;
+  const my = py * res - EXTENT_SHIFT;
 
-  let lng = (mx / SHIFT) * 180.0;
-  let lat = (my / SHIFT) * 180.0;
+  let lng = (mx / EXTENT_SHIFT) * 180.0;
+  let lat = (my / EXTENT_SHIFT) * 180.0;
   lat =
     (180 / Math.PI) *
     (2 * Math.atan(Math.exp((lat * Math.PI) / 180.0)) - Math.PI / 2.0);

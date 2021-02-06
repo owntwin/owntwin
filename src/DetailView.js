@@ -293,8 +293,6 @@ function DetailView({ model, type, entity, ...props }) {
       <DefaultCamera />
       <ambientLight args={[0xffffff, 1]} />
       <pointLight position={[10, 10, 10]} />
-      {/* <ModelContext.Provider value={{ model }}>
-      </ModelContext.Provider> */}
       <BlankPlane width={250} height={250} />
       <Bridge value={useBridge()}>{entityComponent}</Bridge>
       <OrbitControls

@@ -52,6 +52,38 @@ async function getModel() {
   return model;
 }
 
+function Debug() {
+  const [debugOpen, setDebugOpen] = useState(false);
+  const [debug, setDebug] = useAtom(store.debugAtom);
+
+  useEffect(() => {
+    if (!!debug) setDebugOpen(true);
+  }, [debug]);
+
+  return (
+    <div
+      id="debug"
+      css={[
+        tw`rounded-t-md bg-gray-800 text-white fixed bottom-0 left-0 right-0 h-48 p-4 text-sm shadow-md`,
+        debugOpen ? tw`block` : tw`hidden`,
+      ]}
+    >
+      <div
+        css={[tw`absolute top-4 right-4 cursor-pointer`]}
+        onClick={() => {
+          setDebugOpen(false);
+          setDebug('');
+        }}
+      >
+        <svg style={{ width: '18px', height: '18px' }} viewBox="0 0 24 24">
+          <path fill="#eee" d={mdiCloseCircle} />
+        </svg>
+      </div>
+      <div css={[tw`overflow-y-scroll w-full h-full`]}>{debug}</div>
+    </div>
+  );
+}
+
 function App() {
   const [model, setModel] = useState({
     id: null,
@@ -69,9 +101,6 @@ function App() {
   const [detailEntity, setDetailEntity] = useAtom(store.detailEntityAtom);
   const [item, setItem] = useState({});
 
-  const [debugOpen, setDebugOpen] = useState(false);
-  const [debug, setDebug] = useAtom(store.debugAtom);
-
   useEffect(() => {
     (async () => {
       let model = await getModel();
@@ -79,10 +108,6 @@ function App() {
       setModelLoaded(true);
     })();
   }, []);
-
-  useEffect(() => {
-    if (!!debug) setDebugOpen(true);
-  }, [debug]);
 
   useEffect(() => {
     setLayersState(() => {
@@ -141,11 +166,10 @@ function App() {
             ]}
           >
             <div
-              style={{
-                width: '100%',
-                height: '100%',
-                display: state === 'entered' ? 'block' : 'none',
-              }}
+              css={[
+                tw`w-full h-full`,
+                state === 'entered' ? tw`block` : tw`hidden`,
+              ]}
             >
               {modelLoaded && (
                 <DetailView
@@ -195,26 +219,7 @@ function App() {
           }
         />
       )}
-      <div
-        id="debug"
-        css={[
-          tw`rounded-t-md bg-gray-800 text-white fixed bottom-0 left-0 right-0 h-48 p-4 text-sm shadow-md`,
-          debugOpen ? tw`block` : tw`hidden`,
-        ]}
-      >
-        <div
-          css={[tw`absolute top-4 right-4 cursor-pointer`]}
-          onClick={() => {
-            setDebugOpen(false);
-            setDebug('');
-          }}
-        >
-          <svg style={{ width: '18px', height: '18px' }} viewBox="0 0 24 24">
-            <path fill="#eee" d={mdiCloseCircle} />
-          </svg>
-        </div>
-        <div css={[tw`overflow-y-scroll w-full h-full`]}>{debug}</div>
-      </div>
+      <Debug />
       <div css={[tw`absolute top-4 left-auto right-4 hidden sm:block`]}>
         <Clock />
       </div>
