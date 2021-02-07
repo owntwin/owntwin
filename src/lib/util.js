@@ -110,7 +110,7 @@ function planeToCoord(model, x, y) {
   // let _x = x,
   //   _y = y;
 
-  console.log([x, y]);
+  // console.log([x, y]);
 
   [x, y] = planeToPixel(model, x, y);
   let [minx, miny] = coordToPixel(model.bbox.minlng, model.bbox.minlat, z);

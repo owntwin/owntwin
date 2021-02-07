@@ -81,7 +81,7 @@ function ModelView({ model, basePath, ...props }) {
     });
   }, [model, basePath]);
 
-  const [layerState] = useAtom(store.layersStateAtom);
+  const [layersState] = useAtom(store.layersStateAtom);
   const [, setEntity] = useAtom(store.entityAtom);
   const [, setDetailEntity] = useAtom(store.detailEntityAtom);
 
@@ -101,7 +101,7 @@ function ModelView({ model, basePath, ...props }) {
             {Object.values(model.modules)
               .reduce((acc, module) => acc.concat(module.layers), [])
               .map((layer) =>
-                layerState[layer.id] && layerState[layer.id].enabled ? (
+                layersState[layer.id] && layersState[layer.id].enabled ? (
                   <Layer key={layer.id} def={layer} basePath={basePath} />
                 ) : null,
               )}
