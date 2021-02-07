@@ -111,14 +111,21 @@ function App() {
 
   useEffect(() => {
     setLayersState(() => {
-      return Object.values(model.modules)
-        .reduce((acc, module) => acc.concat(module.layers), [])
-        .reduce((acc, layer) => {
-          acc[`${layer.id}`] = { enabled: layer.enabled };
-          return acc;
-        }, {});
+      const acc = {};
+
+      Object.entries(model.modules).forEach(([id, module]) => {
+        const layers = module.definition.layers || [];
+        layers.forEach((layer) => {
+          acc[`${layer.id}`] = {
+            enabled:
+              model.properties[`${id}:layers.${layer.id}.enabled`] || false,
+          };
+        });
+      });
+
+      return acc;
     });
-  }, [setLayersState, model.modules]);
+  }, [setLayersState, model.modules, model.properties]);
 
   useEffect(() => {
     !entity && model && model.id && setEntity(model);
@@ -189,6 +196,7 @@ function App() {
           iri={item.iri}
           item={item}
           modules={model.modules}
+          properties={model.properties}
           back={
             detailEntity && (
               <div

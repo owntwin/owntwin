@@ -13,19 +13,29 @@ import {
 } from '@mdi/js';
 
 function getField(entity, key) {
-  return entity && entity[key] ? encodeURIComponent(entity[key]) : null;
+  const splitted = key.split(':', 2);
+  if (splitted.length === 2) {
+    return entity && entity.properties && entity.properties[key]
+      ? encodeURIComponent(entity.properties[key])
+      : null;
+  } else {
+    return entity && entity[key] ? encodeURIComponent(entity[key]) : null;
+  }
 }
 
-function ModulePane({ module, isOpen, ...props }) {
+function ModulePane({ id, module, properties, isOpen, ...props }) {
   const [paneOpen, setPaneOpen] = useState(isOpen || false);
   const [moduleInfoOpen, setModuleInfoOpen] = useState(false);
 
   const [layersState, setLayersState] = useAtom(store.layersStateAtom);
   const [entity] = useAtom(store.entityAtom);
 
-  const layers = module.layers;
-  const actions = module.actions || [];
+  const definition = module.definition;
+  const layers = definition.layers;
+  const actions = definition.actions || [];
   const filters = [];
+
+  properties = properties || {};
 
   return (
     <div css={[tw`border-b`]}>
@@ -36,7 +46,7 @@ function ModulePane({ module, isOpen, ...props }) {
         }}
       >
         <div css={[tw`flex items-center`]}>
-          <div css={[tw`flex-grow`]}>{module.name}</div>
+          <div css={[tw`flex-grow`]}>{definition.name}</div>
           <div css={[tw`flex items-center`]}>
             <div
               css={[tw`rounded p-1 hover:bg-blue-200`]}
@@ -67,7 +77,7 @@ function ModulePane({ module, isOpen, ...props }) {
               <div css={[tw`my-1`]}>説明</div>
               <div css={[tw`p-2 text-sm bg-gray-100 rounded`]}>
                 <pre css={[tw`break-words whitespace-pre-wrap`]}>
-                  {module.description || (
+                  {definition.description || (
                     <span css={[tw`text-gray-600`]}>未登録</span>
                   )}
                 </pre>
@@ -75,7 +85,7 @@ function ModulePane({ module, isOpen, ...props }) {
               <div css={[tw`mt-2 mb-1`]}>利用条件</div>
               <div css={[tw`p-2 text-sm bg-gray-100 rounded`]}>
                 <pre css={[tw`break-words whitespace-pre-wrap`]}>
-                  {module.license || (
+                  {definition.license || (
                     <span css={[tw`text-gray-600`]}>未登録</span>
                   )}
                 </pre>
@@ -86,28 +96,43 @@ function ModulePane({ module, isOpen, ...props }) {
             <div css={[tw`my-1`]}>アクション</div>
             <ul>
               {actions.length > 0 ? (
-                actions.map((item, i) => {
-                  let missingFields = [];
-                  if (!item.href) {
+                actions.map((action, i) => {
+                  const getProperty = (key) => {
+                    return (
+                      properties[`${id}:actions.${action.id}.${key}`] ||
+                      action[key] ||
+                      null
+                    );
+                  };
+                  const missingFields = [];
+
+                  if (!getProperty('href')) {
                     missingFields.push('href');
                   }
-                  if (!!item.params) {
-                    item.params.forEach(([param, key]) => {
-                      let ok = getField(entity, key) !== null;
+
+                  if (!!action.fields) {
+                    action.fields.forEach((field) => {
+                      const ok = getField(entity, field) !== null;
                       if (!ok) {
-                        missingFields.push(key);
+                        missingFields.push(field);
                       }
                     });
                   }
 
                   function href() {
-                    let params = item.params
-                      ? item.params.map(([param, key]) => {
-                          return `${param}=${getField(entity, key) || ''}`;
+                    const params = action.fields
+                      ? action.fields.map((field) => {
+                          const assign_to = getProperty(`fields.assign_to`); // TODO: Fix
+                          if (!assign_to) return '';
+                          const param = assign_to[field],
+                            value = getField(entity, field);
+                          if (!param || !value) return '';
+                          return `${param}=${value}`;
                         })
                       : [];
-                    return `${item.href}?${
-                      item.default_param ? `${item.default_param}&` : ''
+
+                    return `${getProperty('href')}?${
+                      action.default_param ? `${action.default_param}&` : ''
                     }${params.join('&')}`;
                   }
 
@@ -139,7 +164,7 @@ function ModulePane({ module, isOpen, ...props }) {
                             missingFields.length > 0 ? tw`line-through` : null,
                           ]}
                         >
-                          {item.text}
+                          {action.text}
                         </div>
                       </a>
                       {missingFields.length > 0 && (
@@ -213,7 +238,17 @@ function ModulePane({ module, isOpen, ...props }) {
   );
 }
 
-function ItemInfo({ name, type, iri, item, modules, isOpen, back, ...props }) {
+function ItemInfo({
+  name,
+  type,
+  iri,
+  item,
+  modules,
+  properties,
+  isOpen,
+  back,
+  ...props
+}) {
   const [paneOpen, setPaneOpen] = useState(isOpen || false);
   const [helpClicked, setHelpClicked] = useState(false);
   const description = item.description || null;
@@ -275,7 +310,12 @@ function ItemInfo({ name, type, iri, item, modules, isOpen, back, ...props }) {
             モジュール
           </div>
           {Object.entries(modules).map(([id, module]) => (
-            <ModulePane key={id} module={module} />
+            <ModulePane
+              key={id}
+              id={id}
+              module={module}
+              properties={properties}
+            />
           ))}
         </div>
       </div>

@@ -99,7 +99,7 @@ function ModelView({ model, basePath, ...props }) {
         <ModelContext.Provider value={{ model: model }}>
           <Terrain levelmap={levelmap}>
             {Object.values(model.modules)
-              .reduce((acc, module) => acc.concat(module.layers), [])
+              .reduce((acc, module) => acc.concat(module.definition.layers || []), [])
               .map((layer) =>
                 layersState[layer.id] && layersState[layer.id].enabled ? (
                   <Layer key={layer.id} def={layer} basePath={basePath} />
