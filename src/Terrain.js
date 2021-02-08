@@ -12,10 +12,7 @@ import * as util from './lib/util';
 
 export const TerrainContext = createContext();
 
-const width = 1024,
-  height = 1024;
 const segments = 100;
-const terrainLevelZoom = 2;
 
 function BlankPlane({ width, height, color, ...props }) {
   const { model } = useContext(ModelContext);
@@ -58,21 +55,19 @@ function BlankPlane({ width, height, color, ...props }) {
   );
 }
 
-function Terrain({ levelmap, ...props }) {
+function Terrain({ levelmap, zoom, width, height, ...props }) {
   const [vertices, setVertices] = useState(null);
 
   const geom = useUpdate(
     (geometry) => {
-      let zoom = terrainLevelZoom;
-      for (let i = 0; i < levelmap.length; i++) {
-        let v = levelmap[i];
-        let pos = v[0] + segments * (segments - 1 - v[1]);
+      levelmap.forEach((v) => {
+        const pos = v[0] + segments * (segments - 1 - v[1]);
         geometry.vertices[pos].z = v[2] * zoom;
-      }
+      });
       geometry.verticesNeedUpdate = true;
       setVertices(Array.from(geometry.vertices));
     },
-    [levelmap],
+    [levelmap, zoom],
   );
 
   return (

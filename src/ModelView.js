@@ -13,6 +13,12 @@ import Building from './Building';
 
 export const ModelContext = createContext();
 
+/* Constants */
+// TODO: Improve
+const terrainLevelZoom = 2;
+const width = 1024,
+  height = 1024;
+
 function DefaultCamera({ ...props }) {
   // const camera = useRef();
   // useHelper(camera, CameraHelper, 1, 'hotpink');
@@ -97,9 +103,17 @@ function ModelView({ model, basePath, ...props }) {
       <pointLight position={[10, 10, 10]} />
       <Bridge value={useBridge()}>
         <ModelContext.Provider value={{ model: model }}>
-          <Terrain levelmap={levelmap}>
+          <Terrain
+            levelmap={levelmap}
+            zoom={terrainLevelZoom}
+            width={width}
+            height={height}
+          >
             {Object.values(model.modules)
-              .reduce((acc, module) => acc.concat(module.definition.layers || []), [])
+              .reduce(
+                (acc, module) => acc.concat(module.definition.layers || []),
+                [],
+              )
               .map((layer) =>
                 layersState[layer.id] && layersState[layer.id].enabled ? (
                   <Layer key={layer.id} def={layer} basePath={basePath} />
