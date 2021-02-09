@@ -34,7 +34,7 @@ function BlankPlane({ width, height, color, ...props }) {
           if (ev.intersections.length > 0) {
             let point = ev.intersections[0].point;
             // console.log(point);
-            let coord = util.planeToCoord(model, point.x, point.y);
+            let coord = util.planeToCoord(model.bbox, point.x, point.y);
             // setCoords((val) => [...val, `[${coord.lat}, ${coord.lng}, 0]`]);
             setCoords((val) => {
               let coords = [...val, `[${coord.lng}, ${coord.lat}]`];

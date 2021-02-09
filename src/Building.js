@@ -26,7 +26,7 @@ function Building({ base, z, depth, onPointerDown, ...props }) {
   const originLng = base[0][0],
     originLat = base[0][1];
 
-  const origin = util.coordToPlane(model, originLng, originLat);
+  const origin = util.coordToPlane(model.bbox, originLng, originLat);
 
   const geom = useMemo(() => {
     const shape = new THREE.Shape();
@@ -36,7 +36,7 @@ function Building({ base, z, depth, onPointerDown, ...props }) {
       .slice()
       .reverse()
       .forEach((v) => {
-        const p = util.coordToPlane(model, v[0], v[1]);
+        const p = util.coordToPlane(model.bbox, v[0], v[1]);
         shape.lineTo(p.x - origin.x, p.y - origin.y);
       });
 

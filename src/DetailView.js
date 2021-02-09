@@ -57,7 +57,7 @@ function Building({ model, base, depth, floor, floors, ...props }) {
     originLat = base[0][1];
 
     const origin = util.coordToLocalPlane(
-    model,
+    model.bbox,
     originLng,
     originLat,
     planeWidth,
@@ -70,7 +70,7 @@ function Building({ model, base, depth, floor, floors, ...props }) {
 
     base.forEach((v) => {
       const p = util.coordToLocalPlane(
-        model,
+        model.bbox,
         v[0],
         v[1],
         planeWidth,
@@ -127,7 +127,7 @@ function Building({ model, base, depth, floor, floors, ...props }) {
       // console.log(v);
 
       let p = util.coordToLocalPlane(
-        model,
+        model.bbox,
         v.position.lng,
         v.position.lat,
         planeWidth,
