@@ -1,7 +1,16 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useUpdate } from 'react-three-fiber';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 // import { Plane } from '@react-three/drei';
-// import { CameraHelper } from 'three';
+import {
+  // CameraHelper,
+  BufferAttribute,
+} from 'three';
 import { useAtom } from 'jotai';
 import * as store from './lib/store';
 
@@ -45,7 +54,7 @@ function BlankPlane({ width, height, color, ...props }) {
         }
       }}
     >
-      <planeBufferGeometry args={[width, height]} />
+      <planeGeometry args={[width, height]} />
       <meshBasicMaterial
         color={color || 0xf1f3f5}
         polygonOffset={true}
@@ -58,17 +67,22 @@ function BlankPlane({ width, height, color, ...props }) {
 function Terrain({ levelmap, zoom, width, height, ...props }) {
   const [vertices, setVertices] = useState(null);
 
-  const geom = useUpdate(
-    (geometry) => {
-      levelmap.forEach((v) => {
-        const pos = v[0] + segments * (segments - 1 - v[1]);
-        geometry.vertices[pos].z = v[2] * zoom;
-      });
-      geometry.verticesNeedUpdate = true;
-      setVertices(Array.from(geometry.vertices));
-    },
-    [levelmap, zoom],
-  );
+  const geom = useRef();
+  useLayoutEffect(() => {
+    const positionAttribute = geom.current.getAttribute('position');
+
+    levelmap.forEach((v) => {
+      const pos = v[0] + segments * (segments - 1 - v[1]);
+      positionAttribute.array[pos * 3 + 2] = v[2] * zoom; // pos.z
+    });
+
+    // console.log(positionAttribute);
+    geom.current.setAttribute(
+      'position',
+      new BufferAttribute(new Float32Array(positionAttribute.array), 3),
+    );
+    setVertices(Array.from(positionAttribute.array));
+  }, [levelmap, zoom]);
 
   return (
     <>

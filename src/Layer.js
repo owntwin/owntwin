@@ -1,11 +1,12 @@
 import {
   useContext,
   useEffect,
-  // useRef,
+  useLayoutEffect,
+  useRef,
   useState,
   Suspense,
 } from 'react';
-import { useUpdate, useLoader } from 'react-three-fiber';
+import { useLoader } from '@react-three/fiber';
 
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
@@ -102,50 +103,48 @@ function SVGMeshLayer({ url, ...props }) {
     })();
   }, [url]);
 
-  const ref = useUpdate(
-    (obj) => {
-      let bbox = new THREE.Box3().setFromObject(obj);
-      let size = bbox.getSize(new THREE.Vector3());
-      obj.position.set(0, 0, 0);
-      obj.translateX(-size.x / 2);
-      obj.translateY(-size.y / 2);
+  const ref = useRef();
+  useLayoutEffect(() => {
+    let bbox = new THREE.Box3().setFromObject(ref.current);
+    let size = bbox.getSize(new THREE.Vector3());
+    ref.current.position.set(0, 0, 0);
+    ref.current.translateX(-size.x / 2);
+    ref.current.translateY(-size.y / 2);
 
-      function getTerrainAltitude(x, y) {
-        if (!terrain.vertices) return 0;
-        let pos =
-          Math.floor(x / (width / segments)) +
-          segments * (segments - 1 - Math.floor(y / (height / segments)));
-        if (pos < 0 || terrain.vertices.length <= pos) {
-          // console.log(x, y, pos);
-          return 0;
-        }
-        return terrain.vertices[pos].z;
+    function getTerrainAltitude(x, y) {
+      if (!terrain.vertices) return 0;
+      let pos =
+        Math.floor(x / (width / segments)) +
+        segments * (segments - 1 - Math.floor(y / (height / segments)));
+      if (pos < 0 || terrain.vertices.length <= pos) {
+        // console.log(x, y, pos);
+        return 0;
       }
+      return terrain.vertices[pos * 3 + 2]; // pos.z
+    }
 
-      // terrain
-      obj.children.forEach((line) => {
-        let position = line.geometry.getAttribute('position');
-        let vertices = [];
-        vertices = position.array.map((v, i) => {
-          if (i % 3 === 2) {
-            let z =
-              getTerrainAltitude(position.array[i - 2], position.array[i - 1]) +
-              2;
-            return z;
-          } else {
-            return v;
-          }
-        });
-        line.geometry.setAttribute(
-          'position',
-          new THREE.BufferAttribute(new Float32Array(vertices), 3),
-        );
+    // terrain
+    ref.current.children.forEach((line) => {
+      let position = line.geometry.getAttribute('position');
+      let vertices = [];
+      vertices = position.array.map((v, i) => {
+        if (i % 3 === 2) {
+          let z =
+            getTerrainAltitude(position.array[i - 2], position.array[i - 1]) +
+            2;
+          return z;
+        } else {
+          return v;
+        }
       });
+      line.geometry.setAttribute(
+        'position',
+        new THREE.BufferAttribute(new Float32Array(vertices), 3),
+      );
+    });
 
-      setVisible(true);
-    },
-    [lines, terrain.vertices],
-  );
+    setVisible(true);
+  }, [lines, terrain.vertices]);
 
   return (
     <group ref={ref} visible={visible}>
@@ -173,7 +172,7 @@ function PNGLayer({ url, ...props }) {
 
 function Layer({ def, basePath, ...props }) {
   if (basePath) {
-    def.path = basePath ? (new URL(def.path, basePath)).toString() : def.path;
+    def.path = basePath ? new URL(def.path, basePath).toString() : def.path;
   }
   if (def.format === 'svg') {
     return <SVGMeshLayer url={def.path} />;

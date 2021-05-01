@@ -1,10 +1,10 @@
 import { useEffect, createContext, useState } from 'react';
-import { Canvas } from 'react-three-fiber';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 // import { CameraHelper } from 'three';
 import axios from 'axios';
 
-import { useAtom, Bridge, useBridge } from 'jotai';
+import { useAtom } from 'jotai';
 import * as store from './lib/store';
 
 import Terrain from './Terrain';
@@ -94,50 +94,48 @@ function ModelView({ model, basePath, ...props }) {
   return (
     <Canvas
       id="model-view-canvas"
-      colorManagement={false}
-      pixelRatio={Math.min(2, window.devicePixelRatio)}
+      linear={true}
+      dpr={Math.min(2, window.devicePixelRatio)}
       gl={{ powerPreference: 'default', antialias: false }}
     >
       <DefaultCamera />
       <ambientLight args={[0xffffff, 1]} />
       <pointLight position={[10, 10, 10]} />
-      <Bridge value={useBridge()}>
-        <ModelContext.Provider value={{ model: model }}>
-          <Terrain
-            levelmap={levelmap}
-            zoom={terrainLevelZoom}
-            width={width}
-            height={height}
-          >
-            {Object.values(model.modules)
-              .reduce(
-                (acc, module) => acc.concat(module.definition.layers || []),
-                [],
-              )
-              .map((layer) =>
-                layersState[layer.id] && layersState[layer.id].enabled ? (
-                  <Layer key={layer.id} def={layer} basePath={basePath} />
-                ) : null,
-              )}
-            {buildings.map((building) => (
-              <Building
-                key={building.id}
-                base={building.base}
-                z={building.z}
-                depth={building.depth}
-                name={building.name}
-                type={building.type}
-                onPointerDown={(ev) => {
-                  ev.stopPropagation();
-                  setEntity(building);
-                  setDetailEntity(building);
-                }}
-              />
-            ))}
-          </Terrain>
-        </ModelContext.Provider>
-        )
-      </Bridge>
+      <ModelContext.Provider value={{ model: model }}>
+        <Terrain
+          levelmap={levelmap}
+          zoom={terrainLevelZoom}
+          width={width}
+          height={height}
+        >
+          {Object.values(model.modules)
+            .reduce(
+              (acc, module) => acc.concat(module.definition.layers || []),
+              [],
+            )
+            .map((layer) =>
+              layersState[layer.id] && layersState[layer.id].enabled ? (
+                <Layer key={layer.id} def={layer} basePath={basePath} />
+              ) : null,
+            )}
+          {buildings.map((building) => (
+            <Building
+              key={building.id}
+              base={building.base}
+              z={building.z}
+              depth={building.depth}
+              name={building.name}
+              type={building.type}
+              onPointerDown={(ev) => {
+                ev.stopPropagation();
+                setEntity(building);
+                setDetailEntity(building);
+              }}
+            />
+          ))}
+        </Terrain>
+      </ModelContext.Provider>
+      )
       <OrbitControls
         target={[0, 0, 0]}
         minDistance={100}

@@ -2,15 +2,16 @@ import {
   useEffect,
   useMemo,
   createContext,
-  //  useRef,
+  useLayoutEffect,
+  useRef,
   useState,
 } from 'react';
-import { Canvas, useUpdate } from 'react-three-fiber';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Html } from '@react-three/drei';
 import * as THREE from 'three';
 // import { CameraHelper } from 'three';
 
-import { useAtom, Bridge, useBridge } from 'jotai';
+import { useAtom } from 'jotai';
 import * as store from './lib/store';
 import * as util from './lib/util';
 
@@ -56,7 +57,7 @@ function Building({ model, base, depth, floor, floors, ...props }) {
   const originLng = base[0][0],
     originLat = base[0][1];
 
-    const origin = util.coordToLocalPlane(
+  const origin = util.coordToLocalPlane(
     model.bbox,
     originLng,
     originLat,
@@ -107,10 +108,10 @@ function Building({ model, base, depth, floor, floors, ...props }) {
   const [anchorActive, setAnchorActive] = useState(null);
 
   useEffect(() => {
-    if (entity.id !== anchorActive) {
+    if (!!entity && entity.id !== anchorActive) {
       setAnchorActive(null);
     }
-  }, [entity.id, anchorActive]);
+  }, [entity, anchorActive]);
 
   useEffect(() => {
     document.body.style.cursor = hover || anchorHover ? 'pointer' : 'auto';
@@ -237,8 +238,9 @@ function Building({ model, base, depth, floor, floors, ...props }) {
     floorGroup.push(floor);
   }
 
-  const ref = useUpdate((obj) => {
-    const bbox = new THREE.Box3().setFromObject(obj);
+  const ref = useRef();
+  useLayoutEffect(() => {
+    const bbox = new THREE.Box3().setFromObject(ref.current);
     const size = bbox.getSize(new THREE.Vector3());
 
     const ratio = Math.min(
@@ -246,12 +248,28 @@ function Building({ model, base, depth, floor, floors, ...props }) {
       (planeHeight - 32) / size.y,
     );
 
-    obj.scale.set(ratio, ratio, ratio);
+    ref.current.scale.set(ratio, ratio, ratio);
 
     const center = bbox.getCenter(new THREE.Vector3());
-    obj.translateX(-center.x * ratio);
-    obj.translateY(-center.y * ratio);
+    ref.current.translateX(-center.x * ratio);
+    ref.current.translateY(-center.y * ratio);
   }, []);
+
+  // const ref = useUpdate((obj) => {
+  //   const bbox = new THREE.Box3().setFromObject(obj);
+  //   const size = bbox.getSize(new THREE.Vector3());
+
+  //   const ratio = Math.min(
+  //     (planeWidth - 32) / size.x,
+  //     (planeHeight - 32) / size.y,
+  //   );
+
+  //   obj.scale.set(ratio, ratio, ratio);
+
+  //   const center = bbox.getCenter(new THREE.Vector3());
+  //   obj.translateX(-center.x * ratio);
+  //   obj.translateY(-center.y * ratio);
+  // }, []);
 
   return (
     <mesh ref={ref} position={[0, 0, 0]} geometry={geom}>
@@ -286,15 +304,15 @@ function DetailView({ model, type, entity, ...props }) {
   return (
     <Canvas
       id="detail-view-canvas"
-      colorManagement={false}
-      pixelRatio={Math.min(2, window.devicePixelRatio)}
+      linear={true}
+      dpr={Math.min(2, window.devicePixelRatio)}
       gl={{ powerPreference: 'default', antialias: false }}
     >
       <DefaultCamera />
       <ambientLight args={[0xffffff, 1]} />
       <pointLight position={[10, 10, 10]} />
       <BlankPlane width={250} height={250} />
-      <Bridge value={useBridge()}>{entityComponent}</Bridge>
+      {entityComponent}
       <OrbitControls
         target={[0, 0, 0]}
         minDistance={100}
