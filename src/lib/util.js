@@ -11,6 +11,7 @@ const EXTENT_SHIFT = 20037508.342789244;
 const canvas = {
   width: 1024,
   height: 1024,
+  segments: 100,
 };
 
 function planeToPixel(bbox, x, y) {
@@ -166,4 +167,24 @@ function localPlaneToCoord(bbox, x, y) {
   };
 }
 
-export { coordToPlane, planeToCoord, coordToLocalPlane, localPlaneToCoord };
+function getTerrainAltitude(terrain, x, y) {
+  if (!terrain.vertices) return 0;
+  let pos =
+    Math.floor(x / (canvas.width / canvas.segments)) +
+    canvas.segments *
+      (canvas.segments - 1 - Math.floor(y / (canvas.height / canvas.segments)));
+  if (pos < 0 || terrain.vertices.length <= pos) {
+    // console.log(x, y, pos);
+    return 0;
+  }
+  return terrain.vertices[pos * 3 + 2]; // pos.z
+}
+
+export {
+  canvas,
+  coordToPlane,
+  planeToCoord,
+  coordToLocalPlane,
+  localPlaneToCoord,
+  getTerrainAltitude,
+};

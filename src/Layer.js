@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 
 import PNGLayer from './layers/PNGLayer';
 import SVGMeshLayer from './layers/SVGMeshLayer';
+import GeoJSONLayer from './layers/GeoJSONLayer';
 
 function Layer({ def, basePath, ...props }) {
   if (basePath) {
@@ -15,6 +16,8 @@ function Layer({ def, basePath, ...props }) {
         <PNGLayer url={def.path} opacity={0.5} />
       </Suspense>
     );
+  } else if (def.format === 'geojson') {
+    return <GeoJSONLayer url={def.path} opacity={0.5} />;
   }
 }
 

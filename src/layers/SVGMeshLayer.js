@@ -11,10 +11,11 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 import * as THREE from 'three';
 
 import { TerrainContext } from '../Terrain';
+import * as util from '../lib/util';
 
-const width = 1024,
-  height = 1024;
-const segments = 100;
+const width = util.canvas.width,
+  height = util.canvas.height;
+const segments = util.canvas.segments;
 
 const loader = new SVGLoader();
 

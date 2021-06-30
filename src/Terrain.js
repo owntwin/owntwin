@@ -21,7 +21,7 @@ import * as util from './lib/util';
 
 export const TerrainContext = createContext();
 
-const segments = 100;
+const segments = util.canvas.segments;
 
 function BlankPlane({ width, height, color, ...props }) {
   const { model } = useContext(ModelContext);
