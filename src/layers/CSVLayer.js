@@ -19,6 +19,7 @@ function Anchor({
   bbox,
   terrain,
   label = null,
+  labelVisibility = 'auto',
   clip = true,
   size = {},
   ...props
@@ -56,14 +57,17 @@ function Anchor({
     <BeamAnchor
       position={[origin.x, origin.y, z]}
       label={label}
+      labelVisibility={labelVisibility}
       height={size.height}
+      color={props.color}
     />
   );
 }
 
 export default function CSVLayer({ url, clip = true, ...props }) {
   const terrain = useContext(TerrainContext);
-  const { model } = useContext(ModelContext);
+  const _model = useContext(ModelContext);
+  const model = _model.model; // TODO: Fix
   const [data, setData] = useState(null);
 
   /* load JSON from URL */
@@ -95,6 +99,7 @@ export default function CSVLayer({ url, clip = true, ...props }) {
               bbox={model.bbox}
               terrain={terrain}
               label={record[props.keys.label]}
+              labelVisibility={props.labelVisibility}
               color={props.color}
               size={props.size}
             />

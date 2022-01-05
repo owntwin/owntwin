@@ -2,6 +2,9 @@ import { useLayoutEffect, useRef } from 'react';
 
 import { Html } from '@react-three/drei';
 
+import { useAtom } from 'jotai';
+import * as store from './lib/store';
+
 function SphereAnchor({ position, label = null, ...props }) {
   return (
     <mesh position={position}>
@@ -27,9 +30,17 @@ function SphereAnchor({ position, label = null, ...props }) {
   );
 }
 
-function BeamAnchor({ position, label = null, height = 256, ...props }) {
+function BeamAnchor({
+  position,
+  label = null,
+  labelVisibility = 'auto',
+  height = 256,
+  ...props
+}) {
   // const mesh = useRef(null);
   const geom = useRef(null);
+
+  const [closeup] = useAtom(store.closeupAtom);
 
   useLayoutEffect(() => {
     geom.current.rotateX(Math.PI / 2); // TODO: Use lookAt
@@ -54,7 +65,7 @@ function BeamAnchor({ position, label = null, height = 256, ...props }) {
       <Html style={{ pointerEvents: 'none' }}>
         <div
           style={{
-            display: true ? 'block' : 'none',
+            display: labelVisibility === 'always' || closeup ? 'block' : 'none',
             fontSize: '0.75rem',
             fontWeight: 'normal',
             width: '10rem',

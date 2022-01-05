@@ -25,6 +25,7 @@ function Layer({ def, basePath, ...props }) {
         url={def.path}
         keys={def.keys}
         color={def.color}
+        labelVisibility={def.labelVisibility}
         size={def.size}
         opacity={0.5}
       />

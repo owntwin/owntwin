@@ -1,5 +1,5 @@
 import { useEffect, createContext, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 // import { CameraHelper } from 'three';
 import axios from 'axios';
@@ -33,6 +33,30 @@ function DefaultCamera({ ...props }) {
       near={1}
       far={2048}
       // ref={camera}
+    />
+  );
+}
+
+function ExtendedOrbitControls({ ...props }) {
+  const CLOSEUP_THRESHOLD = 400000;
+
+  const [, setCloseup] = useAtom(store.closeupAtom);
+  const { camera } = useThree();
+
+  return (
+    <OrbitControls
+      target={[0, 0, 0]}
+      minDistance={100}
+      maxDistance={1500}
+      maxPolarAngle={Math.PI / 2 - 0.1}
+      onEnd={() => {
+        const dist2 =
+          camera.position.x ** 2 +
+          camera.position.y ** 2 +
+          camera.position.z ** 2;
+        // console.log(dist2);
+        dist2 < CLOSEUP_THRESHOLD ? setCloseup(true) : setCloseup(false);
+      }}
     />
   );
 }
@@ -136,12 +160,7 @@ function ModelView({ model, basePath, ...props }) {
         </Terrain>
       </ModelContext.Provider>
       )
-      <OrbitControls
-        target={[0, 0, 0]}
-        minDistance={100}
-        maxDistance={1500}
-        maxPolarAngle={Math.PI / 2 - 0.1}
-      />
+      <ExtendedOrbitControls />
     </Canvas>
   );
 }
