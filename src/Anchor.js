@@ -27,16 +27,14 @@ function SphereAnchor({ position, label = null, ...props }) {
   );
 }
 
-function BeamAnchor({ position, label = null, ...props }) {
-  const height = 256;
-
+function BeamAnchor({ position, label = null, height = 256, ...props }) {
   // const mesh = useRef(null);
   const geom = useRef(null);
 
   useLayoutEffect(() => {
     geom.current.rotateX(Math.PI / 2); // TODO: Use lookAt
     geom.current.translate(0, 0, height / 2);
-  }, []);
+  }, [height]);
 
   // useLayoutEffect(() => {
   //   // mesh.current.rotateX(Math.PI / 2);

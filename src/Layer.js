@@ -20,7 +20,15 @@ function Layer({ def, basePath, ...props }) {
   } else if (def.format === 'geojson') {
     return <GeoJSONLayer url={def.path} opacity={0.5} />;
   } else if (def.format === 'csv') {
-    return <CSVLayer url={def.path} keys={def.keys} color={def.color} opacity={0.5} />;
+    return (
+      <CSVLayer
+        url={def.path}
+        keys={def.keys}
+        color={def.color}
+        size={def.size}
+        opacity={0.5}
+      />
+    );
   }
 }
 

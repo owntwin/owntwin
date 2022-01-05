@@ -20,6 +20,7 @@ function Anchor({
   terrain,
   label = null,
   clip = true,
+  size = {},
   ...props
 }) {
   const originLng = parseFloat(coordinates[0]),
@@ -51,7 +52,13 @@ function Anchor({
   )
     return <></>;
 
-  return <BeamAnchor position={[origin.x, origin.y, z]} label={label} />;
+  return (
+    <BeamAnchor
+      position={[origin.x, origin.y, z]}
+      label={label}
+      height={size.height}
+    />
+  );
 }
 
 export default function CSVLayer({ url, clip = true, ...props }) {
@@ -89,6 +96,7 @@ export default function CSVLayer({ url, clip = true, ...props }) {
               terrain={terrain}
               label={record[props.keys.label]}
               color={props.color}
+              size={props.size}
             />
           );
         })}
