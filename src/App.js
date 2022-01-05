@@ -1,3 +1,4 @@
+import 'styled-components/macro';
 import { useEffect, useRef, useState } from 'react';
 import { Transition } from 'react-transition-group';
 

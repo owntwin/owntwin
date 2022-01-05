@@ -1,3 +1,4 @@
+import 'styled-components/macro';
 import { useState } from 'react';
 
 import { useAtom } from 'jotai';

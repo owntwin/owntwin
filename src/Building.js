@@ -1,3 +1,4 @@
+import 'styled-components/macro';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { Html } from '@react-three/drei';
