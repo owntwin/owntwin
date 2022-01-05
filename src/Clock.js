@@ -12,7 +12,7 @@ function Clock({ ...props }) {
     return function cleanup() {
       clearInterval(timer);
     };
-  });
+  }, []);
 
   function tick() {
     let _date = new Date().toLocaleString('ja-JP', {
