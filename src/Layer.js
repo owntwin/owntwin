@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import PNGLayer from './layers/PNGLayer';
 import SVGMeshLayer from './layers/SVGMeshLayer';
 import GeoJSONLayer from './layers/GeoJSONLayer';
+import CSVLayer from './layers/CSVLayer';
 
 function Layer({ def, basePath, ...props }) {
   if (basePath) {
@@ -18,6 +19,8 @@ function Layer({ def, basePath, ...props }) {
     );
   } else if (def.format === 'geojson') {
     return <GeoJSONLayer url={def.path} opacity={0.5} />;
+  } else if (def.format === 'csv') {
+    return <CSVLayer url={def.path} keys={def.keys} color={def.color} opacity={0.5} />;
   }
 }
 
