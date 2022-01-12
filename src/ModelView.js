@@ -11,6 +11,8 @@ import Terrain from './Terrain';
 import Layer from './Layer';
 import Building from './Building';
 
+import Discuss from './addon/discuss/components/Discuss';
+
 export const ModelContext = createContext();
 
 /* Constants */
@@ -157,6 +159,7 @@ function ModelView({ model, basePath, ...props }) {
               }}
             />
           ))}
+          <Discuss />
         </Terrain>
       </ModelContext.Provider>
       )
