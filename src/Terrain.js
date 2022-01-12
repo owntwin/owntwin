@@ -24,7 +24,9 @@ export const TerrainContext = createContext();
 const segments = util.canvas.segments;
 
 function BlankPlane({ width, height, color, ...props }) {
-  const { model } = useContext(ModelContext);
+  // const { model } = useContext(ModelContext);
+  const _model = useContext(ModelContext);
+  const model = _model.model; // TODO: Fix
 
   const [, setCoords] = useState([]);
 
@@ -35,7 +37,7 @@ function BlankPlane({ width, height, color, ...props }) {
   }, [debug]);
 
   return (
-    <mesh
+    <mesh // TODO: model && <mesh ?
       onDoubleClick={(ev) => {
         if (ev.shiftKey) {
           ev.stopPropagation();

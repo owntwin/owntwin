@@ -4,6 +4,8 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
+    "@feathersjs/client": "^4.5.12",
+    "@feathersjs/socketio-client": "^4.5.12",
     "@mapbox/sphericalmercator": "^1.2.0",
     "@mdi/js": "^6.5.95",
     "@react-three/drei": "^7.27.5",
@@ -14,7 +16,9 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-transition-group": "^4.4.2",
+    "socket.io-client": "^2.4.0",
     "styled-components": "^5.3.3",
+    "tailwindcss": "^3.0.11",
     "three": "^0.128.0",
     "twin.macro": "^2.8.2",
     "use-asset": "^1.0.4",
