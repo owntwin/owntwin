@@ -21,6 +21,7 @@ function SphereAnchor({ position, label = null, ...props }) {
             fontSize: '0.75rem',
             fontWeight: 'normal',
             width: '10rem',
+            color: 'rgb(156 163 175)',
           }}
         >
           {label}
@@ -69,6 +70,7 @@ function BeamAnchor({
             fontSize: '0.75rem',
             fontWeight: 'normal',
             width: '10rem',
+            color: 'rgb(156 163 175)',
           }}
         >
           {label}
