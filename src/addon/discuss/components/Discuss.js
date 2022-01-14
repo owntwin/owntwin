@@ -18,7 +18,7 @@ export default function Discuss({ ...props }) {
 
   useEffect(() => {
     client
-      .service('subscription')
+      .service('api/subscription')
       .create({ uid: twinId })
       .catch((err) => {
         // console.log({ err });
