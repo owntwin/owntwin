@@ -18,7 +18,7 @@
     "react-transition-group": "^4.4.2",
     "socket.io-client": "^2.4.0",
     "styled-components": "^5.3.3",
-    "tailwindcss": "^3.0.13",
+    "tailwindcss": "^2.2.16",
     "three": "^0.128.0",
     "twin.macro": "^2.8.2",
     "use-asset": "^1.0.4"
