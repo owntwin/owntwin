@@ -9,7 +9,7 @@
     "@mapbox/sphericalmercator": "^1.2.0",
     "@mdi/js": "^6.5.95",
     "@react-three/drei": "^8.4.0",
-    "@react-three/fiber": "^6.1.2",
+    "@react-three/fiber": "^6.2.3",
     "axios": "^0.24.0",
     "csv-parse": "^5.0.4",
     "jotai": "^1.5.2",
