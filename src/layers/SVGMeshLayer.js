@@ -7,7 +7,7 @@ import {
 } from 'react';
 
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 import * as THREE from 'three';
 
 import { TerrainContext } from '../Terrain';

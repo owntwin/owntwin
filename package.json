@@ -19,7 +19,7 @@
     "socket.io-client": "^2.4.0",
     "styled-components": "^5.3.3",
     "tailwindcss": "^2.2.16",
-    "three": "^0.130.0",
+    "three": "^0.132.0",
     "three.meshline": "github:spite/THREE.MeshLine#pull/143/head",
     "twin.macro": "^2.8.2",
     "use-asset": "^1.0.4"

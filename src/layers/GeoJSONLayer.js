@@ -3,7 +3,7 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 
 import * as util from '../lib/util';
 
