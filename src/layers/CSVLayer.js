@@ -12,7 +12,7 @@ import {
   BeamAnchor,
 } from '../Anchor';
 
-import { parse } from 'csv-parse/lib/sync';
+import { parse as parseCSV } from 'csv-parse/browser/esm/sync';
 
 function Anchor({
   coordinates,
@@ -76,7 +76,7 @@ export default function CSVLayer({ url, clip = true, ...props }) {
       (async () => {
         const _data = await axios.get(url).then((resp) => resp.data);
         // console.log(_data);
-        const records = parse(_data, {
+        const records = parseCSV(_data, {
           columns: true,
           skip_empty_lines: true,
         });
