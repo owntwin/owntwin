@@ -304,7 +304,8 @@ function DetailView({ model, type, entity, ...props }) {
   return (
     <Canvas
       id="detail-view-canvas"
-      linear={true}
+      linear={true} // TODO: Reconsideration
+      flat={true} // TODO: Reconsideration
       dpr={Math.min(2, window.devicePixelRatio)}
       gl={{ powerPreference: 'default', antialias: false }}
     >
