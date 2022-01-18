@@ -10,7 +10,7 @@ function Layer({ def, basePath, ...props }) {
     def.path = basePath ? new URL(def.path, basePath).toString() : def.path;
   }
   if (def.format === 'svg') {
-    return <SVGMeshLayer url={def.path} />;
+    return <SVGMeshLayer url={def.path} color={def.color} />;
   } else if (def.format === 'png') {
     return (
       <Suspense fallback={null}>

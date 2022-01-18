@@ -35,15 +35,18 @@ async function loadSVG(url) {
       for (let i = 0; i < paths.length; i++) {
         let path = paths[i];
 
-        const shapes = path.toShapes(true);
+        const shapes = path.toShapes(true); // TODO: Why?
 
         shapes.forEach((shape) => {
           let points = shape.getPoints();
 
           points = points.map((p) => {
             let x = p.x;
+            // TODO: Improve
+            if (x < 0) x = 0;
             if (x >= widthSVG) x = widthSVG - 1;
             let y = heightSVG - p.y;
+            // TODO: Improve
             if (y < 0) y = 0;
             if (y >= heightSVG) y = heightSVG - 1;
             p.x = x;
@@ -62,7 +65,7 @@ async function loadSVG(url) {
     });
 }
 
-function SVGMeshLayer({ url, ...props }) {
+function SVGMeshLayer({ url, color, ...props }) {
   const [lines, setLines] = useState([]);
   const [visible, setVisible] = useState(false);
 
@@ -92,7 +95,7 @@ function SVGMeshLayer({ url, ...props }) {
       setLines([
         <lineSegments key={0} geometry={merged}>
           <meshBasicMaterial
-            color={0xdadce0}
+            color={color || 0xdadce0}
             side={THREE.DoubleSide}
             depthWrite={false}
             // depthTest={false}
@@ -100,12 +103,13 @@ function SVGMeshLayer({ url, ...props }) {
         </lineSegments>,
       ]);
     })();
-  }, [url]);
+  }, [url, color]);
 
   const ref = useRef();
   useLayoutEffect(() => {
-    let bbox = new THREE.Box3().setFromObject(ref.current);
-    let size = bbox.getSize(new THREE.Vector3());
+    // let bbox = new THREE.Box3().setFromObject(ref.current);
+    // let size = bbox.getSize(new THREE.Vector3());
+    let size = new THREE.Vector3(width, height, 0); // TODO: Improve
     ref.current.position.set(0, 0, 0);
     ref.current.translateX(-size.x / 2);
     ref.current.translateY(-size.y / 2);
