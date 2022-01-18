@@ -53,7 +53,9 @@ export default function Discuss({ ...props }) {
     enabled && (
       <>
         <mesh
-          onPointerMissed={() => {
+          onPointerMissed={(ev) => {
+            // console.log(ev);
+            if (ev.type !== 'dblclick') return;
             if (!raycaster || !scene) return;
             const intersects = raycaster.intersectObjects(scene.children);
             // console.log(intersects);
