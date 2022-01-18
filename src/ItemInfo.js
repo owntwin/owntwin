@@ -11,6 +11,7 @@ import {
   mdiMenuDown,
   mdiInformationOutline,
   mdiOpenInNew,
+  mdiDownload,
 } from '@mdi/js';
 
 function getField(entity, key) {
@@ -194,7 +195,7 @@ function ModulePane({ id, module, properties, isOpen, ...props }) {
               {layers.length > 0 ? (
                 layers.map((item, i) => {
                   return (
-                    <li key={i}>
+                    <li key={i} css={[tw`flex items-center`]}>
                       <input
                         css={[tw`mr-1`]}
                         type="checkbox"
@@ -206,7 +207,20 @@ function ModulePane({ id, module, properties, isOpen, ...props }) {
                           });
                         }}
                       />
-                      {item.name}
+                      <span>{item.name}</span>
+                      {['csv'].includes(item.format) && ( // TODO: Improve
+                        <span css={[tw`ml-1`]}>
+                          <a href={item.path}>
+                            <svg
+                              css={[tw`fill-current text-gray-500 hover:text-gray-600`]}
+                              style={{ width: '14px', height: '14px' }}
+                              viewBox="0 0 24 24"
+                            >
+                              <path d={mdiDownload} />
+                            </svg>
+                          </a>
+                        </span>
+                      )}
                     </li>
                   );
                 })
