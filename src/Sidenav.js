@@ -13,6 +13,10 @@ import { useAtom } from 'jotai';
 import Input from './addon/discuss/components/Input';
 import * as discussStore from './addon/discuss/store';
 
+const addons = process.env.REACT_APP_ADDONS
+  ? process.env.REACT_APP_ADDONS.split(',')
+  : [];
+
 function DiscussButton({ width, height, ...props }) {
   const [enabled, setEnabled] = useAtom(discussStore.enabledAtom);
   const [status] = useAtom(discussStore.statusAtom);
@@ -52,7 +56,11 @@ function Sidenav({ communityURL, ...props }) {
   const HELP_URL = 'https://beta.owntwin.com/docs/about';
 
   return (
-    <div css={[tw`fixed bottom-4 left-4 right-4 sm:right-auto flex items-center h-10`]}>
+    <div
+      css={[
+        tw`fixed bottom-4 left-4 right-4 sm:right-auto flex items-center h-10`,
+      ]}
+    >
       <div css={[tw`flex items-center`]}>
         <a href={HELP_URL} target="_blank" rel="noreferrer">
           <svg style={{ width: '24px', height: '24px' }} viewBox="0 0 24 24">
@@ -84,12 +92,20 @@ function Sidenav({ communityURL, ...props }) {
           </svg>
         </button>
       </div>
-      <div css={[tw`ml-3 flex items-center relative`]}>
-        <DiscussButton width="24px" height="24px" />
-      </div>
-      <div css={[tw`absolute sm:static bottom-14 sm:bottom-auto w-full sm:w-auto sm:ml-3 flex items-center`]}>
-        <Input />
-      </div>
+      {addons.includes('discuss') && (
+        <>
+          <div css={[tw`ml-3 flex items-center relative`]}>
+            <DiscussButton width="24px" height="24px" />
+          </div>
+          <div
+            css={[
+              tw`absolute sm:static bottom-14 sm:bottom-auto w-full sm:w-auto sm:ml-3 flex items-center`,
+            ]}
+          >
+            <Input />
+          </div>
+        </>
+      )}
     </div>
   );
 }

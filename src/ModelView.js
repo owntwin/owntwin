@@ -21,6 +21,10 @@ const terrainLevelZoom = 2;
 const width = 1024,
   height = 1024;
 
+const addons = process.env.REACT_APP_ADDONS
+  ? process.env.REACT_APP_ADDONS.split(',')
+  : [];
+
 function DefaultCamera({ ...props }) {
   // const camera = useRef();
   // useHelper(camera, CameraHelper, 1, 'hotpink');
@@ -160,7 +164,7 @@ function ModelView({ model, basePath, ...props }) {
               }}
             />
           ))}
-          <Discuss />
+          {addons.includes('discuss') && <Discuss />}
         </Terrain>
       </ModelContext.Provider>
       )
