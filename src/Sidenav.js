@@ -4,6 +4,7 @@ import tw from 'twin.macro';
 
 import DiscussInput from './addon/discuss/components/Input';
 import DiscussButton from './addon/discuss/components/Button';
+import DrawButton from './addon/draw/components/Button';
 
 const addons = process.env.REACT_APP_ADDONS
   ? process.env.REACT_APP_ADDONS.split(',')
@@ -49,6 +50,11 @@ function Sidenav({ communityURL, ...props }) {
           </svg>
         </button>
       </div>
+      {addons.includes('draw') && (
+        <div css={[tw`ml-3 flex items-center relative`]}>
+          <DrawButton width="24px" height="24px" />
+        </div>
+      )}
       {addons.includes('discuss') && (
         <>
           <div css={[tw`ml-3 flex items-center relative`]}>
