@@ -70,7 +70,7 @@ function Terrain({ levelmap, zoom, width, height, ...props }) {
   const [vertices, setVertices] = useState(null);
 
   const geom = useRef();
-  useLayoutEffect(() => {
+  useLayoutEffect(() => { // TODO: useEffect
     const positionAttribute = geom.current.getAttribute('position');
 
     levelmap.forEach((v) => {
@@ -89,7 +89,7 @@ function Terrain({ levelmap, zoom, width, height, ...props }) {
   return (
     <>
       <BlankPlane width={width} height={height} />
-      <mesh>
+      <mesh name="terrain">
         <planeGeometry
           ref={geom}
           args={[width, height, segments - 1, segments - 1]}

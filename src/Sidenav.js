@@ -1,56 +1,14 @@
 import 'styled-components/macro';
-import { useEffect } from 'react';
-import {
-  mdiHelpCircleOutline,
-  mdiAccountGroup,
-  mdiFullscreen,
-  mdiCommentTextMultipleOutline,
-} from '@mdi/js';
+import { mdiHelpCircleOutline, mdiAccountGroup, mdiFullscreen } from '@mdi/js';
 import tw from 'twin.macro';
 
-import { useAtom } from 'jotai';
-
-import Input from './addon/discuss/components/Input';
-import * as discussStore from './addon/discuss/store';
+import DiscussInput from './addon/discuss/components/Input';
+import DiscussButton from './addon/discuss/components/Button';
+import DrawButton from './addon/draw/components/Button';
 
 const addons = process.env.REACT_APP_ADDONS
   ? process.env.REACT_APP_ADDONS.split(',')
   : [];
-
-function DiscussButton({ width, height, ...props }) {
-  const [enabled, setEnabled] = useAtom(discussStore.enabledAtom);
-  const [status] = useAtom(discussStore.statusAtom);
-
-  useEffect(() => {}, [enabled]);
-
-  const indicatorStyles = {
-    CONNECTED: tw`bg-blue-400`,
-    ERROR: tw`bg-red-400`,
-  };
-
-  return (
-    <>
-      <button
-        css={[tw`focus:outline-none`]}
-        onClick={() => setEnabled(!enabled)}
-      >
-        <svg style={{ width, height }} viewBox="0 0 24 24">
-          <path fill="#000000" d={mdiCommentTextMultipleOutline} />
-        </svg>
-      </button>
-      {(enabled || status === 'ERROR') && (
-        <span css={[tw`flex absolute h-3 w-3 top-0 right-0 -mt-1 -mr-1`]}>
-          <span
-            css={[
-              tw`absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75`,
-              indicatorStyles[status],
-            ]}
-          ></span>
-        </span>
-      )}
-    </>
-  );
-}
 
 function Sidenav({ communityURL, ...props }) {
   const HELP_URL = 'https://beta.owntwin.com/docs/about';
@@ -92,6 +50,11 @@ function Sidenav({ communityURL, ...props }) {
           </svg>
         </button>
       </div>
+      {addons.includes('draw') && (
+        <div css={[tw`ml-3 flex items-center relative`]}>
+          <DrawButton width="24px" height="24px" />
+        </div>
+      )}
       {addons.includes('discuss') && (
         <>
           <div css={[tw`ml-3 flex items-center relative`]}>
@@ -102,7 +65,7 @@ function Sidenav({ communityURL, ...props }) {
               tw`absolute sm:static bottom-14 sm:bottom-auto w-full sm:w-auto sm:ml-3 flex items-center`,
             ]}
           >
-            <Input />
+            <DiscussInput />
           </div>
         </>
       )}

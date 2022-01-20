@@ -12,6 +12,7 @@ import Layer from './Layer';
 import Building from './Building';
 
 import Discuss from './addon/discuss/components/Discuss';
+import DrawAddon from './addon/draw/components/Draw';
 
 export const ModelContext = createContext();
 
@@ -51,6 +52,7 @@ function ExtendedOrbitControls({ ...props }) {
 
   return (
     <OrbitControls
+      attach="orbitControls"
       target={[0, 0, 0]}
       minDistance={100}
       maxDistance={1500}
@@ -165,6 +167,7 @@ function ModelView({ model, basePath, ...props }) {
             />
           ))}
           {addons.includes('discuss') && <Discuss />}
+          {addons.includes('draw') && <DrawAddon />}
         </Terrain>
       </ModelContext.Provider>
       )
