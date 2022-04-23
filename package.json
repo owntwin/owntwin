@@ -55,6 +55,6 @@
     "@testing-library/user-event": "^13.5.0",
     "autoprefixer": "^10.4.2",
     "postcss": "^8.4.5",
-    "react-scripts": "5.0.0"
+    "react-scripts": "5.0.1"
   }
 }
