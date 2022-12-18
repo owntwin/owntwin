@@ -37,6 +37,7 @@
     "@vitejs/plugin-react": "^3.0.0",
     "babel-plugin-macros": "^3.1.0",
     "babel-plugin-styled-components": "^2.0.7",
+    "rollup-plugin-visualizer": "^5.8.3",
     "styled-components": "^5.3.6",
     "tailwindcss": "^3.2.4",
     "twin.macro": "^3.1.0",
