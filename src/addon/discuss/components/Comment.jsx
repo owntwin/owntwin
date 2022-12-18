@@ -1,9 +1,9 @@
-import 'styled-components/macro';
-import { Html } from '@react-three/drei';
-import tw from 'twin.macro';
-import { mdiPencilOutline, mdiDotsHorizontal } from '@mdi/js';
+import "styled-components/macro";
+import { Html } from "@react-three/drei";
+import tw from "twin.macro";
+import { mdiPencilOutline, mdiDotsHorizontal } from "@mdi/js";
 
-import * as THREE from 'three';
+import * as THREE from "three";
 
 function Comment({
   position,
@@ -19,13 +19,13 @@ function Comment({
   return (
     <Html
       position={position}
-      style={{ transform: 'translate3d(-50%,-100%,0)' }}
+      style={{ transform: "translate3d(-50%,-100%,0)" }}
       distanceFactor={1000}
     >
       <div css={[tw`relative`]}>
         <div
           css={[tw`rounded bg-gray-600 bg-opacity-50 text-white py-2 px-3`]}
-          style={{ minWidth: '32px', width: 'max-content', maxWidth: '180px' }}
+          style={{ minWidth: "32px", width: "max-content", maxWidth: "180px" }}
         >
           <div css={[tw`text-xs`]}>{content}</div>
         </div>
@@ -49,7 +49,7 @@ function CommentPrompt({ position, base, z, depth, onPointerDown, ...props }) {
   return (
     <Html
       position={position}
-      style={{ transform: 'translate3d(-50%,-100%,0)' }}
+      style={{ transform: "translate3d(-50%,-100%,0)" }}
       distanceFactor={1000}
     >
       <div css={[tw`relative`]}>
@@ -63,7 +63,7 @@ function CommentPrompt({ position, base, z, depth, onPointerDown, ...props }) {
             >
               <svg
                 css={[tw`fill-current`]}
-                style={{ width: '24px', height: '24px' }}
+                style={{ width: "24px", height: "24px" }}
                 viewBox="0 0 24 24"
               >
                 <path d={mdiPencilOutline} />
@@ -74,7 +74,7 @@ function CommentPrompt({ position, base, z, depth, onPointerDown, ...props }) {
             >
               <svg
                 css={[tw`fill-current`]}
-                style={{ width: '24px', height: '24px' }}
+                style={{ width: "24px", height: "24px" }}
                 viewBox="0 0 24 24"
               >
                 <path d={mdiDotsHorizontal} />

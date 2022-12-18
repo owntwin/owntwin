@@ -1,14 +1,14 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from "react";
 
-import axios from 'axios';
+import axios from "axios";
 
-import * as THREE from 'three';
-import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
+import * as THREE from "three";
+import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils";
 
-import * as util from '../lib/util';
+import * as util from "../lib/util";
 
-import { TerrainContext } from '../Terrain';
-import { ModelContext } from '../ModelView';
+import { TerrainContext } from "../Terrain";
+import { ModelContext } from "../ModelView";
 
 function extrudePolygonGeometry({ coordinates, bbox, terrain, ...props }) {
   const depth = props.height / 2;
@@ -45,7 +45,7 @@ function extrudePolygonGeometry({ coordinates, bbox, terrain, ...props }) {
     depth: depth || 10,
     bevelEnabled: false,
   };
-  const geom = new THREE.ExtrudeBufferGeometry(shape, extrudeSettings);
+  const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
   geom.translate(origin.x, origin.y, z);
 
   return geom;

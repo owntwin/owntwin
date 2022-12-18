@@ -1,6 +1,6 @@
 /*! Partly derived from https://gist.github.com/maptiler/fddb5ce33ba995d5523de9afdf8ef118 */
 
-import SphericalMercator from '@mapbox/sphericalmercator';
+import SphericalMercator from "@mapbox/sphericalmercator";
 
 const sm = new SphericalMercator();
 

@@ -1,18 +1,18 @@
-import 'styled-components/macro';
-import { useContext, useEffect, useMemo, useState } from 'react';
-import * as THREE from 'three';
-import { Html } from '@react-three/drei';
-import tw from 'twin.macro';
+import "styled-components/macro";
+import { useContext, useEffect, useMemo, useState } from "react";
+import * as THREE from "three";
+import { Html } from "@react-three/drei";
+import tw from "twin.macro";
 
-import * as util from './lib/util';
+import * as util from "./lib/util";
 
-import { ModelContext } from './ModelView';
+import { ModelContext } from "./ModelView";
 
 function Popup({ item, ...props }) {
   return (
     <div
       css={[tw`bg-white border rounded py-2 px-3`]}
-      style={{ minWidth: '200px' }}
+      style={{ minWidth: "200px" }}
     >
       <div css={[tw`text-xs`]}>{item.type}</div>
       <div>{item.name}</div>
@@ -46,7 +46,7 @@ function Building({ base, z, depth, onPointerDown, ...props }) {
       depth: depth || 50,
       bevelEnabled: false,
     };
-    return new THREE.ExtrudeBufferGeometry(shape, extrudeSettings);
+    return new THREE.ExtrudeGeometry(shape, extrudeSettings);
   }, [model, base, origin.x, origin.y, depth]);
 
   const [hover, setHover] = useState(false);
@@ -57,7 +57,7 @@ function Building({ base, z, depth, onPointerDown, ...props }) {
   };
 
   useEffect(() => {
-    document.body.style.cursor = hover ? 'pointer' : 'auto';
+    document.body.style.cursor = hover ? "pointer" : "auto";
   }, [hover]);
 
   return (
@@ -77,7 +77,7 @@ function Building({ base, z, depth, onPointerDown, ...props }) {
         <edgesGeometry attach="geometry" args={[geom, 45]} />
         <lineBasicMaterial color={0xcccccc} attach="material" />
       </lineSegments>
-      <Html style={{ pointerEvents: 'none' }}>
+      <Html style={{ pointerEvents: "none" }}>
         {hover && <Popup item={{ name: props.name, type: props.type }} />}
       </Html>
     </mesh>

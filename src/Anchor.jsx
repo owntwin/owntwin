@@ -1,9 +1,9 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from "react";
 
-import { Html } from '@react-three/drei';
+import { Html } from "@react-three/drei";
 
-import { useAtom } from 'jotai';
-import * as store from './lib/store';
+import { useAtom } from "jotai";
+import * as store from "./lib/store";
 
 function SphereAnchor({ position, label = null, ...props }) {
   return (
@@ -14,14 +14,14 @@ function SphereAnchor({ position, label = null, ...props }) {
         opacity={0.5}
         transparent={true}
       />
-      <Html style={{ pointerEvents: 'none' }}>
+      <Html style={{ pointerEvents: "none" }}>
         <div
           style={{
-            display: true ? 'block' : 'none',
-            fontSize: '0.75rem',
-            fontWeight: 'normal',
-            width: '10rem',
-            color: 'rgb(156 163 175)',
+            display: true ? "block" : "none",
+            fontSize: "0.75rem",
+            fontWeight: "normal",
+            width: "10rem",
+            color: "rgb(156 163 175)",
           }}
         >
           {label}
@@ -34,7 +34,7 @@ function SphereAnchor({ position, label = null, ...props }) {
 function BeamAnchor({
   position,
   label = null,
-  labelVisibility = 'auto',
+  labelVisibility = "auto",
   height = 256,
   ...props
 }) {
@@ -63,14 +63,14 @@ function BeamAnchor({
         opacity={0.5}
         transparent={true}
       />
-      <Html style={{ pointerEvents: 'none' }}>
+      <Html style={{ pointerEvents: "none" }}>
         <div
           style={{
-            display: labelVisibility === 'always' || closeup ? 'block' : 'none',
-            fontSize: '0.75rem',
-            fontWeight: 'normal',
-            width: '10rem',
-            color: 'rgb(156 163 175)',
+            display: labelVisibility === "always" || closeup ? "block" : "none",
+            fontSize: "0.75rem",
+            fontWeight: "normal",
+            width: "10rem",
+            color: "rgb(156 163 175)",
           }}
         >
           {label}

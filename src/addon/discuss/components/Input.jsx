@@ -1,15 +1,15 @@
-import 'styled-components/macro';
-import { useEffect, useRef, useState } from 'react';
-import { mdiSend } from '@mdi/js';
-import tw from 'twin.macro';
+import "styled-components/macro";
+import { useEffect, useRef, useState } from "react";
+import { mdiSend } from "@mdi/js";
+import tw from "twin.macro";
 
-import { useAtom } from 'jotai';
+import { useAtom } from "jotai";
 
-import * as store from '../store';
-import { client, twinId } from '../index';
+import * as store from "../store";
+import { client, twinId } from "../index";
 
 function Input({ ...props }) {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState("");
   const inputRef = useRef();
 
   const [commentPrompt, setCommentPrompt] = useAtom(store.commentPromptAtom);
@@ -21,7 +21,7 @@ function Input({ ...props }) {
 
   // TODO: Here or somewhere else?
   useEffect(() => {
-    client.service('api/discuss').on('created', (message) => {
+    client.service("api/discuss").on("created", (message) => {
       // console.log(message);
       setComments((comments) => [...comments, message]);
     });
@@ -37,14 +37,14 @@ function Input({ ...props }) {
       twinId: twinId, // TODO: Use anonymous auth instead
     };
     client
-      .service('api/discuss')
+      .service("api/discuss")
       .create(comment)
       .catch((err) => {
-        console.log('err', err);
-        setStatus('ERROR');
+        console.log("err", err);
+        setStatus("ERROR");
       });
     setCommentPrompt(store.commentPromptInitialValue);
-    setValue('');
+    setValue("");
   };
 
   return (
@@ -60,7 +60,7 @@ function Input({ ...props }) {
           value={value}
           onChange={(ev) => setValue(ev.target.value)}
           onKeyPress={(ev) => {
-            if (ev.key === 'Enter') {
+            if (ev.key === "Enter") {
               ev.preventDefault();
               submit();
             }
@@ -81,7 +81,7 @@ function Input({ ...props }) {
           >
             <svg
               css={[tw`fill-current`]}
-              style={{ width: '24px', height: '24px' }}
+              style={{ width: "24px", height: "24px" }}
               viewBox="0 0 24 24"
             >
               <path d={mdiSend} />

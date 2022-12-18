@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { useThree } from '@react-three/fiber';
+import { useEffect } from "react";
+import { useAtom } from "jotai";
+import { useThree } from "@react-three/fiber";
 
-import Comment, { CommentPrompt } from './Comment';
+import Comment, { CommentPrompt } from "./Comment";
 
-import { client, twinId } from '../index';
-import * as store from '../store';
+import { client, twinId } from "../index";
+import * as store from "../store";
 
 export default function Discuss({ ...props }) {
   const [comments] = useAtom(store.commentsAtom);
@@ -18,7 +18,7 @@ export default function Discuss({ ...props }) {
 
   useEffect(() => {
     client
-      .service('api/subscription')
+      .service("api/subscription")
       .create({ uid: twinId })
       .catch((err) => {
         // console.log({ err });
@@ -34,17 +34,17 @@ export default function Discuss({ ...props }) {
   }, [enabled]);
 
   useEffect(() => {
-    client.io.on('reconnect', (err) => {
+    client.io.on("reconnect", (err) => {
       setEnabled(true);
-      setStatus('CONNECTED');
+      setStatus("CONNECTED");
     });
-    client.io.on('connect_error', (err) => {
+    client.io.on("connect_error", (err) => {
       setEnabled(false);
-      setStatus('ERROR');
+      setStatus("ERROR");
     });
     return () => {
       // client.io.off('connect');
-      client.io.off('connect_error');
+      client.io.off("connect_error");
     };
   }, [setEnabled, setStatus]);
   // useEffect(() => console.log({ comments }), [comments]);
@@ -55,7 +55,7 @@ export default function Discuss({ ...props }) {
         <mesh
           onPointerMissed={(ev) => {
             // console.log(ev);
-            if (ev.type !== 'dblclick') return;
+            if (ev.type !== "dblclick") return;
             if (!raycaster || !scene) return;
             const intersects = raycaster.intersectObjects(scene.children);
             // console.log(intersects);

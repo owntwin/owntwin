@@ -4,14 +4,14 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-} from 'react';
+} from "react";
 
-import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
-import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
-import * as THREE from 'three';
+import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader";
+import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils";
+import * as THREE from "three";
 
-import { TerrainContext } from '../Terrain';
-import * as util from '../lib/util';
+import { TerrainContext } from "../Terrain";
+import * as util from "../lib/util";
 
 const width = util.canvas.width,
   height = util.canvas.height;
@@ -128,7 +128,7 @@ function SVGMeshLayer({ url, color, ...props }) {
 
     // terrain
     ref.current.children.forEach((line) => {
-      let position = line.geometry.getAttribute('position');
+      let position = line.geometry.getAttribute("position");
       let vertices = [];
       vertices = position.array.map((v, i) => {
         if (i % 3 === 2) {
@@ -141,7 +141,7 @@ function SVGMeshLayer({ url, color, ...props }) {
         }
       });
       line.geometry.setAttribute(
-        'position',
+        "position",
         new THREE.BufferAttribute(new Float32Array(vertices), 3),
       );
     });

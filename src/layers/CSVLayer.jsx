@@ -1,25 +1,25 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from "react";
 
-import axios from 'axios';
+import axios from "axios";
 
-import * as util from '../lib/util';
+import * as util from "../lib/util";
 
-import { TerrainContext } from '../Terrain';
-import { ModelContext } from '../ModelView';
+import { TerrainContext } from "../Terrain";
+import { ModelContext } from "../ModelView";
 
 import {
   // SphereAnchor,
   BeamAnchor,
-} from '../Anchor';
+} from "../Anchor";
 
-import { parse as parseCSV } from 'csv-parse/browser/esm/sync';
+import { parse as parseCSV } from "csv-parse/browser/esm/sync";
 
 function Anchor({
   coordinates,
   bbox,
   terrain,
   label = null,
-  labelVisibility = 'auto',
+  labelVisibility = "auto",
   clip = true,
   size = {},
   ...props

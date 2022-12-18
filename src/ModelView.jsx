@@ -1,18 +1,18 @@
-import { useEffect, createContext, useState } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import { useEffect, createContext, useState } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
+import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 // import { CameraHelper } from 'three';
-import axios from 'axios';
+import axios from "axios";
 
-import { useAtom } from 'jotai';
-import * as store from './lib/store';
+import { useAtom } from "jotai";
+import * as store from "./lib/store";
 
-import Terrain from './Terrain';
-import Layer from './Layer';
-import Building from './Building';
+import Terrain from "./Terrain";
+import Layer from "./Layer";
+import Building from "./Building";
 
-import Discuss from './addon/discuss/components/Discuss';
-import DrawAddon from './addon/draw/components/Draw';
+import Discuss from "./addon/discuss/components/Discuss";
+import DrawAddon from "./addon/draw/components/Draw";
 
 export const ModelContext = createContext();
 
@@ -22,8 +22,8 @@ const terrainLevelZoom = 2;
 const width = 1024,
   height = 1024;
 
-const addons = process.env.REACT_APP_ADDONS
-  ? process.env.REACT_APP_ADDONS.split(',')
+const addons = import.meta.env.VITE_ADDONS
+  ? import.meta.env.VITE_ADDONS.split(",")
   : [];
 
 function DefaultCamera({ ...props }) {
@@ -129,7 +129,7 @@ function ModelView({ model, basePath, ...props }) {
       linear={true} // TODO: Reconsideration
       flat={true} // TODO: Reconsideration
       dpr={Math.min(2, window.devicePixelRatio)}
-      gl={{ powerPreference: 'default', antialias: false }}
+      gl={{ powerPreference: "default", antialias: false }}
     >
       <DefaultCamera />
       <ambientLight args={[0xffffff, 1]} />
@@ -166,8 +166,8 @@ function ModelView({ model, basePath, ...props }) {
               }}
             />
           ))}
-          {addons.includes('discuss') && <Discuss />}
-          {addons.includes('draw') && <DrawAddon />}
+          {addons.includes("discuss") && <Discuss />}
+          {addons.includes("draw") && <DrawAddon />}
         </Terrain>
       </ModelContext.Provider>
       )
