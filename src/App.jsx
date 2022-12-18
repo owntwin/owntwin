@@ -1,23 +1,23 @@
-import 'styled-components/macro';
-import { useEffect, useRef, useState } from 'react';
-import { Transition } from 'react-transition-group';
+import "styled-components/macro";
+import { useEffect, useRef, useState } from "react";
+import { Transition } from "react-transition-group";
 
-import { useAtom } from 'jotai';
-import * as store from './lib/store';
+import { useAtom } from "jotai";
+import * as store from "./lib/store";
 
-import axios from 'axios';
+import axios from "axios";
 
-import ModelView from './ModelView';
-import Sidenav from './Sidenav';
-import ItemInfo from './ItemInfo';
-import Clock from './Clock';
-import DetailView from './DetailView';
+import ModelView from "./ModelView";
+import Sidenav from "./Sidenav";
+import ItemInfo from "./ItemInfo";
+import Clock from "./Clock";
+import DetailView from "./DetailView";
 
-import tw from 'twin.macro';
-import './App.css';
-import { mdiArrowLeftThinCircleOutline, mdiCloseCircle } from '@mdi/js';
+import tw from "twin.macro";
+import "./App.css";
+import { mdiArrowLeftThinCircleOutline, mdiCloseCircle } from "@mdi/js";
 
-import { model as defaultModel } from './model';
+import { model as defaultModel } from "./model";
 
 // const DEBUG = false;
 
@@ -26,12 +26,12 @@ async function getModel() {
   const url = new URL(window.location);
   const params = new URLSearchParams(url.search);
   // TODO: Debug only
-  if (params.has('twin')) {
-    basePath = params.get('twin');
-    path = new URL('./twin.json', basePath);
+  if (params.has("twin")) {
+    basePath = params.get("twin");
+    path = new URL("./twin.json", basePath);
   } else {
     basePath = null;
-    path = './twin.json';
+    path = "./twin.json";
   }
   model = await axios
     .get(path)
@@ -39,7 +39,7 @@ async function getModel() {
     .catch(() => defaultModel);
   model._basePath = basePath;
 
-  if (params.has('no-terrain')) {
+  if (params.has("no-terrain")) {
     model.terrain = null;
   }
 
@@ -73,10 +73,10 @@ function Debug() {
         css={[tw`absolute top-4 right-4 cursor-pointer`]}
         onClick={() => {
           setDebugOpen(false);
-          setDebug('');
+          setDebug("");
         }}
       >
-        <svg style={{ width: '18px', height: '18px' }} viewBox="0 0 24 24">
+        <svg style={{ width: "18px", height: "18px" }} viewBox="0 0 24 24">
           <path fill="#eee" d={mdiCloseCircle} />
         </svg>
       </div>
@@ -170,19 +170,19 @@ function App() {
             className="detail-view"
             css={[
               tw`absolute top-0 bottom-0 left-0 right-0`,
-              ['entering', 'entered'].includes(state) ? tw`block` : tw`hidden`,
+              ["entering", "entered"].includes(state) ? tw`block` : tw`hidden`,
             ]}
           >
             <div
               css={[
                 tw`w-full h-full`,
-                state === 'entered' ? tw`block` : tw`hidden`,
+                state === "entered" ? tw`block` : tw`hidden`,
               ]}
             >
               {modelLoaded && (
                 <DetailView
                   model={model}
-                  type={'building'}
+                  type={"building"}
                   entity={detailEntity}
                 />
               )}
@@ -216,7 +216,7 @@ function App() {
               >
                 <div css={[tw`mr-1`]}>
                   <svg
-                    style={{ width: '18px', height: '18px' }}
+                    style={{ width: "18px", height: "18px" }}
                     viewBox="0 0 24 24"
                   >
                     <path fill="#888" d={mdiArrowLeftThinCircleOutline} />

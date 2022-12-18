@@ -1,18 +1,18 @@
-import { useContext, useMemo } from 'react';
-import { extend } from '@react-three/fiber';
-import * as THREE from 'three';
+import { useContext, useMemo } from "react";
+import { extend } from "@react-three/fiber";
+import * as THREE from "three";
 
 import {
-  MeshLine,
+  MeshLineGeometry,
   MeshLineMaterial,
   //  MeshLineRaycast
-} from 'three.meshline';
+} from "meshline";
 
-import { ModelContext } from './ModelView';
+import { ModelContext } from "./ModelView";
 
-import * as util from './lib/util';
+import * as util from "./lib/util";
 
-extend({ MeshLine, MeshLineMaterial });
+extend({ MeshLineGeometry, MeshLineMaterial });
 
 function Path({ coordinates, color, ...props }) {
   const { model } = useContext(ModelContext);
@@ -29,13 +29,13 @@ function Path({ coordinates, color, ...props }) {
 
   return (
     <mesh position={[0, -0.4, 2]}>
-      <meshLine attach="geometry" points={points} />
+      <meshLineGeometry attach="geometry" points={points} />
       <meshLineMaterial
         attach="material"
         transparent
         depthTest={false}
         lineWidth={10}
-        color={color || 'green'}
+        color={color || "green"}
         // dashArray={0.05}
         // dashRatio={0.95}
       />

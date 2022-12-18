@@ -5,19 +5,19 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-} from 'react';
+} from "react";
 // import { Plane } from '@react-three/drei';
 import {
   // CameraHelper,
   BufferAttribute,
-} from 'three';
-import { useAtom } from 'jotai';
-import * as store from './lib/store';
+} from "three";
+import { useAtom } from "jotai";
+import * as store from "./lib/store";
 
 // import tw from 'twin.macro';
 
-import { ModelContext } from './ModelView';
-import * as util from './lib/util';
+import { ModelContext } from "./ModelView";
+import * as util from "./lib/util";
 
 export const TerrainContext = createContext();
 
@@ -49,7 +49,7 @@ function BlankPlane({ width, height, color, ...props }) {
             // setCoords((val) => [...val, `[${coord.lat}, ${coord.lng}, 0]`]);
             setCoords((val) => {
               let coords = [...val, `[${coord.lng}, ${coord.lat}]`];
-              setDebug(`[${coords.join(', ')}]`);
+              setDebug(`[${coords.join(", ")}]`);
               return coords;
             });
           }
@@ -70,8 +70,9 @@ function Terrain({ levelmap, zoom, width, height, ...props }) {
   const [vertices, setVertices] = useState(null);
 
   const geom = useRef();
-  useLayoutEffect(() => { // TODO: useEffect
-    const positionAttribute = geom.current.getAttribute('position');
+  useLayoutEffect(() => {
+    // TODO: useEffect
+    const positionAttribute = geom.current.getAttribute("position");
 
     levelmap.forEach((v) => {
       const pos = v[0] + segments * (segments - 1 - v[1]);
@@ -80,7 +81,7 @@ function Terrain({ levelmap, zoom, width, height, ...props }) {
 
     // console.log(positionAttribute);
     geom.current.setAttribute(
-      'position',
+      "position",
       new BufferAttribute(new Float32Array(positionAttribute.array), 3),
     );
     setVertices(Array.from(positionAttribute.array));

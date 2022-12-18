@@ -1,33 +1,33 @@
-import { forwardRef, useEffect, useRef, useState } from 'react';
-import { useAtom } from 'jotai';
-import { extend, useFrame, useThree } from '@react-three/fiber';
-import { Sphere } from '@react-three/drei';
-import * as THREE from 'three';
+import { forwardRef, useEffect, useRef, useState } from "react";
+import { useAtom } from "jotai";
+import { extend, useFrame, useThree } from "@react-three/fiber";
+import { Sphere } from "@react-three/drei";
+import * as THREE from "three";
 
 // import { throttle } from 'lodash-es';
 
 import {
-  MeshLine,
+  MeshLineGeometry,
   MeshLineMaterial,
   //  MeshLineRaycast
-} from 'three.meshline';
+} from "meshline";
 
-import * as store from '../store';
+import * as store from "../store";
 
-extend({ MeshLine, MeshLineMaterial });
+extend({ MeshLineGeometry, MeshLineMaterial });
 
 function Line({ points, ...props }) {
   // useEffect(() => console.log(points), [points]);
 
   return (
     <mesh>
-      <meshLine attach="geometry" points={points} />
+      <meshLineGeometry attach="geometry" points={points} />
       <meshLineMaterial
         attach="material"
         transparent
         depthTest={false}
         lineWidth={4}
-        color={'rgb(55, 65, 81)'}
+        color={"rgb(55, 65, 81)"}
         opacity={0.75}
         {...props}
         // dashArray={0.05}
@@ -52,7 +52,7 @@ const Pen = forwardRef(({ position, setLinePoints, ...props }, ref) => {
 
   const onMove = (ev) => {
     // throttle(
-    if (['touch', 'pen'].includes(ev.sourceEvent.pointerType) && !enabled) {
+    if (["touch", "pen"].includes(ev.pointerType) && !enabled) {
       setPoints([]);
       setEnabled(true);
     }
@@ -109,7 +109,7 @@ function Draw({ setLinePoints, ...props }) {
     };
   }, [scene.orbitControls]);
 
-  const terrain = scene.getObjectByName('terrain');
+  const terrain = scene.getObjectByName("terrain");
 
   useFrame((_, delta) => {
     if (!raycaster || !scene || !pen.current) return;

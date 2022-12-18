@@ -1,10 +1,10 @@
-import 'styled-components/macro';
-import { useState } from 'react';
+import "styled-components/macro";
+import { useState } from "react";
 
-import { useAtom } from 'jotai';
-import * as store from './lib/store';
+import { useAtom } from "jotai";
+import * as store from "./lib/store";
 
-import tw from 'twin.macro';
+import tw from "twin.macro";
 import {
   // mdiChevronUp, mdiChevronDown,
   mdiMenuUp,
@@ -12,10 +12,10 @@ import {
   mdiInformationOutline,
   mdiOpenInNew,
   mdiDownload,
-} from '@mdi/js';
+} from "@mdi/js";
 
 function getField(entity, key) {
-  const splitted = key.split(':', 2);
+  const splitted = key.split(":", 2);
   if (splitted.length === 2) {
     return entity && entity.properties && entity.properties[key]
       ? encodeURIComponent(entity.properties[key])
@@ -63,7 +63,7 @@ function ModulePane({ id, module, properties, isOpen, ...props }) {
             >
               <svg
                 css={[tw`fill-current text-gray-600`]}
-                style={{ width: '18px', height: '18px' }}
+                style={{ width: "18px", height: "18px" }}
                 viewBox="0 0 24 24"
               >
                 <path d={mdiInformationOutline} />
@@ -108,8 +108,8 @@ function ModulePane({ id, module, properties, isOpen, ...props }) {
                   };
                   const missingFields = [];
 
-                  if (!getProperty('href')) {
-                    missingFields.push('href');
+                  if (!getProperty("href")) {
+                    missingFields.push("href");
                   }
 
                   if (!!action.fields) {
@@ -125,17 +125,17 @@ function ModulePane({ id, module, properties, isOpen, ...props }) {
                     const params = action.fields
                       ? action.fields.map((field) => {
                           const assign_to = getProperty(`fields.assign_to`); // TODO: Fix
-                          if (!assign_to) return '';
+                          if (!assign_to) return "";
                           const param = assign_to[field],
                             value = getField(entity, field);
-                          if (!param || !value) return '';
+                          if (!param || !value) return "";
                           return `${param}=${value}`;
                         })
                       : [];
 
-                    return `${getProperty('href')}?${
-                      action.default_param ? `${action.default_param}&` : ''
-                    }${params.join('&')}`;
+                    return `${getProperty("href")}?${
+                      action.default_param ? `${action.default_param}&` : ""
+                    }${params.join("&")}`;
                   }
 
                   return (
@@ -156,7 +156,7 @@ function ModulePane({ id, module, properties, isOpen, ...props }) {
                       >
                         <svg
                           css={[tw`fill-current text-black mr-0.5`]}
-                          style={{ width: '14px', height: '14px' }}
+                          style={{ width: "14px", height: "14px" }}
                           viewBox="0 0 24 24"
                         >
                           <path d={mdiOpenInNew} />
@@ -175,8 +175,8 @@ function ModulePane({ id, module, properties, isOpen, ...props }) {
                             tw`bg-gray-500 text-white rounded px-1 py-0.5 mb-0.5 text-xs`,
                           ]}
                         >
-                          情報を追加してください:{' '}
-                          <code>{missingFields.join(', ')}</code>
+                          情報を追加してください:{" "}
+                          <code>{missingFields.join(", ")}</code>
                         </div>
                       )}
                     </li>
@@ -208,14 +208,14 @@ function ModulePane({ id, module, properties, isOpen, ...props }) {
                         }}
                       />
                       <span>{item.name}</span>
-                      {['csv'].includes(item.format) && ( // TODO: Improve
+                      {["csv"].includes(item.format) && ( // TODO: Improve
                         <span css={[tw`ml-1`]}>
                           <a href={item.path}>
                             <svg
                               css={[
                                 tw`fill-current text-gray-500 hover:text-gray-600`,
                               ]}
-                              style={{ width: '14px', height: '14px' }}
+                              style={{ width: "14px", height: "14px" }}
                               viewBox="0 0 24 24"
                             >
                               <path d={mdiDownload} />
@@ -313,7 +313,7 @@ function IRIModal({ iri, setOpen, ...props }) {
                   >
                     <svg
                       css={[tw`fill-current mr-1`]}
-                      style={{ width: '16px', height: '16px' }}
+                      style={{ width: "16px", height: "16px" }}
                       viewBox="0 0 24 24"
                     >
                       <path d={mdiDownload} />
@@ -356,7 +356,7 @@ function ItemInfo({
         tw`fixed top-4 left-4 flex flex-col bg-white shadow rounded right-4 sm:right-auto sm:w-72`,
         paneOpen ? tw`bottom-20` : tw`bottom-auto`,
       ]}
-      style={{ ...props.style, maxHeight: '40rem', zIndex: '20000000' }}
+      style={{ ...props.style, maxHeight: "40rem", zIndex: "20000000" }}
     >
       <div>
         {back}
@@ -374,7 +374,7 @@ function ItemInfo({
                 {iri}
               </span>
             ) : (
-              '未登録'
+              "未登録"
             )}
           </div>
           {IRIModalOpen && <IRIModal iri={iri} setOpen={setIRIModalOpen} />}
@@ -392,7 +392,7 @@ function ItemInfo({
         <div css={[tw`text-xs text-gray-800 flex items-center`]}>
           <svg
             css={[tw`fill-current text-gray-600`]}
-            style={{ width: '18px', height: '18px' }}
+            style={{ width: "18px", height: "18px" }}
             viewBox="0 0 24 24"
           >
             <path d={paneOpen ? mdiMenuUp : mdiMenuDown} />
@@ -411,7 +411,7 @@ function ItemInfo({
         </div>
         <div css={[tw`border rounded-sm py-2 px-3 m-2 mt-0`]}>
           <div css={[tw`text-sm`, !description && tw`text-gray-600`]}>
-            {description ? description : '未登録'}
+            {description ? description : "未登録"}
           </div>
         </div>
         <div css={[tw`py-2`]}>

@@ -1,10 +1,10 @@
-import 'styled-components/macro';
-import { mdiDraw } from '@mdi/js';
-import tw from 'twin.macro';
+import "styled-components/macro";
+import { mdiDraw } from "@mdi/js";
+import tw from "twin.macro";
 
-import { useAtom } from 'jotai';
+import { useAtom } from "jotai";
 
-import * as store from '../store';
+import * as store from "../store";
 
 export default function DiscussButton({ width, height, ...props }) {
   const [enabled, setEnabled] = useAtom(store.enabledAtom);
@@ -32,7 +32,7 @@ export default function DiscussButton({ width, height, ...props }) {
           <span
             css={[
               tw`absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75`,
-              indicatorStyles['ENABLED'],
+              indicatorStyles["ENABLED"],
             ]}
           ></span>
         </span>

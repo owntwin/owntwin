@@ -1,11 +1,11 @@
-import 'styled-components/macro';
+import "styled-components/macro";
 // import { useEffect } from 'react';
-import { mdiCommentTextMultipleOutline } from '@mdi/js';
-import tw from 'twin.macro';
+import { mdiCommentTextMultipleOutline } from "@mdi/js";
+import tw from "twin.macro";
 
-import { useAtom } from 'jotai';
+import { useAtom } from "jotai";
 
-import * as store from '../store';
+import * as store from "../store";
 
 export default function DiscussButton({ width, height, ...props }) {
   const [enabled, setEnabled] = useAtom(store.enabledAtom);
@@ -26,7 +26,7 @@ export default function DiscussButton({ width, height, ...props }) {
           <path fill="#000000" d={mdiCommentTextMultipleOutline} />
         </svg>
       </button>
-      {(enabled || status === 'ERROR') && (
+      {(enabled || status === "ERROR") && (
         <span css={[tw`flex absolute h-3 w-3 top-0 right-0 -mt-1 -mr-1`]}>
           <span
             css={[

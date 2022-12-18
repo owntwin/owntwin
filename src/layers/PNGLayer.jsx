@@ -1,9 +1,9 @@
-import { useContext } from 'react';
-import { useLoader } from '@react-three/fiber';
+import { useContext } from "react";
+import { useLoader } from "@react-three/fiber";
 
-import * as THREE from 'three';
+import * as THREE from "three";
 
-import { TerrainContext } from '../Terrain';
+import { TerrainContext } from "../Terrain";
 
 function PNGLayer({ url, ...props }) {
   const terrain = useContext(TerrainContext);

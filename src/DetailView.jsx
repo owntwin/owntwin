@@ -5,15 +5,15 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-} from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, Html } from '@react-three/drei';
-import * as THREE from 'three';
+} from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, PerspectiveCamera, Html } from "@react-three/drei";
+import * as THREE from "three";
 // import { CameraHelper } from 'three';
 
-import { useAtom } from 'jotai';
-import * as store from './lib/store';
-import * as util from './lib/util';
+import { useAtom } from "jotai";
+import * as store from "./lib/store";
+import * as util from "./lib/util";
 
 export const ModelContext = createContext();
 
@@ -89,7 +89,7 @@ function Building({ model, base, depth, floor, floors, ...props }) {
       depth: (depth || 50) * 0.2, // TODO: Fix
       bevelEnabled: false,
     };
-    return new THREE.ExtrudeBufferGeometry(shape, extrudeSettings);
+    return new THREE.ExtrudeGeometry(shape, extrudeSettings);
   }, [shape, depth]);
 
   /* Floors */
@@ -97,9 +97,10 @@ function Building({ model, base, depth, floor, floors, ...props }) {
   let floorHeight = ((depth || 50) * 0.2) / floorN;
   let floorsMetadata = floors ? floors : {};
 
-  const floorGeom = useMemo(() => new THREE.ShapeBufferGeometry(shape), [
-    shape,
-  ]);
+  const floorGeom = useMemo(
+    () => new THREE.ShapeBufferGeometry(shape),
+    [shape],
+  );
 
   let floorGroup = [];
   const [activeFloor, setActiveFloor] = useState(null);
@@ -114,7 +115,7 @@ function Building({ model, base, depth, floor, floors, ...props }) {
   }, [entity, anchorActive]);
 
   useEffect(() => {
-    document.body.style.cursor = hover || anchorHover ? 'pointer' : 'auto';
+    document.body.style.cursor = hover || anchorHover ? "pointer" : "auto";
   }, [hover, anchorHover]);
 
   for (let i = 0; i < floorN; i++) {
@@ -122,7 +123,7 @@ function Building({ model, base, depth, floor, floors, ...props }) {
       texture: null,
       anchors: [],
     };
-    floorMetadata['n'] = `${i + 1}`;
+    floorMetadata["n"] = `${i + 1}`;
 
     const anchorGroup = floorMetadata.anchors.map((v, j) => {
       // console.log(v);
@@ -172,17 +173,17 @@ function Building({ model, base, depth, floor, floors, ...props }) {
               transparent={true}
             />
           </mesh>
-          <Html style={{ pointerEvents: 'none' }}>
+          <Html style={{ pointerEvents: "none" }}>
             <div
               style={{
                 display:
                   activeFloor === null || activeFloor === i + 1
-                    ? 'block'
-                    : 'none',
-                fontSize: '0.75rem',
+                    ? "block"
+                    : "none",
+                fontSize: "0.75rem",
                 fontWeight:
-                  anchorHover === v.id || anchorActive === v.id ? 'bold' : null,
-                width: '10rem',
+                  anchorHover === v.id || anchorActive === v.id ? "bold" : null,
+                width: "10rem",
               }}
             >
               {v.name}
@@ -288,7 +289,7 @@ function DetailView({ model, type, entity, ...props }) {
 
   if (entityComponent) entityComponent = null;
 
-  if (!!entity && type === 'building') {
+  if (!!entity && type === "building") {
     entityComponent = (
       <Building
         key={entity.id}
@@ -307,7 +308,7 @@ function DetailView({ model, type, entity, ...props }) {
       linear={true} // TODO: Reconsideration
       flat={true} // TODO: Reconsideration
       dpr={Math.min(2, window.devicePixelRatio)}
-      gl={{ powerPreference: 'default', antialias: false }}
+      gl={{ powerPreference: "default", antialias: false }}
     >
       <DefaultCamera />
       <ambientLight args={[0xffffff, 1]} />
