@@ -10,8 +10,8 @@ See <https://beta.owntwin.com/docs/>.
 
 ```
 npm install
-npm run start
+npm run dev
 ```
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+This project was bootstrapped with [Vite](https://vitejs.dev/).
+You can learn more in the [Vite documentation](https://vitejs.dev/guide/).
