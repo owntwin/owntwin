@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "(tsc || exit 0) && vite build",
     "preview": "vite preview"
   },
   "babelMacros": {
@@ -41,6 +41,7 @@
     "styled-components": "^5.3.6",
     "tailwindcss": "^3.2.4",
     "twin.macro": "^3.1.0",
+    "typescript": "^4.9.4",
     "vite": "^4.0.0"
   }
 }
