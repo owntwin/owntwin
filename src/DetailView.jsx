@@ -98,7 +98,7 @@ function Building({ model, base, depth, floor, floors, ...props }) {
   let floorsMetadata = floors ? floors : {};
 
   const floorGeom = useMemo(
-    () => new THREE.ShapeBufferGeometry(shape),
+    () => new THREE.ShapeGeometry(shape),
     [shape],
   );
 
