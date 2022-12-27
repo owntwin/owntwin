@@ -1,14 +1,17 @@
 import "styled-components/macro";
 import { useContext, useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
+import { ThreeEvent } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import tw from "twin.macro";
 
 import * as util from "./lib/util";
 
+import MeshBuilding from "./components/Building";
+
 import { ModelContext } from "./ModelView";
 
-function Popup({ item, ...props }) {
+function Popup({ item, ...props }: { item: { type: string; name: string } }) {
   return (
     <div
       css={[tw`bg-white border rounded py-2 px-3`]}
@@ -21,17 +24,28 @@ function Popup({ item, ...props }) {
   );
 }
 
-function Building({ base, z, depth, onPointerDown, ...props }) {
+function Building({
+  base,
+  z,
+  depth,
+  onPointerDown,
+  onClick,
+  ...props
+}: {
+  base: [number, number][];
+  z: number;
+  depth: number;
+  onPointerDown: (event: ThreeEvent<PointerEvent>) => void;
+  onClick?: (event: ThreeEvent<MouseEvent>) => void;
+}) {
   const { model } = useContext(ModelContext);
 
   const originLng = base[0][0],
     originLat = base[0][1];
-
   const origin = util.coordToPlane(model.bbox, originLng, originLat);
 
-  const geom = useMemo(() => {
+  const baseShape = useMemo(() => {
     const shape = new THREE.Shape();
-
     shape.moveTo(0, 0);
     base
       .slice()
@@ -40,47 +54,28 @@ function Building({ base, z, depth, onPointerDown, ...props }) {
         const p = util.coordToPlane(model.bbox, v[0], v[1]);
         shape.lineTo(p.x - origin.x, p.y - origin.y);
       });
-
-    const extrudeSettings = {
-      steps: 1,
-      depth: depth || 50,
-      bevelEnabled: false,
-    };
-    return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    return shape;
   }, [model, base, origin.x, origin.y, depth]);
 
   const [hover, setHover] = useState(false);
 
-  const color = {
-    default: 0xf1f3f4,
-    hover: 0x666666,
-  };
-
-  useEffect(() => {
-    document.body.style.cursor = hover ? "pointer" : "auto";
-  }, [hover]);
-
   return (
-    <mesh
+    <MeshBuilding
+      baseShape={baseShape}
+      height={depth}
       position={[origin.x, origin.y, z]}
-      geometry={geom}
-      onClick={props.onClick}
+      onClick={onClick}
       onPointerDown={onPointerDown}
       onPointerOver={(ev) => {
         ev.stopPropagation();
         setHover(true);
       }}
-      onPointerOut={(ev) => setHover(false)}
+      onPointerOut={() => setHover(false)}
     >
-      <meshLambertMaterial color={hover ? color.hover : color.default} />
-      <lineSegments>
-        <edgesGeometry attach="geometry" args={[geom, 45]} />
-        <lineBasicMaterial color={0xcccccc} attach="material" />
-      </lineSegments>
       <Html style={{ pointerEvents: "none" }}>
         {hover && <Popup item={{ name: props.name, type: props.type }} />}
       </Html>
-    </mesh>
+    </MeshBuilding>
   );
 }
 
