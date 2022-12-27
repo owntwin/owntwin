@@ -126,7 +126,7 @@ function ModelView({ model, basePath, ...props }) {
   return (
     <Canvas
       id="model-view-canvas"
-      linear={true} // TODO: Reconsideration
+      linear={false} // NOTE: See https://github.com/pmndrs/react-three-fiber/releases/tag/v8.0.0
       flat={true} // TODO: Reconsideration
       dpr={Math.min(2, window.devicePixelRatio)}
       gl={{ powerPreference: "default", antialias: false }}
