@@ -105,7 +105,7 @@ function GeoJSONLayer({ url, clip = true, ...props }) {
   }, [geojson, model.bbox, terrain, clip]); // TODO: Fix: model causes x4 calls
 
   const color = {
-    default: 0xd1d5db, // 0x9ca3af, 0xb0b0b0, 0xff00ff, 0xc0c0c0
+    default: 0xd1d5db, // 0xe5e7eb, 0x9ca3af, 0xb0b0b0, 0xff00ff, 0xc0c0c0
     hover: 0x666666,
   };
 
