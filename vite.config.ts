@@ -17,6 +17,7 @@ export default defineConfig({
     logOverride: { "this-is-undefined-in-esm": "silent" },
   },
   build: {
+    assetsDir: "static",
     rollupOptions: {
       plugins: [visualizer()],
     },
