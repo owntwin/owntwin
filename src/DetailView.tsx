@@ -35,12 +35,21 @@ function DefaultCamera({ ...props }) {
   );
 }
 
-function BlankPlane({ width, height, color, ...props }) {
+function BlankPlane({
+  width,
+  height,
+  color = 0xf1f3f5,
+  ...props
+}: {
+  width: number;
+  height: number;
+  color?: number;
+}) {
   return (
     <mesh>
       <planeBufferGeometry args={[width, height]} />
       <meshBasicMaterial
-        color={color || 0xf1f3f5}
+        color={color}
         polygonOffset={true}
         polygonOffsetFactor={1}
       />
@@ -97,10 +106,7 @@ function Building({ model, base, depth, floor, floors, ...props }) {
   let floorHeight = ((depth || 50) * 0.2) / floorN;
   let floorsMetadata = floors ? floors : {};
 
-  const floorGeom = useMemo(
-    () => new THREE.ShapeGeometry(shape),
-    [shape],
-  );
+  const floorGeom = useMemo(() => new THREE.ShapeGeometry(shape), [shape]);
 
   let floorGroup = [];
   const [activeFloor, setActiveFloor] = useState(null);
@@ -182,7 +188,9 @@ function Building({ model, base, depth, floor, floors, ...props }) {
                     : "none",
                 fontSize: "0.75rem",
                 fontWeight:
-                  anchorHover === v.id || anchorActive === v.id ? "bold" : null,
+                  anchorHover === v.id || anchorActive === v.id
+                    ? "bold"
+                    : undefined,
                 width: "10rem",
               }}
             >

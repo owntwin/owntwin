@@ -1,6 +1,14 @@
 /*! Partly derived from https://gist.github.com/maptiler/fddb5ce33ba995d5523de9afdf8ef118 */
 
+// @ts-ignore
 import SphericalMercator from "@mapbox/sphericalmercator";
+
+type BBox = {
+  minlng: number;
+  minlat: number;
+  maxlng: number;
+  maxlat: number;
+};
 
 const sm = new SphericalMercator();
 
@@ -14,7 +22,7 @@ const canvas = {
   segments: 100,
 };
 
-function planeToPixel(bbox, x, y) {
+function planeToPixel(bbox: BBox, x: number, y: number) {
   const z = 18;
 
   let xyz = sm.xyz(
@@ -34,7 +42,7 @@ function planeToPixel(bbox, x, y) {
   return [px, py];
 }
 
-function pixelToPlane(bbox, px, py) {
+function pixelToPlane(bbox: BBox, px: number, py: number) {
   const z = 18;
 
   let xyz = sm.xyz(
@@ -54,7 +62,7 @@ function pixelToPlane(bbox, px, py) {
   return [x, y];
 }
 
-function coordToPixel(lng, lat, z) {
+function coordToPixel(lng: number, lat: number, z: number) {
   let mx = (lng * EXTENT_SHIFT) / 180.0;
   let my =
     Math.log(Math.tan(((90 + lat) * Math.PI) / 360.0)) / (Math.PI / 180.0);
@@ -67,7 +75,7 @@ function coordToPixel(lng, lat, z) {
   return [px, py];
 }
 
-function pixelToCoord(px, py, z) {
+function pixelToCoord(px: number, py: number, z: number) {
   const res = RES / 2 ** z;
 
   const mx = px * res - EXTENT_SHIFT;
@@ -82,7 +90,13 @@ function pixelToCoord(px, py, z) {
   return [lng, lat];
 }
 
-function coordToPlane(bbox, lng, lat, planeWidth, planeHeight) {
+function coordToPlane(
+  bbox: BBox,
+  lng: number,
+  lat: number,
+  planeWidth?: number,
+  planeHeight?: number,
+) {
   planeWidth = planeWidth || canvas.width;
   planeHeight = planeHeight || canvas.height;
 
@@ -102,7 +116,7 @@ function coordToPlane(bbox, lng, lat, planeWidth, planeHeight) {
   return { x, y };
 }
 
-function planeToCoord(bbox, x, y) {
+function planeToCoord(bbox: BBox, x: number, y: number) {
   const z = 18;
   // let _x = x,
   //   _y = y;
@@ -121,11 +135,17 @@ function planeToCoord(bbox, x, y) {
   return { lng, lat };
 }
 
-function scaleCoord(x) {
+function scaleCoord(x: number) {
   return x * 10000; // 1000000;
 }
 
-function coordToLocalPlane(bbox, lng, lat, planeWidth, planeHeight) {
+function coordToLocalPlane(
+  bbox: BBox,
+  lng: number,
+  lat: number,
+  planeWidth?: number,
+  planeHeight?: number,
+) {
   planeWidth = planeWidth || canvas.width;
   planeHeight = planeHeight || canvas.height;
   let bboxW = scaleCoord(bbox.maxlng) - scaleCoord(bbox.minlng);
@@ -154,7 +174,7 @@ function coordToLocalPlane(bbox, lng, lat, planeWidth, planeHeight) {
   };
 }
 
-function localPlaneToCoord(bbox, x, y) {
+function localPlaneToCoord(bbox: BBox, x: number, y: number) {
   let bboxW = bbox.maxlng - bbox.minlng;
   let bboxH = bbox.maxlat - bbox.minlat;
   let ratioW = bboxW / canvas.width;
@@ -167,7 +187,7 @@ function localPlaneToCoord(bbox, x, y) {
   };
 }
 
-function getTerrainAltitude(terrain, x, y) {
+function getTerrainAltitude(terrain: any, x: number, y: number) {
   if (!terrain.vertices) return 0;
   let pos =
     Math.floor(x / (canvas.width / canvas.segments)) +
