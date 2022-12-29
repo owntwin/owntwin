@@ -94,6 +94,8 @@ function GeoJSONLayer({ url, clip = true, ...props }) {
       geometries.push(poly);
     });
 
+    if (geometries.length === 0) return undefined;
+
     const mergedGeometry = BufferGeometryUtils.mergeBufferGeometries(
       geometries,
       false,
