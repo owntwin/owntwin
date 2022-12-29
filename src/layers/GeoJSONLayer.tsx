@@ -120,10 +120,10 @@ function GeoJSONLayer({ url, clip = true, ...props }) {
           transparent={true}
           opacity={props.opacity || 0.5}
         />
-        {/* <lineSegments>
+        <lineSegments>
           <edgesGeometry attach="geometry" args={[geom, 45]} />
-          <lineBasicMaterial color={0xcccccc} attach="material" />
-        </lineSegments> */}
+          <lineBasicMaterial color={0xf8f8f8} attach="material" />
+        </lineSegments>
       </mesh>
       )
     </>
