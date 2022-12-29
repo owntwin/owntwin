@@ -57,6 +57,7 @@ function ExtendedOrbitControls({ ...props }) {
       minDistance={100}
       maxDistance={1500}
       maxPolarAngle={Math.PI / 2 - 0.1}
+      zoomSpeed={0.5}
       onEnd={() => {
         const dist2 =
           camera.position.x ** 2 +
