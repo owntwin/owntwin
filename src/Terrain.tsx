@@ -3,6 +3,7 @@ import {
   useContext,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -11,6 +12,7 @@ import {
   // CameraHelper,
   BufferAttribute,
 } from "three";
+import * as THREE from "three";
 import { useAtom } from "jotai";
 import * as store from "./lib/store";
 
@@ -67,41 +69,53 @@ function BlankPlane({ width, height, color, ...props }) {
 }
 
 function Terrain({ levelmap, zoom, width, height, ...props }) {
-  const [vertices, setVertices] = useState(null);
+  // const [vertices, setVertices] = useState(null);
 
-  const geom = useRef();
-  useLayoutEffect(() => {
-    // TODO: useEffect
-    const positionAttribute = geom.current.getAttribute("position");
+  const geom = useMemo(() => {
+    return new THREE.PlaneGeometry(width, height, segments - 1, segments - 1);
+  }, []);
+
+  const vertices = useMemo(() => {
+    if (!Array.isArray(levelmap) || levelmap.length === 0) return null;
+
+    const positionAttributeArray = new Float32Array(
+      geom.getAttribute("position").array,
+    );
+
+    const minLevel = levelmap.reduce(
+      (min, v) => Math.min(min, v[2]),
+      levelmap[0][2],
+    );
 
     levelmap.forEach((v) => {
       const pos = v[0] + segments * (segments - 1 - v[1]);
-      positionAttribute.array[pos * 3 + 2] = v[2] * zoom; // pos.z
+      positionAttributeArray[pos * 3 + 2] = (v[2] - minLevel) * zoom; // pos.z
     });
 
-    // console.log(positionAttribute);
-    geom.current.setAttribute(
+    geom.setAttribute(
       "position",
-      new BufferAttribute(new Float32Array(positionAttribute.array), 3),
+      new BufferAttribute(positionAttributeArray, 3),
     );
-    setVertices(Array.from(positionAttribute.array));
+
+    return Array.from(positionAttributeArray);
   }, [levelmap, zoom]);
 
   return (
     <>
       <BlankPlane width={width} height={height} />
-      <mesh name="terrain">
-        <planeGeometry
-          ref={geom}
-          args={[width, height, segments - 1, segments - 1]}
-        />
-        <meshBasicMaterial color={0xf8f9fa} />
+      <mesh name="terrain" geometry={geom}>
+        {/* <meshBasicMaterial color={0xe5e7eb} /> */}
+        <meshBasicMaterial color={0xfaf9f9} />
+        {/* <meshBasicMaterial color={0xf1f3f4} /> */}
+        {/* <meshBasicMaterial color={0xf8f9fa} /> */}
       </mesh>
+      !!vertices && (
       <TerrainContext.Provider
-        value={{ geometry: geom.current, vertices: vertices }} // should be geom?
+        value={{ geometry: geom, vertices: vertices }} // should be geom?
       >
         {props.children}
       </TerrainContext.Provider>
+      )
     </>
   );
 }
