@@ -59,6 +59,7 @@ function Anchor({
       label={label}
       labelVisibility={labelVisibility}
       height={size.height}
+      radius={2}
       color={props.color}
     />
   );

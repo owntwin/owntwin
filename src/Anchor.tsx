@@ -36,6 +36,7 @@ function BeamAnchor({
   label = null,
   labelVisibility = "auto",
   height = 256,
+  radius = 5,
   ...props
 }) {
   // const mesh = useRef(null);
@@ -57,7 +58,7 @@ function BeamAnchor({
 
   return (
     <mesh position={position}>
-      <cylinderBufferGeometry ref={geom} args={[5, 5, height, 8]} />
+      <cylinderBufferGeometry ref={geom} args={[radius, radius, height, 8]} />
       <meshBasicMaterial
         color={props.color || 0x2196f3}
         opacity={0.5}
