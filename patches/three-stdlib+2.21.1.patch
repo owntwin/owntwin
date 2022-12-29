@@ -1,0 +1,17 @@
+diff --git a/node_modules/three-stdlib/.DS_Store b/node_modules/three-stdlib/.DS_Store
+new file mode 100644
+index 0000000..d83d1b0
+Binary files /dev/null and b/node_modules/three-stdlib/.DS_Store differ
+diff --git a/node_modules/three-stdlib/loaders/SVGLoader.js b/node_modules/three-stdlib/loaders/SVGLoader.js
+index feca7fc..47b79dc 100644
+--- a/node_modules/three-stdlib/loaders/SVGLoader.js
++++ b/node_modules/three-stdlib/loaders/SVGLoader.js
+@@ -620,7 +620,7 @@ class SVGLoader extends Loader {
+         index++;
+       }
+ 
+-      const regex = /(-?[\d\.?]+)[,|\s](-?[\d\.?]+)/g;
++      const regex = /([+-]?\d*\.?\d+(?:e[+-]?\d+)?)[,|\s]([+-]?\d*\.?\d+(?:e[+-]?\d+)?)/g;
+       const path = new ShapePath();
+       let index = 0;
+       node.getAttribute('points').replace(regex, iterator);
