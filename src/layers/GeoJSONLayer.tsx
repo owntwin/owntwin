@@ -52,6 +52,16 @@ function extrudePolygonGeometry({ coordinates, bbox, terrain, ...props }) {
   return geom;
 }
 
+function InternalLayer({ internalObjects }) {
+  return (
+    <>
+      {internalObjects.map((obj) => (
+        <primitive object={obj} key={obj.uuid} />
+      ))}
+    </>
+  );
+}
+
 function GeoJSONLayer({ url, clip = true, ...props }) {
   const terrain = useContext(TerrainContext);
   const { model } = useContext(ModelContext);
@@ -122,7 +132,7 @@ function GeoJSONLayer({ url, clip = true, ...props }) {
 
   const internalObjects = useMemo(() => {
     if (!geometries) return [];
-    return geometries.map(geom => {
+    return geometries.map((geom) => {
       const mesh = new THREE.Mesh(geom, new THREE.MeshBasicMaterial());
       mesh.visible = false;
       return mesh;
@@ -187,22 +197,22 @@ function GeoJSONLayer({ url, clip = true, ...props }) {
 
   return (
     <>
-      {internalObjects && (
-        internalObjects.map(obj => <primitive object={obj} />)
+      {geom && (
+        <mesh geometry={geom}>
+          <meshBasicMaterial
+            color={color.default}
+            transparent={true}
+            opacity={props.opacity || 0.5}
+          />
+          <lineSegments>
+            <edgesGeometry attach="geometry" args={[geom, 45]} />
+            <lineBasicMaterial color={0xf8f8f8} attach="material" />
+          </lineSegments>
+        </mesh>
       )}
-      geom && (
-      <mesh geometry={geom}>
-        <meshBasicMaterial
-          color={color.default}
-          transparent={true}
-          opacity={props.opacity || 0.5}
-        />
-        <lineSegments>
-          <edgesGeometry attach="geometry" args={[geom, 45]} />
-          <lineBasicMaterial color={0xf8f8f8} attach="material" />
-        </lineSegments>
-      </mesh>
-      )
+      {/* {internalObjects && <InternalLayer internalObjects={internalObjects} />} */}
+      {/* {internalObjects &&
+        internalObjects.map((obj) => <primitive object={obj} key={obj.uuid} />)} */}
     </>
   );
 }
