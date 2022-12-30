@@ -1,6 +1,7 @@
 import "styled-components/macro";
-import { useEffect, useState } from "react";
 import tw from "twin.macro";
+
+import { useEffect, useState } from "react";
 
 function Clock({ ...props }) {
   const [date, setDate] = useState();

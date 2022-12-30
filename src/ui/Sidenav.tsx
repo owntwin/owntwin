@@ -1,10 +1,11 @@
 import "styled-components/macro";
-import { mdiHelpCircleOutline, mdiAccountGroup, mdiFullscreen } from "@mdi/js";
 import tw from "twin.macro";
 
-import DiscussInput from "./addon/discuss/components/Input";
-import DiscussButton from "./addon/discuss/components/Button";
-import DrawButton from "./addon/draw/components/Button";
+import { mdiHelpCircleOutline, mdiAccountGroup, mdiFullscreen } from "@mdi/js";
+
+import DiscussInput from "../addon/discuss/components/Input";
+import DiscussButton from "../addon/discuss/components/Button";
+import DrawButton from "../addon/draw/components/Button";
 
 const addons = import.meta.env.VITE_ADDONS
   ? import.meta.env.VITE_ADDONS.split(",")

@@ -8,10 +8,10 @@ import * as store from "./lib/store";
 import axios from "axios";
 
 import ModelView from "./ModelView";
-import Sidenav from "./Sidenav";
-import ItemInfo from "./ui/ItemInfo";
-import Clock from "./Clock";
 import DetailView from "./DetailView";
+import Sidenav from "./ui/Sidenav";
+import ItemInfo from "./ui/ItemInfo";
+import Clock from "./ui/Clock";
 import ExportButton from "./ui/ExportButton";
 
 import tw from "twin.macro";
