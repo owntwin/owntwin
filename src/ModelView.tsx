@@ -131,6 +131,7 @@ function ModelView({ model, basePath, ...props }) {
       flat={true} // TODO: Reconsideration
       dpr={Math.min(2, window.devicePixelRatio)}
       gl={{ powerPreference: "default", antialias: false }}
+      // frameloop="demand"
     >
       <DefaultCamera />
       <ambientLight args={[0xffffff, 1]} />
