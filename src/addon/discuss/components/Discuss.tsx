@@ -49,35 +49,33 @@ export default function Discuss({ ...props }) {
   }, [setEnabled, setStatus]);
   // useEffect(() => console.log({ comments }), [comments]);
 
-  return (
-    enabled && (
-      <>
-        <mesh
-          onPointerMissed={(ev) => {
-            // console.log(ev);
-            if (ev.type !== "dblclick") return;
-            if (!raycaster || !scene) return;
-            const intersects = raycaster.intersectObjects(scene.children);
-            // console.log(intersects);
-            if (intersects.length > 0) {
-              const closest = intersects[0];
-              setCommentPrompt({ ...commentPrompt, position: closest.point });
-            } else {
-              setCommentPrompt(store.commentPromptInitialValue);
-            }
-          }}
-        ></mesh>
-        {!!commentPrompt.position && (
-          <CommentPrompt position={commentPrompt.position} />
-        )}
-        {comments.map((comment, i) => (
-          <Comment
-            key={i}
-            position={comment.position}
-            content={comment.content}
-          />
-        ))}
-      </>
-    )
-  );
+  return enabled ? (
+    <>
+      <mesh
+        onPointerMissed={(ev) => {
+          // console.log(ev);
+          if (ev.type !== "dblclick") return;
+          if (!raycaster || !scene) return;
+          const intersects = raycaster.intersectObjects(scene.children);
+          // console.log(intersects);
+          if (intersects.length > 0) {
+            const closest = intersects[0];
+            setCommentPrompt({ ...commentPrompt, position: closest.point });
+          } else {
+            setCommentPrompt(store.commentPromptInitialValue);
+          }
+        }}
+      ></mesh>
+      {!!commentPrompt.position && (
+        <CommentPrompt position={commentPrompt.position} />
+      )}
+      {comments.map((comment, i) => (
+        <Comment
+          key={i}
+          position={comment.position}
+          content={comment.content}
+        />
+      ))}
+    </>
+  ) : null;
 }

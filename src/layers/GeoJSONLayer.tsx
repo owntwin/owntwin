@@ -150,46 +150,6 @@ function GeoJSONLayer({ url, clip = true, ...props }) {
     return mergedGeometry;
   }, [geometries]); // TODO: Fix: model causes x4 calls
 
-  // const geom = useMemo(() => {
-  //   if (!geojson) return;
-
-  //   const geometries = [];
-  //   geojson.features.forEach((feature) => {
-  //     const originLng = feature.geometry.coordinates[0][0][0],
-  //       originLat = feature.geometry.coordinates[0][0][1];
-
-  //     const origin = util.coordToPlane(model.bbox, originLng, originLat);
-  //     if (
-  //       clip &&
-  //       (origin.x < -util.canvas.width / 2 ||
-  //         util.canvas.width / 2 <= origin.x ||
-  //         origin.y < -util.canvas.height / 2 ||
-  //         util.canvas.height / 2 <= origin.y)
-  //     )
-  //       return;
-
-  //     const poly = extrudePolygonGeometry({
-  //       coordinates: feature.geometry.coordinates,
-  //       bbox: model.bbox,
-  //       height: feature.properties.attributes.measuredHeight,
-  //       terrain: terrain,
-  //     });
-
-  //     geometries.push(poly);
-  //   });
-
-  //   if (geometries.length === 0) return undefined;
-
-  //   const mergedGeometry = BufferGeometryUtils.mergeBufferGeometries(
-  //     geometries,
-  //     false,
-  //   );
-
-  //   // console.log(mergedGeometry);
-
-  //   return mergedGeometry;
-  // }, [geojson, model.bbox, terrain, clip]); // TODO: Fix: model causes x4 calls
-
   const color = {
     default: 0xd1d5db, // 0xe5e7eb, 0x9ca3af, 0xb0b0b0, 0xff00ff, 0xc0c0c0
     hover: 0x666666,

@@ -30,6 +30,8 @@ function Layer({ def, basePath, ...props }) {
         opacity={0.5}
       />
     );
+  } else {
+    return null;
   }
 }
 
