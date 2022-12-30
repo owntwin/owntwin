@@ -2,7 +2,7 @@ import "styled-components/macro";
 import tw from "twin.macro";
 
 import { mdiDownload } from "@mdi/js";
-// import Icon from "@mdi/react";
+// import { Icon } from "@mdi/react";
 
 export default function ExportModal({ iri, setOpen, ...props }) {
   return (

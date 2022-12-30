@@ -4,11 +4,12 @@ import tw from "twin.macro";
 import { useState } from "react";
 
 import { mdiExportVariant } from "@mdi/js";
-import Icon from "@mdi/react";
+// NOTE: https://github.com/Templarian/MaterialDesign-React/issues/69#issuecomment-1107975402
+import { Icon } from "@mdi/react";
 
 import ExportModal from "./ExportModal";
 
-export default function ExportButton({ iri }: { iri: string }) {
+export default function ExportButton({ iri }: { iri: string | null }) {
   const [exportModalOpen, setExportModalOpen] = useState(false);
 
   return (
@@ -19,10 +20,10 @@ export default function ExportButton({ iri }: { iri: string }) {
         ]}
         onClick={() => setExportModalOpen(true)}
       >
-        <Icon path={mdiExportVariant} size="18px" />
+        <Icon path={mdiExportVariant} size={0.75} />
         {/* <div>共有</div> */}
       </button>
-      {exportModalOpen && (
+      {exportModalOpen && !!iri && (
         <ExportModal iri={iri} setOpen={setExportModalOpen} />
       )}
     </>

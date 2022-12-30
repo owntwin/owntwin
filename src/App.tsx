@@ -16,10 +16,9 @@ import ExportButton from "./ui/ExportButton";
 
 import tw from "twin.macro";
 import "./App.css";
-import { mdiArrowLeftThinCircleOutline, mdiCloseCircle, mdiExportVariant } from "@mdi/js";
+import { mdiArrowLeftThinCircleOutline, mdiCloseCircle } from "@mdi/js";
 
 import { model as defaultModel } from "./model";
-import Icon from "@mdi/react";
 
 // const DEBUG = false;
 
@@ -231,7 +230,9 @@ function App() {
         />
       )}
       <Debug />
-      <div css={[tw`absolute top-4 left-auto right-4 hidden sm:flex gap-2 h-10`]}>
+      <div
+        css={[tw`absolute top-4 left-auto right-4 hidden sm:flex gap-2 h-10`]}
+      >
         <ExportButton iri={model.iri} />
         <Clock />
       </div>
