@@ -1,7 +1,8 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import axios from "axios";
 
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils";
 
@@ -66,10 +67,32 @@ function GeoJSONLayer({ url, clip = true, ...props }) {
       })();
   }, [url]);
 
-  const geom = useMemo(() => {
+  const raycaster = useMemo(() => new THREE.Raycaster(), []);
+  const intersecting = useRef<THREE.Object3D | null>(null);
+
+  useFrame((state) => {
+    raycaster.setFromCamera(state.pointer, state.camera);
+    const intersects = raycaster.intersectObjects(internalObjects, false);
+    if (intersects.length > 0) {
+      // console.log(intersects);
+      if (intersects.length > 0) {
+        const closest = intersects[0].object;
+        if (intersecting.current != closest) {
+          if (intersecting.current) intersecting.current.visible = false;
+          intersecting.current = closest;
+          intersecting.current.visible = true;
+        }
+      }
+    } else {
+      if (intersecting.current) intersecting.current.visible = false;
+      intersecting.current = null;
+    }
+  });
+
+  const geometries = useMemo(() => {
     if (!geojson) return;
 
-    const geometries = [];
+    const geometries: THREE.BufferGeometry[] = [];
     geojson.features.forEach((feature) => {
       const originLng = feature.geometry.coordinates[0][0][0],
         originLat = feature.geometry.coordinates[0][0][1];
@@ -93,18 +116,69 @@ function GeoJSONLayer({ url, clip = true, ...props }) {
 
       geometries.push(poly);
     });
+    // geometries.forEach((obj, i) => { i === 0 && console.log(obj); });
+    return geometries;
+  }, [geojson, model.bbox, terrain, clip]); // TODO: Fix: model causes x4 calls
 
-    if (geometries.length === 0) return undefined;
+  const internalObjects = useMemo(() => {
+    if (!geometries) return [];
+    return geometries.map(geom => {
+      const mesh = new THREE.Mesh(geom, new THREE.MeshBasicMaterial());
+      mesh.visible = false;
+      return mesh;
+    });
+  }, [geometries]);
+
+  const geom = useMemo(() => {
+    if (!geometries || geometries.length === 0) return undefined;
 
     const mergedGeometry = BufferGeometryUtils.mergeBufferGeometries(
       geometries,
       false,
     );
-
     // console.log(mergedGeometry);
-
     return mergedGeometry;
-  }, [geojson, model.bbox, terrain, clip]); // TODO: Fix: model causes x4 calls
+  }, [geometries]); // TODO: Fix: model causes x4 calls
+
+  // const geom = useMemo(() => {
+  //   if (!geojson) return;
+
+  //   const geometries = [];
+  //   geojson.features.forEach((feature) => {
+  //     const originLng = feature.geometry.coordinates[0][0][0],
+  //       originLat = feature.geometry.coordinates[0][0][1];
+
+  //     const origin = util.coordToPlane(model.bbox, originLng, originLat);
+  //     if (
+  //       clip &&
+  //       (origin.x < -util.canvas.width / 2 ||
+  //         util.canvas.width / 2 <= origin.x ||
+  //         origin.y < -util.canvas.height / 2 ||
+  //         util.canvas.height / 2 <= origin.y)
+  //     )
+  //       return;
+
+  //     const poly = extrudePolygonGeometry({
+  //       coordinates: feature.geometry.coordinates,
+  //       bbox: model.bbox,
+  //       height: feature.properties.attributes.measuredHeight,
+  //       terrain: terrain,
+  //     });
+
+  //     geometries.push(poly);
+  //   });
+
+  //   if (geometries.length === 0) return undefined;
+
+  //   const mergedGeometry = BufferGeometryUtils.mergeBufferGeometries(
+  //     geometries,
+  //     false,
+  //   );
+
+  //   // console.log(mergedGeometry);
+
+  //   return mergedGeometry;
+  // }, [geojson, model.bbox, terrain, clip]); // TODO: Fix: model causes x4 calls
 
   const color = {
     default: 0xd1d5db, // 0xe5e7eb, 0x9ca3af, 0xb0b0b0, 0xff00ff, 0xc0c0c0
@@ -113,6 +187,9 @@ function GeoJSONLayer({ url, clip = true, ...props }) {
 
   return (
     <>
+      {internalObjects && (
+        internalObjects.map(obj => <primitive object={obj} />)
+      )}
       geom && (
       <mesh geometry={geom}>
         <meshBasicMaterial
