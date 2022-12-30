@@ -26,11 +26,7 @@ function Clock({ ...props }) {
   }
 
   return (
-    <div css={[tw`flex items-center`]}>
-      <div css={[tw`bg-white shadow rounded py-2 px-3 select-none`]}>
-        {date}
-      </div>
-    </div>
+    <div css={[tw`h-full bg-white shadow rounded py-2 px-3 select-none`]}>{date}</div>
   );
 }
 

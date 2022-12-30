@@ -19,6 +19,7 @@
     "@feathersjs/socketio-client": "^4.5.15",
     "@mapbox/sphericalmercator": "^1.2.0",
     "@mdi/js": "^7.1.96",
+    "@mdi/react": "^1.6.1",
     "@react-three/drei": "^9.46.7",
     "@react-three/fiber": "^8.9.1",
     "@types/three": "^0.146.0",
