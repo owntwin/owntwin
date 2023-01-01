@@ -23,12 +23,13 @@ import { model as defaultModel } from "./model";
 
 async function getModel() {
   let model, basePath, path;
-  const url = new URL(window.location);
+  const url = new URL(window.location.href);
   const params = new URLSearchParams(url.search);
   // TODO: Debug only
   if (params.has("twin")) {
     basePath = params.get("twin");
-    path = new URL("./twin.json", basePath);
+    if (typeof basePath !== "string") return;
+    path = new URL("./twin.json", basePath).toString();
   } else {
     basePath = null;
     path = "./twin.json";

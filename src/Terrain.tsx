@@ -23,7 +23,15 @@ export const TerrainContext = createContext();
 
 const segments = util.canvas.segments;
 
-function BlankPlane({ width, height, color, ...props }) {
+function BlankPlane({
+  width,
+  height,
+  color = 0xf1f3f5,
+}: {
+  width: number;
+  height: number;
+  color?: number;
+}) {
   // const { model } = useContext(ModelContext);
   const _model = useContext(ModelContext);
   const model = _model.model; // TODO: Fix
@@ -58,7 +66,7 @@ function BlankPlane({ width, height, color, ...props }) {
     >
       <planeGeometry args={[width, height]} />
       <meshBasicMaterial
-        color={color || 0xf1f3f5}
+        color={color}
         polygonOffset={true}
         polygonOffsetFactor={1}
       />

@@ -4,7 +4,7 @@ import axios from "axios";
 
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils";
+import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 
 import * as util from "../lib/util";
 

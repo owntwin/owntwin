@@ -87,14 +87,16 @@ export default function CSVLayer({ url, clip = true, ...props }) {
   }, [url]);
 
   return (
+    // TODO: Fix
     <group opacity={props.opacity ? props.opacity : 0.5}>
       {data &&
         model &&
         terrain &&
-        data.map((record) => {
+        data.map((record, i: number) => {
           // console.log(record);
           return (
             <Anchor
+              key={i}  // TODO: Fix key
               clip={clip}
               coordinates={[record[props.keys.lng], record[props.keys.lat]]}
               bbox={model.bbox}

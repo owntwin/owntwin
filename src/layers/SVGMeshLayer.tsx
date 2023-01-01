@@ -19,7 +19,7 @@ const segments = util.canvas.segments;
 
 const loader = new SVGLoader();
 
-async function loadSVG(url) {
+async function loadSVG(url: string) {
   const load = () =>
     new Promise((resolve) => {
       loader.load(url, resolve);
@@ -34,7 +34,6 @@ async function loadSVG(url) {
 
       for (let i = 0; i < paths.length; i++) {
         let path = paths[i];
-        i === 3250 && console.log(path);
 
         const shapes = path.toShapes(true); // TODO: Why?
 

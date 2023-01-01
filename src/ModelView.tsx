@@ -70,7 +70,7 @@ function ExtendedOrbitControls({ ...props }) {
   );
 }
 
-async function completeModel(model, base) {
+async function completeModel(model, base?: string) {
   const blankTerrain: [] = [];
 
   if (model.terrain && model.terrain.path) {
