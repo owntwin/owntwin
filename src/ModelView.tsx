@@ -172,7 +172,6 @@ function ModelView({ model, basePath, ...props }) {
           {addons.includes("draw") && <DrawAddon />}
         </Terrain>
       </ModelContext.Provider>
-      )
       <ExtendedOrbitControls />
     </Canvas>
   );

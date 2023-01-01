@@ -115,13 +115,13 @@ function Terrain({ levelmap, zoom, width, height, ...props }) {
         {/* <meshBasicMaterial color={0xf1f3f4} /> */}
         {/* <meshBasicMaterial color={0xf8f9fa} /> */}
       </mesh>
-      !!vertices && (
-      <TerrainContext.Provider
-        value={{ geometry: geom, vertices: vertices }} // should be geom?
-      >
-        {props.children}
-      </TerrainContext.Provider>
-      )
+      {vertices && (
+        <TerrainContext.Provider
+          value={{ geometry: geom, vertices: vertices }} // should be geom?
+        >
+          {props.children}
+        </TerrainContext.Provider>
+      )}
     </>
   );
 }
