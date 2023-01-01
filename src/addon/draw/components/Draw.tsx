@@ -56,7 +56,7 @@ const Pen = forwardRef(({ position, setLinePoints, ...props }, ref) => {
       setPoints([]);
       setEnabled(true);
     }
-    if (enabled) {
+    if (enabled && ref.current) {
       setPoints((pts) => {
         const pt = ref.current.position.clone();
         // console.log(pts, pt);

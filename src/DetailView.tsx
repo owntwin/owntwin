@@ -247,8 +247,9 @@ function Building({ model, base, depth, floor, floors, ...props }) {
     floorGroup.push(floor);
   }
 
-  const ref = useRef();
+  const ref = useRef<THREE.Mesh>(null);
   useLayoutEffect(() => {
+    if (!ref.current) return;
     const bbox = new THREE.Box3().setFromObject(ref.current);
     const size = bbox.getSize(new THREE.Vector3());
 

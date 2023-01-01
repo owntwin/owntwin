@@ -40,13 +40,15 @@ function BeamAnchor({
   ...props
 }) {
   // const mesh = useRef(null);
-  const geom = useRef(null);
+  const geom = useRef<THREE.BufferGeometry>(null);
 
   const [closeup] = useAtom(store.closeupAtom);
 
   useLayoutEffect(() => {
-    geom.current.rotateX(Math.PI / 2); // TODO: Use lookAt
-    geom.current.translate(0, 0, height / 2);
+    if (geom.current) {
+      geom.current.rotateX(Math.PI / 2); // TODO: Use lookAt
+      geom.current.translate(0, 0, height / 2);
+    }
   }, [height]);
 
   // useLayoutEffect(() => {

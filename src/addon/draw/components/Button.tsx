@@ -5,7 +5,7 @@ import { mdiDraw } from "@mdi/js";
 import { useAtom } from "jotai";
 import * as store from "../store";
 
-export default function DiscussButton({ width, height, ...props }) {
+export default function DrawButton({ width, height, ...props }) {
   const [enabled, setEnabled] = useAtom(store.enabledAtom);
 
   const indicatorStyles = {

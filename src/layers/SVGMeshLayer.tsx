@@ -106,8 +106,9 @@ function SVGMeshLayer({ url, color, ...props }) {
     })();
   }, [url, color]);
 
-  const ref = useRef();
+  const ref = useRef<THREE.Group>(null);
   useLayoutEffect(() => {
+    if (!ref.current) return;
     // let bbox = new THREE.Box3().setFromObject(ref.current);
     // let size = bbox.getSize(new THREE.Vector3());
     let size = new THREE.Vector3(width, height, 0); // TODO: Improve
