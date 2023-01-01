@@ -40,7 +40,7 @@ function BeamAnchor({
   ...props
 }) {
   // const mesh = useRef(null);
-  const geom = useRef<THREE.BufferGeometry>(null);
+  const geom = useRef<THREE.CylinderGeometry>(null);
 
   const [closeup] = useAtom(store.closeupAtom);
 
@@ -60,7 +60,7 @@ function BeamAnchor({
 
   return (
     <mesh position={position}>
-      <cylinderBufferGeometry ref={geom} args={[radius, radius, height, 8]} />
+      <cylinderGeometry ref={geom} args={[radius, radius, height, 8]} />
       <meshBasicMaterial
         color={props.color || 0x2196f3}
         opacity={0.5}
