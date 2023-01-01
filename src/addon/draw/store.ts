@@ -1,5 +1,6 @@
 import { atom } from "jotai";
 
-const enabledAtom = atom(false);
+const selectedToolAtom = atom<"draw" | "erase" | null>(null);
+const linesAtom = atom<any[]>([]);
 
-export { enabledAtom };
+export { selectedToolAtom, linesAtom };
