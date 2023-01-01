@@ -1,9 +1,8 @@
-import "styled-components/macro";
 import { useContext, useEffect, useMemo, useState } from "react";
+
 import * as THREE from "three";
 import { ThreeEvent } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
-import tw from "twin.macro";
 
 import * as util from "./lib/util";
 
@@ -14,12 +13,12 @@ import { ModelContext } from "./ModelView";
 function Popup({ item, ...props }: { item: { type: string; name: string } }) {
   return (
     <div
-      css={[tw`bg-white border rounded py-2 px-3`]}
+      className="bg-white border rounded py-2 px-3"
       style={{ minWidth: "200px" }}
     >
-      <div css={[tw`text-xs`]}>{item.type}</div>
+      <div className="text-xs">{item.type}</div>
       <div>{item.name}</div>
-      <div css={[tw`mt-3 text-xs text-gray-600`]}>クリックで拡大</div>
+      <div className="mt-3 text-xs text-gray-600">クリックで拡大</div>
     </div>
   );
 }

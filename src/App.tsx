@@ -1,6 +1,6 @@
-import "styled-components/macro";
 import { useEffect, useRef, useState } from "react";
 import { Transition } from "react-transition-group";
+import clsx from "clsx";
 
 import { useAtom } from "jotai";
 import * as store from "./lib/store";
@@ -14,7 +14,6 @@ import ItemInfo from "./ui/ItemInfo";
 import Clock from "./ui/Clock";
 import ExportButton from "./ui/ExportButton";
 
-import tw from "twin.macro";
 import "./App.css";
 import { mdiArrowLeftThinCircleOutline, mdiCloseCircle } from "@mdi/js";
 
@@ -65,13 +64,13 @@ function Debug() {
   return (
     <div
       id="debug"
-      css={[
-        tw`rounded-t-md bg-gray-800 text-white fixed bottom-0 left-0 right-0 h-48 p-4 text-sm shadow-md`,
-        debugOpen ? tw`block` : tw`hidden`,
-      ]}
+      className={clsx(
+        "rounded-t-md bg-gray-800 text-white fixed bottom-0 left-0 right-0 h-48 p-4 text-sm shadow-md",
+        debugOpen ? "block" : "hidden",
+      )}
     >
       <div
-        css={[tw`absolute top-4 right-4 cursor-pointer`]}
+        className="absolute top-4 right-4 cursor-pointer"
         onClick={() => {
           setDebugOpen(false);
           setDebug("");
@@ -81,7 +80,7 @@ function Debug() {
           <path fill="#eee" d={mdiCloseCircle} />
         </svg>
       </div>
-      <div css={[tw`overflow-y-scroll w-full h-full`]}>{debug}</div>
+      <div className="overflow-y-scroll w-full h-full">{debug}</div>
     </div>
   );
 }
@@ -144,23 +143,22 @@ function App() {
 
   return (
     <div
-      className="App"
       id="App"
-      css={[tw`fixed top-0 bottom-0 left-0 right-0`]}
+      className={clsx("App", "fixed top-0 bottom-0 left-0 right-0")}
     >
       <div
-        css={[
-          tw`absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center text-sm text-gray-400 pointer-events-none`,
-          !detailEntity ? tw`flex` : tw`hidden`,
-        ]}
+        className={clsx(
+          "absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center text-sm text-gray-400 pointer-events-none",
+          !detailEntity ? "flex" : "hidden",
+        )}
       >
         <div>表示されない場合は再読み込み</div>
       </div>
       <div
-        css={[
-          tw`absolute top-0 bottom-0 left-0 right-0`,
-          !detailEntity ? tw`block` : tw`hidden`,
-        ]}
+        className={clsx(
+          "absolute top-0 bottom-0 left-0 right-0",
+          !detailEntity ? "block" : "hidden",
+        )}
       >
         {modelLoaded && <ModelView model={model} basePath={model._basePath} />}
       </div>
@@ -168,17 +166,17 @@ function App() {
         {(state) => (
           <div
             ref={transitionRef}
-            className="detail-view"
-            css={[
-              tw`absolute top-0 bottom-0 left-0 right-0`,
-              ["entering", "entered"].includes(state) ? tw`block` : tw`hidden`,
-            ]}
+            className={clsx(
+              "detail-view",
+              "absolute top-0 bottom-0 left-0 right-0",
+              ["entering", "entered"].includes(state) ? "block" : "hidden",
+            )}
           >
             <div
-              css={[
-                tw`w-full h-full`,
-                state === "entered" ? tw`block` : tw`hidden`,
-              ]}
+              className={clsx(
+                "w-full h-full",
+                state === "entered" ? "block" : "hidden",
+              )}
             >
               {modelLoaded && (
                 <DetailView
@@ -202,9 +200,7 @@ function App() {
           back={
             detailEntity && (
               <div
-                css={[
-                  tw`text-sm text-gray-600 px-2 py-2 cursor-pointer flex items-center bg-gray-50 hover:bg-gray-100`,
-                ]}
+                className="text-sm text-gray-600 px-2 py-2 cursor-pointer flex items-center bg-gray-50 hover:bg-gray-100"
                 onClick={(ev) => {
                   ev.stopPropagation();
                   if (detailEntity.id === entity.id) {
@@ -215,7 +211,7 @@ function App() {
                   }
                 }}
               >
-                <div css={[tw`mr-1`]}>
+                <div className="mr-1">
                   <svg
                     style={{ width: "18px", height: "18px" }}
                     viewBox="0 0 24 24"
@@ -230,19 +226,17 @@ function App() {
         />
       )}
       <Debug />
-      <div
-        css={[tw`absolute top-4 left-auto right-4 hidden sm:flex gap-2 h-10`]}
-      >
+      <div className="absolute top-4 left-auto right-4 hidden sm:flex gap-2 h-10">
         <ExportButton iri={model.iri} />
         <Clock />
       </div>
       {modelLoaded && <Sidenav communityURL={model.community} />}
-      <a href="//beta.owntwin.com" css={[tw`cursor-pointer`]}>
+      <a href="//beta.owntwin.com" className="cursor-pointer">
         <div
-          className="logo"
-          css={[
-            tw`absolute bottom-4 left-auto right-4 opacity-75 font-bold text-white bg-gray-500 rounded px-3 py-2`,
-          ]}
+          className={clsx(
+            "logo",
+            "absolute bottom-4 left-auto right-4 opacity-75 font-bold text-white bg-gray-500 rounded px-3 py-2",
+          )}
         >
           <div>OwnTwin</div>
         </div>

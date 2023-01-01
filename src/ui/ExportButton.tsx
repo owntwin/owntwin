@@ -1,6 +1,3 @@
-import "styled-components/macro";
-import tw from "twin.macro";
-
 import { useState } from "react";
 
 import { mdiExportVariant } from "@mdi/js";
@@ -15,9 +12,7 @@ export default function ExportButton({ iri }: { iri: string | null }) {
   return (
     <>
       <button
-        css={[
-          tw`h-full bg-white hover:bg-gray-100 shadow rounded py-2 px-3 select-none flex items-center gap-1`,
-        ]}
+        className="h-full bg-white hover:bg-gray-100 shadow rounded py-2 px-3 select-none flex items-center gap-1"
         onClick={() => setExportModalOpen(true)}
       >
         <Icon path={mdiExportVariant} size={0.75} />

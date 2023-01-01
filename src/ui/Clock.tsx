@@ -1,6 +1,3 @@
-import "styled-components/macro";
-import tw from "twin.macro";
-
 import { useEffect, useState } from "react";
 
 function Clock({ ...props }) {
@@ -27,7 +24,9 @@ function Clock({ ...props }) {
   }
 
   return (
-    <div css={[tw`h-full bg-white shadow rounded py-2 px-3 select-none`]}>{date}</div>
+    <div className="h-full bg-white shadow rounded py-2 px-3 select-none">
+      {date}
+    </div>
   );
 }
 

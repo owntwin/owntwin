@@ -1,4 +1,3 @@
-import "styled-components/macro";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { MeshProps } from "@react-three/fiber";

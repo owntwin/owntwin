@@ -16,8 +16,6 @@ import * as THREE from "three";
 import { useAtom } from "jotai";
 import * as store from "./lib/store";
 
-// import tw from 'twin.macro';
-
 import { ModelContext } from "./ModelView";
 import * as util from "./lib/util";
 
