@@ -14,10 +14,7 @@ export default function ExportModal({ iri, setOpen, ...props }) {
           aria-hidden="true"
           onClick={() => setOpen(false)}
         ></div>
-        <span
-          className="hidden align-middle h-screen"
-          aria-hidden="true"
-        >
+        <span className="hidden align-middle h-screen" aria-hidden="true">
           &#8203;
         </span>
         <div className="inline-block align-middle bg-white rounded-lg text-left overflow-hidden border shadow-xl transform transition-all my-8 sm:max-w-lg w-full">
