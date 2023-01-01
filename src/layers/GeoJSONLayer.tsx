@@ -52,7 +52,11 @@ function extrudePolygonGeometry({ coordinates, bbox, terrain, ...props }) {
   return geom;
 }
 
-function InternalLayer({ internalObjects }) {
+function InternalLayer({
+  internalObjects,
+}: {
+  internalObjects: THREE.Object3D[];
+}) {
   return (
     <>
       {internalObjects.map((obj) => (
