@@ -1,7 +1,15 @@
+import { Dispatch, SetStateAction } from "react";
+
 import { mdiDownload } from "@mdi/js";
 // import { Icon } from "@mdi/react";
 
-export default function ExportModal({ iri, setOpen, ...props }) {
+export default function ExportModal({
+  iri,
+  setOpen,
+}: {
+  iri: string;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}) {
   return (
     <div
       className="fixed z-10 inset-0 overflow-y-auto"

@@ -1,22 +1,27 @@
-import { mdiPencilOutline, mdiDotsHorizontal } from "@mdi/js";
+import { useMemo } from "react";
 
-import { Html } from "@react-three/drei";
 import * as THREE from "three";
+import { Html } from "@react-three/drei";
+
+import { mdiPencilOutline, mdiDotsHorizontal } from "@mdi/js";
 
 function Comment({
   position,
-  content = null,
-  z,
-  depth,
-  onPointerDown,
+  content,
   ...props
+}: {
+  position: { x: number; y: number; z: number };
+  content?: string;
 }) {
-  position = new THREE.Vector3(position.x, position.y, position.z);
+  const _position = useMemo(
+    () => new THREE.Vector3(position.x, position.y, position.z),
+    [position],
+  );
   // console.log({ position });
 
   return (
     <Html
-      position={position}
+      position={_position}
       style={{ transform: "translate3d(-50%,-100%,0)" }}
       distanceFactor={1000}
     >
@@ -41,7 +46,7 @@ function Comment({
   );
 }
 
-function CommentPrompt({ position, base, z, depth, onPointerDown, ...props }) {
+function CommentPrompt({ position, ...props }: { position: THREE.Vector3 }) {
   return (
     <Html
       position={position}

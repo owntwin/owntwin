@@ -1,11 +1,20 @@
+import * as THREE from "three";
+
 import { atom } from "jotai";
 
-const commentPromptInitialValue = { position: null, content: null };
+type Comment = {
+  position: THREE.Vector3;
+  content: string;
+};
+
+const commentPromptInitialValue = { position: undefined, content: undefined };
 
 const enabledAtom = atom(true);
-const statusAtom = atom("DISCONNECTED");
-const commentPromptAtom = atom(commentPromptInitialValue);
-const commentsAtom = atom(Array.from([]));
+const statusAtom = atom<"DISCONNECTED" | "CONNECTED" | "ERROR">("DISCONNECTED");
+const commentPromptAtom = atom<Comment | Partial<Comment>>(
+  commentPromptInitialValue,
+);
+const commentsAtom = atom<Comment[]>(Array.from([]));
 
 export {
   commentPromptInitialValue,

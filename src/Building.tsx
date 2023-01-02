@@ -36,6 +36,8 @@ function Building({
   depth: number;
   onPointerDown: (event: ThreeEvent<PointerEvent>) => void;
   onClick?: (event: ThreeEvent<MouseEvent>) => void;
+  name?: string;
+  type?: string;
 }) {
   const { model } = useContext(ModelContext);
 
@@ -72,7 +74,9 @@ function Building({
       onPointerOut={() => setHover(false)}
     >
       <Html style={{ pointerEvents: "none" }}>
-        {hover && <Popup item={{ name: props.name, type: props.type }} />}
+        {hover && (
+          <Popup item={{ name: props.name || "", type: props.type || "" }} />
+        )}
       </Html>
     </MeshBuilding>
   );

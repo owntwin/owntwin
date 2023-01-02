@@ -8,7 +8,7 @@ const addons = import.meta.env.VITE_ADDONS
   ? import.meta.env.VITE_ADDONS.split(",")
   : [];
 
-function Sidenav({ communityURL, ...props }) {
+function Sidenav({ communityURL, ...props }: { communityURL?: string }) {
   const HELP_URL = "https://beta.owntwin.com/docs/about";
 
   return (

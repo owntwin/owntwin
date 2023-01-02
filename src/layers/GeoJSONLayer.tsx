@@ -8,20 +8,35 @@ import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 
 import * as util from "../lib/util";
 
-import { TerrainContext } from "../Terrain";
+import { Terrain, TerrainContext } from "../Terrain";
 import { ModelContext } from "../ModelView";
 
-function extrudePolygonGeometry({ coordinates, bbox, terrain, ...props }) {
+import { BBox, GeoJSON } from "../types";
+
+type Coordinate = [number, number, number];
+
+function extrudePolygonGeometry({
+  coordinates,
+  bbox,
+  terrain,
+  ...props
+}: {
+  coordinates: Coordinate[][];
+  bbox: BBox;
+  terrain: Terrain;
+  height: number;
+}) {
   const depth = props.height / 2;
 
   // TODO: Support hole (coordinate[1])
-  coordinates = coordinates[0];
+  // TODO: Fix naming
+  let _coordinates = coordinates[0];
 
-  const originLng = coordinates[0][0],
-    originLat = coordinates[0][1];
+  const originLng = _coordinates[0][0],
+    originLat = _coordinates[0][1];
 
   const origin = util.coordToPlane(bbox, originLng, originLat);
-  // const z = 0; // coordinates[0][2]; // TODO: z from GeoJSON?
+  // const z = 0; // _coordinates[0][2]; // TODO: z from GeoJSON?
   // TODO: Fix: terrain is [0,1023], origin.x/y is [-512,512]
   const z =
     util.getTerrainAltitude(
@@ -33,7 +48,7 @@ function extrudePolygonGeometry({ coordinates, bbox, terrain, ...props }) {
   const shape = new THREE.Shape();
 
   shape.moveTo(0, 0);
-  coordinates
+  _coordinates
     .slice()
     .reverse()
     .forEach((v) => {
@@ -66,10 +81,18 @@ function InternalLayer({
   );
 }
 
-function GeoJSONLayer({ url, clip = true, ...props }) {
+function GeoJSONLayer({
+  url,
+  clip = true,
+  ...props
+}: {
+  url: string;
+  clip?: boolean;
+  opacity?: 0.5;
+}) {
   const terrain = useContext(TerrainContext);
   const { model } = useContext(ModelContext);
-  const [geojson, setGeojson] = useState(null);
+  const [geojson, setGeojson] = useState<GeoJSON>();
 
   /* load JSON from URL */
   useEffect(() => {
@@ -104,10 +127,15 @@ function GeoJSONLayer({ url, clip = true, ...props }) {
   });
 
   const geometries = useMemo(() => {
-    if (!geojson) return;
+    if (!geojson || !geojson.features) return;
 
     const geometries: THREE.BufferGeometry[] = [];
     geojson.features.forEach((feature) => {
+      if (!model.bbox || !terrain || !terrain.geometry) {
+        // console.error(...);
+        return;
+      }
+
       const originLng = feature.geometry.coordinates[0][0][0],
         originLat = feature.geometry.coordinates[0][0][1];
 
@@ -125,7 +153,7 @@ function GeoJSONLayer({ url, clip = true, ...props }) {
         coordinates: feature.geometry.coordinates,
         bbox: model.bbox,
         height: feature.properties.attributes.measuredHeight,
-        terrain: terrain,
+        terrain: terrain as Terrain, // TODO: Refactoring
       });
 
       geometries.push(poly);
@@ -166,7 +194,7 @@ function GeoJSONLayer({ url, clip = true, ...props }) {
           <meshBasicMaterial
             color={color.default}
             transparent={true}
-            opacity={props.opacity || 0.5}
+            opacity={props.opacity}
           />
           <lineSegments>
             <edgesGeometry attach="geometry" args={[geom, 45]} />

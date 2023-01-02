@@ -5,15 +5,20 @@ import { Html } from "@react-three/drei";
 import { useAtom } from "jotai";
 import * as store from "./lib/store";
 
-function SphereAnchor({ position, label = null, ...props }) {
+function SphereAnchor({
+  position,
+  label,
+  color = 0x2196f3,
+  ...props
+}: {
+  position: [number, number, number];
+  label?: string;
+  color?: string | number;
+}) {
   return (
     <mesh position={position}>
       <sphereBufferGeometry args={[40, 20, 20]} />
-      <meshBasicMaterial
-        color={props.color || 0x2196f3}
-        opacity={0.5}
-        transparent={true}
-      />
+      <meshBasicMaterial color={color} opacity={0.5} transparent={true} />
       <Html style={{ pointerEvents: "none" }}>
         <div
           style={{
@@ -33,11 +38,19 @@ function SphereAnchor({ position, label = null, ...props }) {
 
 function BeamAnchor({
   position,
-  label = null,
+  label,
   labelVisibility = "auto",
   height = 256,
   radius = 5,
+  color = 0x2196f3,
   ...props
+}: {
+  position: [number, number, number];
+  label?: string;
+  labelVisibility?: "auto" | "always";
+  height?: number;
+  radius?: number;
+  color?: string | number;
 }) {
   // const mesh = useRef(null);
   const geom = useRef<THREE.CylinderGeometry>(null);
@@ -61,11 +74,7 @@ function BeamAnchor({
   return (
     <mesh position={position}>
       <cylinderGeometry ref={geom} args={[radius, radius, height, 8]} />
-      <meshBasicMaterial
-        color={props.color || 0x2196f3}
-        opacity={0.5}
-        transparent={true}
-      />
+      <meshBasicMaterial color={color} opacity={0.5} transparent={true} />
       <Html style={{ pointerEvents: "none" }}>
         <div
           style={{

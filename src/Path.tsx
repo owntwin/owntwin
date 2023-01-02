@@ -1,4 +1,5 @@
 import { useContext, useMemo } from "react";
+
 import { extend } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -14,20 +15,29 @@ import * as util from "./lib/util";
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 
-function Path({ coordinates, color, ...props }) {
+function Path({
+  coordinates,
+  color,
+  ...props
+}: {
+  coordinates: [number, number][];
+  color?: number | string;
+}) {
   const { model } = useContext(ModelContext);
 
   const points = useMemo(() => {
+    if (!model.bbox) return;
+    const bbox = model.bbox;
     const points = coordinates.map((coord) => {
-      const xy = util.coordToPlane(model.bbox, coord[0], coord[1]);
-      return new THREE.Vector3(xy.x, xy.y, 50); // TODO: Remove constant
+      const xy = util.coordToPlane(bbox, coord[0], coord[1]);
+      return [xy.x, xy.y, 50]; // TODO: Remove constant
     });
-    return points;
+    return points.flat();
   }, [model.bbox, coordinates]);
 
   // TODO: Curve
 
-  return (
+  return points ? (
     <mesh position={[0, -0.4, 2]}>
       <meshLineGeometry attach="geometry" points={points} />
       <meshLineMaterial
@@ -40,7 +50,7 @@ function Path({ coordinates, color, ...props }) {
         // dashRatio={0.95}
       />
     </mesh>
-  );
+  ) : null;
 }
 
 export { Path };

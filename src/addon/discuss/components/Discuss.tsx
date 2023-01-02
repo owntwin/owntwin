@@ -20,7 +20,7 @@ export default function Discuss({ ...props }) {
     client
       .service("api/subscription")
       .create({ uid: twinId })
-      .catch((err) => {
+      .catch((err: unknown) => {
         // console.log({ err });
       });
   }, []);
@@ -34,11 +34,11 @@ export default function Discuss({ ...props }) {
   }, [enabled]);
 
   useEffect(() => {
-    client.io.on("reconnect", (err) => {
+    client.io.on("reconnect", (err: unknown) => {
       setEnabled(true);
       setStatus("CONNECTED");
     });
-    client.io.on("connect_error", (err) => {
+    client.io.on("connect_error", (err: unknown) => {
       setEnabled(false);
       setStatus("ERROR");
     });

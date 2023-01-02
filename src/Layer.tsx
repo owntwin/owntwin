@@ -4,8 +4,16 @@ import PNGLayer from "./layers/PNGLayer";
 import SVGMeshLayer from "./layers/SVGMeshLayer";
 import GeoJSONLayer from "./layers/GeoJSONLayer";
 import CSVLayer from "./layers/CSVLayer";
+import { Layer as ILayer } from "./types";
 
-function Layer({ def, basePath, ...props }) {
+function Layer({
+  def,
+  basePath,
+  ...props
+}: {
+  def: ILayer;
+  basePath?: string;
+}) {
   if (basePath) {
     def.path = basePath ? new URL(def.path, basePath).toString() : def.path;
   }

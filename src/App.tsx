@@ -18,26 +18,32 @@ import "./App.css";
 import { mdiArrowLeftThinCircleOutline, mdiCloseCircle } from "@mdi/js";
 
 import { model as defaultModel } from "./model";
+import { Definition, Model, Layer } from "./types";
 
 // const DEBUG = false;
 
-async function getModel() {
-  let model, basePath, path;
+async function getModel(): Promise<Partial<Model>> {
+  let basePath, path;
+
   const url = new URL(window.location.href);
   const params = new URLSearchParams(url.search);
+
   // TODO: Debug only
   if (params.has("twin")) {
     basePath = params.get("twin");
-    if (typeof basePath !== "string") return;
+    if (typeof basePath !== "string") return {};
     path = new URL("./twin.json", basePath).toString();
   } else {
     basePath = null;
     path = "./twin.json";
   }
-  model = await axios
+  let modelData = await axios
     .get(path)
     .then((resp) => resp.data)
     .catch(() => defaultModel);
+
+  let model = modelData;
+
   model._basePath = basePath;
 
   if (params.has("no-terrain")) {
@@ -87,12 +93,12 @@ function Debug() {
 }
 
 function App() {
-  const [model, setModel] = useState({
-    id: null,
-    name: null,
-    type: null,
-    iri: null,
-    description: null,
+  const [model, setModel] = useState<Partial<Model>>({
+    id: undefined,
+    name: undefined,
+    type: undefined,
+    iri: undefined,
+    description: undefined,
     modules: [],
   });
   const [modelLoaded, setModelLoaded] = useState(false);
@@ -113,14 +119,18 @@ function App() {
 
   useEffect(() => {
     setLayersState(() => {
-      const acc = {};
+      const acc: Partial<Layer> = {};
 
+      if (!model.modules) return acc;
+
+      // TODO: Refactoring
       Object.entries(model.modules).forEach(([id, module]) => {
         const layers = module.definition.layers || [];
         layers.forEach((layer) => {
           acc[`${layer.id}`] = {
             enabled:
-              model.properties[`${id}:layers.${layer.id}.enabled`] || false,
+              model.properties &&
+              (model.properties[`${id}:layers.${layer.id}.enabled`] || false),
           };
         });
       });

@@ -5,12 +5,12 @@ import * as THREE from "three";
 
 import { TerrainContext } from "../Terrain";
 
-function PNGLayer({ url, ...props }) {
+function PNGLayer({ url, ...props }: { url: string; opacity?: number }) {
   const terrain = useContext(TerrainContext);
 
   const texture = useLoader(THREE.TextureLoader, url);
 
-  return (
+  return terrain.geometry ? (
     <mesh geometry={terrain.geometry}>
       <meshBasicMaterial
         map={texture}
@@ -19,7 +19,7 @@ function PNGLayer({ url, ...props }) {
         opacity={props.opacity ? props.opacity : 0.5}
       />
     </mesh>
-  );
+  ) : null;
 }
 
 export default PNGLayer;

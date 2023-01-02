@@ -1,5 +1,6 @@
 import {
   createContext,
+  ReactNode,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -7,19 +8,30 @@ import {
   useRef,
   useState,
 } from "react";
+
 // import { Plane } from '@react-three/drei';
 import {
   // CameraHelper,
   BufferAttribute,
 } from "three";
 import * as THREE from "three";
+
 import { useAtom } from "jotai";
 import * as store from "./lib/store";
 
 import { ModelContext } from "./ModelView";
 import * as util from "./lib/util";
 
-export const TerrainContext = createContext();
+export type Terrain = {
+  geometry: THREE.PlaneGeometry;
+  vertices: number[];
+};
+export type Levelmap = [number, number, number][];
+
+export const TerrainContext = createContext<Partial<Terrain>>({
+  geometry: undefined,
+  vertices: [],
+});
 
 const segments = util.canvas.segments;
 
@@ -36,7 +48,7 @@ function BlankPlane({
   const _model = useContext(ModelContext);
   const model = _model.model; // TODO: Fix
 
-  const [, setCoords] = useState([]);
+  const [, setCoords] = useState<string[]>([]);
 
   const [debug, setDebug] = useAtom(store.debugAtom);
 
@@ -47,6 +59,10 @@ function BlankPlane({
   return (
     <mesh // TODO: model && <mesh ?
       onDoubleClick={(ev) => {
+        if (!model.bbox) {
+          console.error("model.bbox is undefined");
+          return;
+        }
         if (ev.shiftKey) {
           ev.stopPropagation();
           // console.log({ intersections: ev.intersections });
@@ -74,7 +90,19 @@ function BlankPlane({
   );
 }
 
-function Terrain({ levelmap, zoom, width, height, ...props }) {
+function Terrain({
+  levelmap,
+  zoom,
+  width,
+  height,
+  ...props
+}: {
+  levelmap: Levelmap;
+  zoom: number;
+  width: number;
+  height: number;
+  children?: ReactNode;
+}) {
   // const [vertices, setVertices] = useState(null);
 
   const geom = useMemo(() => {

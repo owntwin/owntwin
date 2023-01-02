@@ -3,12 +3,7 @@
 // @ts-ignore
 import SphericalMercator from "@mapbox/sphericalmercator";
 
-type BBox = {
-  minlng: number;
-  minlat: number;
-  maxlng: number;
-  maxlat: number;
-};
+import { BBox } from "../types";
 
 const sm = new SphericalMercator();
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import clsx from "clsx";
 
 import ExportModal from "./ExportModal";
@@ -15,7 +15,9 @@ import {
   mdiDownload,
 } from "@mdi/js";
 
-function getField(entity, key) {
+import { Definition, ModuleDefinition } from "../types";
+
+function getField(entity: Record<string, any> | null, key: string) {
   const splitted = key.split(":", 2);
   if (splitted.length === 2) {
     return entity && entity.properties && entity.properties[key]
@@ -26,8 +28,19 @@ function getField(entity, key) {
   }
 }
 
-function ModulePane({ id, module, properties, isOpen, ...props }) {
-  const [paneOpen, setPaneOpen] = useState(isOpen || false);
+function ModulePane({
+  id,
+  module,
+  properties,
+  isOpen = false,
+  ...props
+}: {
+  id: string;
+  module: ModuleDefinition;
+  properties: Record<string, any>;
+  isOpen?: boolean;
+}) {
+  const [paneOpen, setPaneOpen] = useState<boolean>(isOpen);
   const [moduleInfoOpen, setModuleInfoOpen] = useState(false);
 
   const [layersState, setLayersState] = useAtom(store.layersStateAtom);
@@ -36,7 +49,7 @@ function ModulePane({ id, module, properties, isOpen, ...props }) {
   const definition = module.definition;
   const layers = definition.layers;
   const actions = definition.actions || [];
-  const filters = [];
+  const filters: { name: string }[] = [];
 
   properties = properties || {};
 
@@ -99,8 +112,8 @@ function ModulePane({ id, module, properties, isOpen, ...props }) {
             <div className="my-1">アクション</div>
             <ul>
               {actions.length > 0 ? (
-                actions.map((action, i) => {
-                  const getProperty = (key) => {
+                actions.map((action, i: number) => {
+                  const getProperty = (key: string) => {
                     return (
                       properties[`${id}:actions.${action.id}.${key}`] ||
                       action[key] ||
@@ -188,7 +201,7 @@ function ModulePane({ id, module, properties, isOpen, ...props }) {
             <div className="my-1">レイヤー</div>
             <ul>
               {layers.length > 0 ? (
-                layers.map((item, i) => {
+                layers.map((item, i: number) => {
                   return (
                     <li key={i} className="flex items-center">
                       <input
@@ -258,6 +271,11 @@ function ItemInfo({
   isOpen,
   back,
   ...props
+}: Pick<Definition, "name" | "type" | "iri" | "modules" | "properties"> & {
+  item: { description?: string }; // TODO: Fix
+  isOpen: boolean;
+  back: ReactNode;
+  style?: Record<string, string>;
 }) {
   const [paneOpen, setPaneOpen] = useState(isOpen || false);
   const [helpClicked, setHelpClicked] = useState(false);

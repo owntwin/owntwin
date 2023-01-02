@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 function Clock({ ...props }) {
-  const [date, setDate] = useState();
+  const [date, setDate] = useState<string>();
 
   useEffect(() => {
     tick();

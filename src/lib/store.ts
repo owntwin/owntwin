@@ -1,9 +1,16 @@
 import { atom } from "jotai";
 
-const layersStateAtom = atom({});
-const entityAtom = atom(null);
+const layersStateAtom = atom<
+  Record<
+    string,
+    {
+      enabled: boolean;
+    }
+  >
+>({});
+const entityAtom = atom<Record<string, any> | null>(null);
 const detailEntityAtom = atom(null);
-const debugAtom = atom(null);
+const debugAtom = atom<string | null>(null);
 // const zoomAtom = atom(0xffff);
 const closeupAtom = atom(false);
 

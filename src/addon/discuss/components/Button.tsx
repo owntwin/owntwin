@@ -5,11 +5,19 @@ import { mdiCommentTextMultipleOutline } from "@mdi/js";
 import { useAtom } from "jotai";
 import * as store from "../store";
 
-export default function DiscussButton({ width, height, ...props }) {
+export default function DiscussButton({
+  width,
+  height,
+  ...props
+}: {
+  width: string;
+  height: string;
+}) {
   const [enabled, setEnabled] = useAtom(store.enabledAtom);
   const [status] = useAtom(store.statusAtom);
 
   const indicatorStyles = {
+    DISCONNECTED: null,
     CONNECTED: "bg-blue-400",
     ERROR: "bg-red-400",
   };

@@ -13,8 +13,11 @@ import Building from "./Building";
 
 import Discuss from "./addon/discuss/components/Discuss";
 import DrawAddon from "./addon/draw/components/Draw";
+import { Model } from "./types";
 
-export const ModelContext = createContext();
+export const ModelContext = createContext<{ model: Partial<Model> }>({
+  model: {},
+});
 
 /* Constants */
 // TODO: Improve
@@ -70,7 +73,7 @@ function ExtendedOrbitControls({ ...props }) {
   );
 }
 
-async function completeModel(model, base?: string) {
+async function completeModel(model: Partial<Model>, base?: string) {
   const blankTerrain: [] = [];
 
   if (model.terrain && model.terrain.path) {
@@ -107,7 +110,14 @@ async function completeModel(model, base?: string) {
   return model;
 }
 
-function ModelView({ model, basePath, ...props }) {
+function ModelView({
+  model,
+  basePath,
+  ...props
+}: {
+  model: Model;
+  basePath: string;
+}) {
   // console.log({ model: JSON.stringify(model) });
 
   const [levelmap, setLevelmap] = useState([]);

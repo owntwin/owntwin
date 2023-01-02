@@ -6,7 +6,7 @@ import { Icon } from "@mdi/react";
 
 import ExportModal from "./ExportModal";
 
-export default function ExportButton({ iri }: { iri: string | null }) {
+export default function ExportButton({ iri }: { iri?: string }) {
   const [exportModalOpen, setExportModalOpen] = useState(false);
 
   return (
