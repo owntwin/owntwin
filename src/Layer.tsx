@@ -21,12 +21,16 @@ function Layer({
     return <SVGMeshLayer url={def.path} color={def.color} />;
   } else if (def.format === "png") {
     return (
-      <Suspense fallback={null}>
+      <Suspense>
         <PNGLayer url={def.path} opacity={0.5} />
       </Suspense>
     );
   } else if (def.format === "geojson") {
-    return <GeoJSONLayer url={def.path} opacity={0.5} />;
+    return (
+      <Suspense>
+        <GeoJSONLayer url={def.path} opacity={0.5} />
+      </Suspense>
+    );
   } else if (def.format === "csv") {
     return (
       <CSVLayer

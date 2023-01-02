@@ -1,8 +1,7 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useState, useTransition } from "react";
 
 import axios from "axios";
 
-import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 
@@ -67,18 +66,42 @@ function extrudePolygonGeometry({
   return geom;
 }
 
-function InternalLayer({
-  internalObjects,
+function SelectableLayer({
+  geometries,
 }: {
-  internalObjects: THREE.Object3D[];
+  geometries: THREE.BufferGeometry[];
 }) {
-  return (
-    <>
-      {internalObjects.map((obj) => (
-        <primitive object={obj} key={obj.uuid} />
-      ))}
-    </>
-  );
+  // const [data, setData] = useState(
+  //   geometries.map((geom) => ({
+  //     geometry: geom,
+  //     visible: false,
+  //   })),
+  // );
+
+  const [meshes, setMeshes] = useState<any[]>([]);
+  const [isPending, startTransition] = useTransition();
+  useEffect(() => {
+    startTransition(() => {
+      setMeshes(
+        geometries.map((geom) => (
+          <mesh
+            visible={false}
+            geometry={geom}
+            onPointerOver={(ev) => {
+              ev.object.visible = true;
+            }}
+            onPointerOut={(ev) => {
+              ev.object.visible = false;
+            }}
+          >
+            <meshBasicMaterial />
+          </mesh>
+        )),
+      );
+    });
+  }, []);
+
+  return <>{meshes}</>;
 }
 
 function GeoJSONLayer({
@@ -104,27 +127,27 @@ function GeoJSONLayer({
       })();
   }, [url]);
 
-  const raycaster = useMemo(() => new THREE.Raycaster(), []);
-  const intersecting = useRef<THREE.Object3D | null>(null);
+  // const raycaster = useMemo(() => new THREE.Raycaster(), []);
+  // const intersecting = useRef<THREE.Object3D | null>(null);
 
-  useFrame((state) => {
-    raycaster.setFromCamera(state.pointer, state.camera);
-    const intersects = raycaster.intersectObjects(internalObjects, false);
-    if (intersects.length > 0) {
-      // console.log(intersects);
-      if (intersects.length > 0) {
-        const closest = intersects[0].object;
-        if (intersecting.current != closest) {
-          if (intersecting.current) intersecting.current.visible = false;
-          intersecting.current = closest;
-          intersecting.current.visible = true;
-        }
-      }
-    } else {
-      if (intersecting.current) intersecting.current.visible = false;
-      intersecting.current = null;
-    }
-  });
+  // useFrame((state) => {
+  //   raycaster.setFromCamera(state.pointer, state.camera);
+  //   const intersects = raycaster.intersectObjects(internalObjects, false);
+  //   if (intersects.length > 0) {
+  //     // console.log(intersects);
+  //     if (intersects.length > 0) {
+  //       const closest = intersects[0].object;
+  //       if (intersecting.current != closest) {
+  //         if (intersecting.current) intersecting.current.visible = false;
+  //         intersecting.current = closest;
+  //         intersecting.current.visible = true;
+  //       }
+  //     }
+  //   } else {
+  //     if (intersecting.current) intersecting.current.visible = false;
+  //     intersecting.current = null;
+  //   }
+  // });
 
   const geometries = useMemo(() => {
     if (!geojson || !geojson.features) return;
@@ -162,15 +185,6 @@ function GeoJSONLayer({
     return geometries;
   }, [geojson, model.bbox, terrain, clip]); // TODO: Fix: model causes x4 calls
 
-  const internalObjects = useMemo(() => {
-    if (!geometries) return [];
-    return geometries.map((geom) => {
-      const mesh = new THREE.Mesh(geom, new THREE.MeshBasicMaterial());
-      mesh.visible = false;
-      return mesh;
-    });
-  }, [geometries]);
-
   const geom = useMemo(() => {
     if (!geometries || geometries.length === 0) return undefined;
 
@@ -202,9 +216,7 @@ function GeoJSONLayer({
           </lineSegments>
         </mesh>
       )}
-      {/* {internalObjects && <InternalLayer internalObjects={internalObjects} />} */}
-      {/* {internalObjects &&
-        internalObjects.map((obj) => <primitive object={obj} key={obj.uuid} />)} */}
+      {geometries && <SelectableLayer geometries={geometries} />}
     </>
   );
 }
