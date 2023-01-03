@@ -206,7 +206,7 @@ function App() {
           type={item.type}
           iri={item.iri}
           item={item}
-          modules={model.modules}
+          modules={model.modules || []}
           properties={model.properties}
           back={
             detailEntity && (

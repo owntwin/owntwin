@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 import { atom } from "jotai";
 
-type Comment = {
+export type Comment = {
   position: THREE.Vector3;
   content: string;
 };

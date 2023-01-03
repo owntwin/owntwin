@@ -22,7 +22,7 @@ function Input({ ...props }) {
 
   // TODO: Here or somewhere else?
   useEffect(() => {
-    client.service("api/discuss").on("created", (message) => {
+    client.service("api/discuss").on("created", (message: store.Comment) => {
       // console.log(message);
       setComments((comments) => [...comments, message]);
     });

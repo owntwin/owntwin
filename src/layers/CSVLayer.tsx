@@ -2,11 +2,11 @@ import { useContext, useEffect, useState } from "react";
 
 import axios from "axios";
 
+import { BBox } from "../types";
 import * as util from "../lib/util";
 
-import { TerrainContext } from "../Terrain";
+import { Terrain, TerrainContext } from "../Terrain";
 import { ModelContext } from "../ModelView";
-
 import {
   // SphereAnchor,
   BeamAnchor,
@@ -18,11 +18,20 @@ function Anchor({
   coordinates,
   bbox,
   terrain,
-  label = null,
+  label,
   labelVisibility = "auto",
   clip = true,
   size = {},
   ...props
+}: {
+  coordinates: [number, number, number][];
+  bbox: BBox;
+  terrain: Terrain;
+  label?: string;
+  labelVisibility?: "auto" | "always";
+  clip?: boolean;
+  size?: { height?: number };
+  color?: number | string;
 }) {
   const originLng = parseFloat(coordinates[0]),
     originLat = parseFloat(coordinates[1]);
@@ -65,11 +74,23 @@ function Anchor({
   );
 }
 
-export default function CSVLayer({ url, clip = true, ...props }) {
+export default function CSVLayer({
+  url,
+  clip = true,
+  ...props
+}: {
+  url: string;
+  clip?: boolean;
+  keys?: Record<string, any>;
+  labelVisibility?: "auto" | "always";
+  opacity?: number;
+  color?: string | number;
+  size?: { height?: number };
+}) {
   const terrain = useContext(TerrainContext);
   const _model = useContext(ModelContext);
   const model = _model.model; // TODO: Fix
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<Record<string, any>>();
 
   /* load JSON from URL */
   useEffect(() => {
@@ -77,7 +98,7 @@ export default function CSVLayer({ url, clip = true, ...props }) {
       (async () => {
         const _data = await axios.get(url).then((resp) => resp.data);
         // console.log(_data);
-        const records = parseCSV(_data, {
+        const records: Record<string, any> = parseCSV(_data, {
           columns: true,
           skip_empty_lines: true,
         });
@@ -92,11 +113,11 @@ export default function CSVLayer({ url, clip = true, ...props }) {
       {data &&
         model &&
         terrain &&
-        data.map((record, i: number) => {
+        data.map((record: Record<string, any>, i: number) => {
           // console.log(record);
           return (
             <Anchor
-              key={i}  // TODO: Fix key
+              key={i} // TODO: Fix key
               clip={clip}
               coordinates={[record[props.keys.lng], record[props.keys.lat]]}
               bbox={model.bbox}

@@ -115,7 +115,7 @@ function ModelView({
   basePath,
   ...props
 }: {
-  model: Model;
+  model: Partial<Model>;
   basePath: string;
 }) {
   // console.log({ model: JSON.stringify(model) });
@@ -153,16 +153,17 @@ function ModelView({
           width={width}
           height={height}
         >
-          {Object.values(model.modules)
-            .reduce(
-              (acc, module) => acc.concat(module.definition.layers || []),
-              [],
-            )
-            .map((layer) =>
-              layersState[layer.id] && layersState[layer.id].enabled ? (
-                <Layer key={layer.id} def={layer} basePath={basePath} />
-              ) : null,
-            )}
+          {model.modules &&
+            Object.values(model.modules)
+              .reduce(
+                (acc, module) => acc.concat(module.definition.layers || []),
+                [],
+              )
+              .map((layer) =>
+                layersState[layer.id] && layersState[layer.id].enabled ? (
+                  <Layer key={layer.id} def={layer} basePath={basePath} />
+                ) : null,
+              )}
           {buildings.map((building) => (
             <Building
               key={building.id}
