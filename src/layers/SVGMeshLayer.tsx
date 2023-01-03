@@ -1,4 +1,5 @@
 import {
+  ReactNode,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -30,12 +31,12 @@ async function loadSVG(url: string) {
       const widthSVG = data.xml.viewBox.baseVal.width;
       const heightSVG = data.xml.viewBox.baseVal.height;
       const paths = data.paths;
-      let pathPoints = [];
+      let pathPoints: THREE.Vector2[][] = [];
 
       for (let i = 0; i < paths.length; i++) {
         let path = paths[i];
 
-        const shapes = path.toShapes(true); // TODO: Why?
+        const shapes: THREE.Shape[] = path.toShapes(true); // TODO: Why?
 
         shapes.forEach((shape) => {
           let points = shape.getPoints();
@@ -65,8 +66,15 @@ async function loadSVG(url: string) {
     });
 }
 
-function SVGMeshLayer({ url, color, ...props }) {
-  const [lines, setLines] = useState([]);
+function SVGMeshLayer({
+  url,
+  color = 0xdadce0,
+  ...props
+}: {
+  url: string;
+  color?: string | number;
+}) {
+  const [lines, setLines] = useState<ReactNode[]>([]);
   const [visible, setVisible] = useState(false);
 
   const terrain = useContext(TerrainContext);
@@ -75,11 +83,13 @@ function SVGMeshLayer({ url, color, ...props }) {
     (async () => {
       const svg = await loadSVG(url);
 
-      let _lines = [];
+      if (!svg) return;
 
-      svg.pathPoints.forEach((points, i) => {
-        let _points = [];
-        points.forEach((p, i) => {
+      let _lines: THREE.BufferGeometry[] = [];
+
+      svg.pathPoints.forEach((points, i: number) => {
+        let _points: THREE.Vector2[] = [];
+        points.forEach((p, i: number) => {
           if (i > 0) {
             _points.push(points[i - 1]);
             _points.push(p);
@@ -95,7 +105,7 @@ function SVGMeshLayer({ url, color, ...props }) {
       setLines([
         <lineSegments key={0} geometry={merged}>
           <meshBasicMaterial
-            color={color || 0xdadce0}
+            color={color}
             side={THREE.DoubleSide}
             depthWrite={false}
             // depthTest={false}
@@ -106,8 +116,10 @@ function SVGMeshLayer({ url, color, ...props }) {
   }, [url, color]);
 
   const ref = useRef<THREE.Group>(null);
+
   useLayoutEffect(() => {
     if (!ref.current) return;
+
     // let bbox = new THREE.Box3().setFromObject(ref.current);
     // let size = bbox.getSize(new THREE.Vector3());
     let size = new THREE.Vector3(width, height, 0); // TODO: Improve
@@ -115,7 +127,7 @@ function SVGMeshLayer({ url, color, ...props }) {
     ref.current.translateX(-size.x / 2);
     ref.current.translateY(-size.y / 2);
 
-    function getTerrainAltitude(x, y) {
+    function getTerrainAltitude(x: number, y: number) {
       if (!terrain.vertices) return 0;
       let pos =
         Math.floor(x / (width / segments)) +
@@ -131,7 +143,7 @@ function SVGMeshLayer({ url, color, ...props }) {
     ref.current.children.forEach((line) => {
       let position = line.geometry.getAttribute("position");
       let vertices = [];
-      vertices = position.array.map((v, i) => {
+      vertices = position.array.map((v, i: number) => {
         if (i % 3 === 2) {
           let z =
             getTerrainAltitude(position.array[i - 2], position.array[i - 1]) +
