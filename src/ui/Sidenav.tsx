@@ -2,7 +2,7 @@ import { mdiHelpCircleOutline, mdiAccountGroup, mdiFullscreen } from "@mdi/js";
 
 import DiscussInput from "../addon/discuss/components/Input";
 import DiscussButton from "../addon/discuss/components/Button";
-import { DrawButton, EraseButton } from "../addon/draw/components/Button";
+import { BrushButton, DrawButton, EraseButton } from "../addon/draw/components/Button";
 
 const addons = import.meta.env.VITE_ADDONS
   ? import.meta.env.VITE_ADDONS.split(",")
@@ -47,6 +47,7 @@ function Sidenav({ communityURL, ...props }: { communityURL?: string }) {
       {addons.includes("draw") && (
         <div className="ml-3 flex items-center relative gap-1.5 bg-white/75 rounded-full border px-3 py-1">
           <DrawButton size="24px" />
+          <BrushButton size="24px" />
           <EraseButton size="24px" />
         </div>
       )}

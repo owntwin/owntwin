@@ -1,0 +1,151 @@
+import {
+  useEffect,
+  useState,
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useMemo,
+} from "react";
+
+import { useFrame, useThree, ThreeEvent } from "@react-three/fiber";
+import { Sphere } from "@react-three/drei";
+import * as THREE from "three";
+import { OrbitControls } from "three-stdlib";
+
+import { useAtom } from "jotai";
+import * as store from "../store";
+import * as appStore from "../../../lib/store";
+
+import { Line } from "../types";
+
+function Eraser({
+  position,
+  size,
+  setActive,
+}: {
+  position: [number, number, number];
+  size: number;
+  setActive: Dispatch<SetStateAction<boolean>>;
+}) {
+  const [_active, _setActive] = useState(false);
+
+  const onDown = useCallback(
+    (ev?: unknown) => {
+      if (!_active) {
+        _setActive(true);
+        setActive(true);
+      }
+    },
+    [_active],
+  );
+
+  const onMove = useCallback(
+    (ev: ThreeEvent<PointerEvent>) => {
+      // TODO: throttle
+      if (["touch", "pen"].includes(ev.pointerType) && !_active) {
+        _setActive(true);
+        setActive(true);
+      }
+    },
+    [_active],
+  );
+
+  return (
+    <>
+      <Sphere
+        args={[size]}
+        position={position}
+        onPointerDown={() => onDown()}
+        onPointerMove={(ev) => onMove(ev)}
+        onPointerUp={() => {
+          _setActive(false);
+          setActive(false);
+        }}
+      >
+        <meshBasicMaterial attach="material" color="#ffffff" />
+      </Sphere>
+    </>
+  );
+}
+
+export function Erase({
+  setLinesData,
+  linesData,
+}: {
+  setLinesData: Dispatch<SetStateAction<Line[]>>;
+  linesData: Line[];
+}) {
+  const three = useThree();
+  const scene = three.scene as THREE.Scene & { orbitControls: OrbitControls };
+  const raycaster = three.raycaster;
+
+  const [position, setPosition] = useState<[number, number, number]>([0, 0, 0]);
+  const [active, setActive] = useState(false);
+
+  const [hoveredEntity] = useAtom(appStore.hoveredEntityAtom);
+
+  const curvesData = useMemo(() => {
+    const curvesData = linesData.map((line) => ({
+      curve: new THREE.CatmullRomCurve3(line.points),
+      uuid: line.uuid,
+    }));
+    return curvesData;
+  }, [linesData]);
+
+  useEffect(() => {
+    if (!scene.orbitControls) return;
+    scene.orbitControls.enableRotate = false;
+    return () => {
+      scene.orbitControls.enableRotate = true;
+    };
+  }, [scene.orbitControls]);
+
+  // TODO: useMemo?
+  const terrain = scene.getObjectByName("terrain");
+
+  useFrame((_, delta) => {
+    if (!raycaster || !scene || !terrain) return;
+    const intersects = raycaster.intersectObject(terrain);
+    if (intersects.length > 0) {
+      // console.log(intersects);
+      const closest = intersects[0];
+      setPosition([closest.point.x, closest.point.y, closest.point.z]);
+    }
+  });
+
+  const handlePointerOver = useCallback(
+    (uuid: string) => {
+      if (active) {
+        setLinesData((current) => current.filter((line) => line.uuid !== uuid));
+      }
+      // console.log(active, uuid);
+    },
+    [active],
+  );
+
+  useEffect(() => {
+    if (active && hoveredEntity.entity) {
+      // console.log(hoveredEntity.entity);
+      hoveredEntity.entity.material.color = new THREE.Color(0xffffff);
+      // hoveredEntity.entity.material.opacity = 0.5;
+      hoveredEntity.entity.userData.visibility = "auto";
+      hoveredEntity.entity.visible = false;
+    }
+  }, [active, hoveredEntity.entity]);
+
+  return (
+    <>
+      <Eraser position={position} size={12} setActive={setActive} />
+      {curvesData.map(({ curve, uuid }) => (
+        <mesh
+          visible={false}
+          key={uuid}
+          onPointerOver={() => handlePointerOver(uuid)}
+        >
+          <tubeGeometry args={[curve, 32, 16, 4]} />
+          <meshBasicMaterial color={0x000000} />
+        </mesh>
+      ))}
+    </>
+  );
+}

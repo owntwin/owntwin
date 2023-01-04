@@ -1,7 +1,7 @@
 import clsx from "clsx";
 
 import { Icon } from "@mdi/react";
-import { mdiDraw, mdiEraserVariant } from "@mdi/js";
+import { mdiBrushVariant, mdiDraw, mdiEraserVariant } from "@mdi/js";
 
 import { useAtom } from "jotai";
 import * as store from "../store";
@@ -63,6 +63,28 @@ export function EraseButton({ size }: { size: number | string }) {
         />
       </button>
       <ButtonIndicator enabled={selectedTool === "erase"} />
+    </div>
+  );
+}
+
+export function BrushButton({ size }: { size: number | string }) {
+  const [selectedTool, setSelectedTool] = useAtom(store.selectedToolAtom);
+
+  return (
+    <div className="relative flex items-center">
+      <button
+        className="focus:outline-none"
+        onClick={() =>
+          setSelectedTool((current) => (current === "brush" ? null : "brush"))
+        }
+      >
+        <Icon
+          className="fill-current text-gray-600 hover:text-black"
+          path={mdiBrushVariant}
+          size={size}
+        />
+      </button>
+      <ButtonIndicator enabled={selectedTool === "brush"} />
     </div>
   );
 }

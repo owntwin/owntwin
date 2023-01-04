@@ -5,12 +5,14 @@ import axios from "axios";
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 
+import * as store from "../lib/store";
 import * as util from "../lib/util";
 
 import { Terrain, TerrainContext } from "../Terrain";
 import { ModelContext } from "../ModelView";
 
 import { BBox, GeoJSON } from "../types";
+import { useAtom } from "jotai";
 
 type Coordinate = [number, number, number];
 
@@ -71,30 +73,41 @@ function SelectableLayer({
 }: {
   geometries: THREE.BufferGeometry[];
 }) {
-  // const [data, setData] = useState(
-  //   geometries.map((geom) => ({
-  //     geometry: geom,
-  //     visible: false,
-  //   })),
-  // );
+  const [entities, setEntities] = useState(
+    geometries.map((geom) => ({
+      geometry: geom,
+      visibility: "auto",
+    })),
+  );
+
+  const [, setHoveredEntity] = useAtom(store.hoveredEntityAtom);
 
   const [meshes, setMeshes] = useState<any[]>([]);
   const [isPending, startTransition] = useTransition();
+
   useEffect(() => {
     startTransition(() => {
       setMeshes(
-        geometries.map((geom) => (
+        entities.map(({ geometry, visibility }, i) => (
           <mesh
+            key={i}
             visible={false}
-            geometry={geom}
+            geometry={geometry}
             onPointerOver={(ev) => {
               ev.object.visible = true;
+              setHoveredEntity({ entity: ev.object });
             }}
             onPointerOut={(ev) => {
-              ev.object.visible = false;
+              if (ev.object.userData.visibility !== "always") {
+                ev.object.visible = false;
+              }
+              setHoveredEntity((entity) => {
+                // console.log(entity);
+                return entity.entity === ev.object ? { entity: null } : entity;
+              });
             }}
           >
-            <meshBasicMaterial />
+            <meshBasicMaterial color={0xf3f4f6} />
           </mesh>
         )),
       );
@@ -198,6 +211,7 @@ function GeoJSONLayer({
 
   const color = {
     default: 0xd1d5db, // 0xe5e7eb, 0x9ca3af, 0xb0b0b0, 0xff00ff, 0xc0c0c0
+    // default: 0xffffff, // 0xe5e7eb, 0x9ca3af, 0xb0b0b0, 0xff00ff, 0xc0c0c0
     hover: 0x666666,
   };
 
@@ -209,10 +223,13 @@ function GeoJSONLayer({
             color={color.default}
             transparent={true}
             opacity={props.opacity}
+            polygonOffset={true}
+            polygonOffsetUnits={1}
+            polygonOffsetFactor={1}
           />
           <lineSegments>
             <edgesGeometry attach="geometry" args={[geom, 45]} />
-            <lineBasicMaterial color={0xf8f8f8} attach="material" />
+            <lineBasicMaterial color={0xfefefe} attach="material" />
           </lineSegments>
         </mesh>
       )}

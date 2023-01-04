@@ -21,8 +21,6 @@ import { Sphere } from "@react-three/drei";
 import * as THREE from "three";
 import { OrbitControls } from "three-stdlib";
 
-// import { throttle } from 'lodash-es';
-
 import {
   MeshLineGeometry,
   MeshLineMaterial,
@@ -31,6 +29,11 @@ import {
 
 import { useAtom } from "jotai";
 import * as store from "../store";
+
+import { Erase } from "./Erase";
+import BrushAddon from "./Brush";
+
+import * as types from "../types";
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 declare global {
@@ -42,15 +45,14 @@ declare global {
   }
 }
 
-type Line = {
+function Line({
+  points,
+  color = "rgb(55, 65, 81)",
+  ...props
+}: {
   points: THREE.Vector3[];
-  uuid: string;
-};
-
-function Line({ points, ...props }: { points: THREE.Vector3[] }) {
-  const [, setLines] = useAtom(store.linesAtom);
-
-  // useEffect(() => console.log(points), [points]);
+  color?: string | number;
+}) {
   const ref = useRef<THREE.Mesh>(null);
 
   const _points = useMemo(
@@ -71,18 +73,6 @@ function Line({ points, ...props }: { points: THREE.Vector3[] }) {
   //   });
   // }, [points]);
 
-  // useEffect(() => {
-  //   setLines((lines) => {
-  //     if (ref.current !== null) {
-  //       console.log([...lines, ref.current]);
-  //       return [...lines, ref.current];
-  //     } else {
-  //       console.log(lines);
-  //       return lines;
-  //     }
-  //   });
-  // }, [ref.current]);
-
   return (
     <mesh ref={ref}>
       <meshLineGeometry attach="geometry" points={_points} />
@@ -91,7 +81,7 @@ function Line({ points, ...props }: { points: THREE.Vector3[] }) {
         transparent
         depthTest={false}
         lineWidth={4}
-        color={"rgb(55, 65, 81)"}
+        color={color}
         opacity={0.75}
         {...props}
         // dashArray={0.05}
@@ -105,10 +95,10 @@ const Pen = forwardRef(
   (
     {
       position,
-      setLinePoints,
+      setLinesData,
     }: {
       position: [number, number, number];
-      setLinePoints: Dispatch<SetStateAction<Line[]>>;
+      setLinesData: Dispatch<SetStateAction<types.Line[]>>;
     },
     ref: Ref<THREE.Mesh>,
   ) => {
@@ -168,7 +158,7 @@ const Pen = forwardRef(
             const curvePoints = new THREE.CatmullRomCurve3(points).getPoints(
               size,
             );
-            setLinePoints((current) => [
+            setLinesData((current) => [
               ...current,
               {
                 points: curvePoints,
@@ -187,9 +177,9 @@ const Pen = forwardRef(
 );
 
 function Draw({
-  setLinePoints,
+  setLinesData,
 }: {
-  setLinePoints: Dispatch<SetStateAction<Line[]>>;
+  setLinesData: Dispatch<SetStateAction<types.Line[]>>;
 }) {
   const three = useThree();
   const scene = three.scene as THREE.Scene & { orbitControls: OrbitControls };
@@ -222,139 +212,144 @@ function Draw({
     // if (delta % 10 < 5) return;
   });
 
-  return <Pen position={[0, 0, 0]} ref={pen} setLinePoints={setLinePoints} />;
+  return <Pen position={[0, 0, 0]} ref={pen} setLinesData={setLinesData} />;
 }
 
-const Eraser = ({
-  position,
-  size,
-  setActive,
-}: {
-  position: [number, number, number];
-  size: number;
-  setActive: Dispatch<SetStateAction<boolean>>;
-}) => {
-  const [_active, _setActive] = useState(false);
+// const Eraser = ({
+//   position,
+//   size,
+//   setActive,
+// }: {
+//   position: [number, number, number];
+//   size: number;
+//   setActive: Dispatch<SetStateAction<boolean>>;
+// }) => {
+//   const [_active, _setActive] = useState(false);
 
-  const onDown = useCallback(
-    (ev?: unknown) => {
-      if (!_active) {
-        _setActive(true);
-        setActive(true);
-      }
-    },
-    [_active],
-  );
+//   const onDown = useCallback(
+//     (ev?: unknown) => {
+//       if (!_active) {
+//         _setActive(true);
+//         setActive(true);
+//       }
+//     },
+//     [_active],
+//   );
 
-  const onMove = useCallback(
-    (ev: ThreeEvent<PointerEvent>) => {
-      // TODO: throttle
-      if (["touch", "pen"].includes(ev.pointerType) && !_active) {
-        _setActive(true);
-        setActive(true);
-      }
-    },
-    [_active],
-  );
+//   const onMove = useCallback(
+//     (ev: ThreeEvent<PointerEvent>) => {
+//       // TODO: throttle
+//       if (["touch", "pen"].includes(ev.pointerType) && !_active) {
+//         _setActive(true);
+//         setActive(true);
+//       }
+//     },
+//     [_active],
+//   );
 
-  return (
-    <>
-      <Sphere
-        args={[size]}
-        position={position}
-        onPointerDown={() => onDown()}
-        onPointerMove={(ev) => onMove(ev)}
-        onPointerUp={() => {
-          _setActive(false);
-          setActive(false);
-        }}
-      >
-        <meshBasicMaterial attach="material" color="#ffffff" />
-      </Sphere>
-    </>
-  );
-};
+//   return (
+//     <>
+//       <Sphere
+//         args={[size]}
+//         position={position}
+//         onPointerDown={() => onDown()}
+//         onPointerMove={(ev) => onMove(ev)}
+//         onPointerUp={() => {
+//           _setActive(false);
+//           setActive(false);
+//         }}
+//       >
+//         <meshBasicMaterial attach="material" color="#ffffff" />
+//       </Sphere>
+//     </>
+//   );
+// };
 
-function Erase({
-  setLinePoints,
-  linePoints,
-}: {
-  setLinePoints: Dispatch<SetStateAction<Line[]>>;
-  linePoints: Line[];
-}) {
-  const three = useThree();
-  const scene = three.scene as THREE.Scene & { orbitControls: OrbitControls };
-  const raycaster = three.raycaster;
+// function Erase({
+//   setLinesData,
+//   linesData,
+// }: {
+//   setLinesData: Dispatch<SetStateAction<Line[]>>;
+//   linesData: Line[];
+// }) {
+//   const three = useThree();
+//   const scene = three.scene as THREE.Scene & { orbitControls: OrbitControls };
+//   const raycaster = three.raycaster;
 
-  const [position, setPosition] = useState<[number, number, number]>([0, 0, 0]);
-  const [active, setActive] = useState(false);
+//   const [position, setPosition] = useState<[number, number, number]>([0, 0, 0]);
+//   const [active, setActive] = useState(false);
 
-  const curvesData = useMemo(() => {
-    const curvesData = linePoints.map((line) => ({
-      curve: new THREE.CatmullRomCurve3(line.points),
-      uuid: line.uuid,
-    }));
-    return curvesData;
-  }, [linePoints]);
+//   const curvesData = useMemo(() => {
+//     const curvesData = linesData.map((line) => ({
+//       curve: new THREE.CatmullRomCurve3(line.points),
+//       uuid: line.uuid,
+//     }));
+//     return curvesData;
+//   }, [linesData]);
 
-  useEffect(() => {
-    if (!scene.orbitControls) return;
-    scene.orbitControls.enableRotate = false;
-    return () => {
-      scene.orbitControls.enableRotate = true;
-    };
-  }, [scene.orbitControls]);
+//   useEffect(() => {
+//     if (!scene.orbitControls) return;
+//     scene.orbitControls.enableRotate = false;
+//     return () => {
+//       scene.orbitControls.enableRotate = true;
+//     };
+//   }, [scene.orbitControls]);
 
-  const terrain = scene.getObjectByName("terrain");
+//   // TODO: useMemo?
+//   const terrain = scene.getObjectByName("terrain");
 
-  useFrame((_, delta) => {
-    if (!raycaster || !scene || !terrain) return;
-    const intersects = raycaster.intersectObject(terrain);
-    if (intersects.length > 0) {
-      // console.log(intersects);
-      const closest = intersects[0];
-      setPosition([closest.point.x, closest.point.y, closest.point.z]);
-    }
-  });
+//   useFrame((_, delta) => {
+//     if (!raycaster || !scene || !terrain) return;
+//     const intersects = raycaster.intersectObject(terrain);
+//     if (intersects.length > 0) {
+//       // console.log(intersects);
+//       const closest = intersects[0];
+//       setPosition([closest.point.x, closest.point.y, closest.point.z]);
+//     }
+//   });
 
-  const handlePointerOver = useCallback((uuid: string) => {
-    if (active) {
-      setLinePoints((current) => current.filter((line) => line.uuid !== uuid));
-    }
-    // console.log(active, uuid);
-  }, [active]);
+//   const handlePointerOver = useCallback(
+//     (uuid: string) => {
+//       if (active) {
+//         setLinesData((current) => current.filter((line) => line.uuid !== uuid));
+//       }
+//       // console.log(active, uuid);
+//     },
+//     [active],
+//   );
 
-  return (
-    <>
-      <Eraser position={position} size={16} setActive={setActive} />
-      {curvesData.map(({ curve, uuid }) => (
-        <mesh
-          visible={false}
-          key={uuid}
-          onPointerOver={() => handlePointerOver(uuid)}
-        >
-          <tubeGeometry args={[curve, 32, 16, 4]} />
-          <meshBasicMaterial color={0x000000} />
-        </mesh>
-      ))}
-    </>
-  );
-}
+//   return (
+//     <>
+//       <Eraser position={position} size={12} setActive={setActive} />
+//       {curvesData.map(({ curve, uuid }) => (
+//         <mesh
+//           visible={false}
+//           key={uuid}
+//           onPointerOver={() => handlePointerOver(uuid)}
+//         >
+//           <tubeGeometry args={[curve, 32, 16, 4]} />
+//           <meshBasicMaterial color={0x000000} />
+//         </mesh>
+//       ))}
+//     </>
+//   );
+// }
 
 export default function DrawAddon({ ...props }) {
-  const [linePoints, setLinePoints] = useState<Line[]>([]);
+  const [linesData, setLinesData] = useState<types.Line[]>([]);
 
   const [selectedTool] = useAtom(store.selectedToolAtom);
 
   return (
     <>
-      {selectedTool === "draw" && <Draw setLinePoints={setLinePoints} />}
+      {selectedTool === "draw" && <Draw setLinesData={setLinesData} />}
       {selectedTool === "erase" && (
-        <Erase setLinePoints={setLinePoints} linePoints={linePoints} />
+        <Erase setLinesData={setLinesData} linesData={linesData} />
       )}
-      {linePoints.map((linepts, i) => (
+      {linesData.map((linepts, i) => (
         <Line key={i} points={linepts.points} />
       ))}
+      <BrushAddon />
     </>
   );
 }

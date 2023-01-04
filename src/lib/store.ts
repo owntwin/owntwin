@@ -13,6 +13,7 @@ const detailEntityAtom = atom(null);
 const debugAtom = atom<string | null>(null);
 // const zoomAtom = atom(0xffff);
 const closeupAtom = atom(false);
+const hoveredEntityAtom = atom<{ entity: any | null }>({ entity: null });
 
 export {
   layersStateAtom,
@@ -20,4 +21,5 @@ export {
   detailEntityAtom,
   debugAtom,
   closeupAtom,
+  hoveredEntityAtom,
 };
