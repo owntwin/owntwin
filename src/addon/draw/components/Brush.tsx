@@ -103,7 +103,7 @@ function Brush() {
       // console.log(hoveredEntity.entity);
       hoveredEntity.entity.material.color = new THREE.Color(0x93c5fd);
       // hoveredEntity.entity.material.transparent = true;
-      // hoveredEntity.entity.material.opacity = 0.5;
+      // hoveredEntity.entity.material.opacity = 1;
       hoveredEntity.entity.userData.visibility = "always";
       hoveredEntity.entity.visible = true;
     }

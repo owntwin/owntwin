@@ -107,7 +107,11 @@ function SelectableLayer({
               });
             }}
           >
-            <meshBasicMaterial color={0xf3f4f6} />
+            <meshBasicMaterial
+              color={0xf3f4f6}
+              transparent={true}
+              opacity={0.75}
+            />
           </mesh>
         )),
       );
