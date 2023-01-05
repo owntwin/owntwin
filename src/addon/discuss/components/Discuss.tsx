@@ -4,10 +4,14 @@ import { useThree } from "@react-three/fiber";
 
 import Comment, { CommentPrompt } from "./Comment";
 
-import { client, twinId } from "../index";
+import { BACKEND_URL, defaultClient, twinId } from "../index";
 import * as store from "../store";
 
+import socketio from "@feathersjs/socketio-client";
+import io from "socket.io-client";
+
 export default function Discuss({ ...props }) {
+  const [client, setClient] = useAtom(store.clientAtom);
   const [comments] = useAtom(store.commentsAtom);
   const [commentPrompt, setCommentPrompt] = useAtom(store.commentPromptAtom);
 
@@ -17,7 +21,13 @@ export default function Discuss({ ...props }) {
   const [, setStatus] = useAtom(store.statusAtom);
 
   useEffect(() => {
-    client
+    const socket = io(BACKEND_URL, {
+      transports: ["websocket", "polling"],
+    });
+    defaultClient.configure(socketio(socket));
+    setClient(defaultClient);
+
+    defaultClient
       .service("api/subscription")
       .create({ uid: twinId })
       .catch((err: unknown) => {
@@ -26,14 +36,16 @@ export default function Discuss({ ...props }) {
   }, []);
 
   useEffect(() => {
+    if (!client) return;
     if (enabled) {
       client.io.connect();
     } else {
       // client.io.disconnect();
     }
-  }, [enabled]);
+  }, [enabled, client]);
 
   useEffect(() => {
+    if (!client) return;
     client.io.on("reconnect", (err: unknown) => {
       setEnabled(true);
       setStatus("CONNECTED");
@@ -46,7 +58,7 @@ export default function Discuss({ ...props }) {
       // client.io.off('connect');
       client.io.off("connect_error");
     };
-  }, [setEnabled, setStatus]);
+  }, [client]);
   // useEffect(() => console.log({ comments }), [comments]);
 
   return enabled ? (

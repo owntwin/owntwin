@@ -2,15 +2,16 @@ import { useEffect, useRef, useState } from "react";
 
 import { mdiSend } from "@mdi/js";
 
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import * as store from "../store";
 
-import { client, twinId } from "../index";
+import { twinId } from "../index";
 
 function Input({ ...props }) {
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const client = useAtomValue(store.clientAtom);
   const [commentPrompt, setCommentPrompt] = useAtom(store.commentPromptAtom);
   const [, setComments] = useAtom(store.commentsAtom);
   const [enabled] = useAtom(store.enabledAtom);
@@ -22,11 +23,12 @@ function Input({ ...props }) {
 
   // TODO: Here or somewhere else?
   useEffect(() => {
+    if (!client) return;
     client.service("api/discuss").on("created", (message: store.Comment) => {
       // console.log(message);
       setComments((comments) => [...comments, message]);
     });
-  }, [setComments]);
+  }, [client]);
 
   // useEffect(() => console.log(comments), [comments]);
 
