@@ -10,7 +10,7 @@ import * as store from "../store";
 import socketio from "@feathersjs/socketio-client";
 import io from "socket.io-client";
 
-export default function Discuss({ ...props }) {
+export default function DiscussAddon({ ...props }) {
   const [client, setClient] = useAtom(store.clientAtom);
   const [comments] = useAtom(store.commentsAtom);
   const [commentPrompt, setCommentPrompt] = useAtom(store.commentPromptAtom);

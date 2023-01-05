@@ -11,7 +11,7 @@ import Terrain from "./Terrain";
 import Layer from "./Layer";
 import Building from "./Building";
 
-import Discuss from "./addon/discuss/components/Discuss";
+import DiscussAddon from "./addon/discuss/components/DiscussAddon";
 import DrawAddon from "./addon/draw/components/Draw";
 import { Model } from "./types";
 
@@ -179,7 +179,7 @@ function ModelView({
               }}
             />
           ))}
-          {addons.includes("discuss") && <Discuss />}
+          {addons.includes("discuss") && <DiscussAddon />}
           {addons.includes("draw") && <DrawAddon />}
         </Terrain>
       </ModelContext.Provider>
