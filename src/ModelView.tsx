@@ -12,7 +12,7 @@ import Layer from "./Layer";
 import Building from "./Building";
 
 import DiscussAddon from "./addon/discuss/components/DiscussAddon";
-import DrawAddon from "./addon/draw/components/Draw";
+import DrawAddon from "./addon/draw/components/DrawAddon";
 import { Model } from "./types";
 
 export const ModelContext = createContext<{ model: Partial<Model> }>({
