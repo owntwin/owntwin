@@ -47,7 +47,7 @@ function Sidenav({ communityURL, ...props }: { communityURL?: string }) {
       {addons.includes("draw") && (
         <div className="ml-3 flex items-center relative gap-1.5 bg-white/75 rounded-full border px-3 py-1">
           <DrawButton size="24px" />
-          <BrushButton size="24px" />
+          {/* <BrushButton size="24px" /> */}
           <EraseButton size="24px" />
         </div>
       )}

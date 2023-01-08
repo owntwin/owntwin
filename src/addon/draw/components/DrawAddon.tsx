@@ -60,7 +60,12 @@ function Draw() {
   return <LinePen position={[0, 0, 0]} ref={pen} />;
 }
 
-export default function DrawAddon({ ...props }) {
+export default function DrawAddon({
+  brush = false,
+  ...props
+}: {
+  brush?: boolean;
+}) {
   const drawSnap = useSnapshot(drawState);
 
   const [selectedTool] = useAtom(store.selectedToolAtom);
@@ -108,7 +113,7 @@ export default function DrawAddon({ ...props }) {
       {drawSnap.drawings.map((linepts, i) => (
         <Line key={i} points={linepts.points} />
       ))}
-      <BrushAddon />
+      {brush && <BrushAddon />}
     </>
   );
 }
