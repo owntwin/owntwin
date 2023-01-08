@@ -13,8 +13,10 @@ import * as THREE from "three";
 import { OrbitControls } from "three-stdlib";
 
 import { useAtom } from "jotai";
-import * as store from "../store";
+// import * as store from "../store";
 import * as appStore from "../../../lib/store";
+
+import { drawState } from "../share";
 
 import { Line } from "../types";
 
@@ -68,13 +70,7 @@ function Eraser({
   );
 }
 
-export function Erase({
-  setLinesData,
-  linesData,
-}: {
-  setLinesData: Dispatch<SetStateAction<Line[]>>;
-  linesData: Line[];
-}) {
+export function Erase({ linesData }: { linesData: Line[] }) {
   const three = useThree();
   const scene = three.scene as THREE.Scene & { orbitControls: OrbitControls };
   const raycaster = three.raycaster;
@@ -86,7 +82,9 @@ export function Erase({
 
   const curvesData = useMemo(() => {
     const curvesData = linesData.map((line) => ({
-      curve: new THREE.CatmullRomCurve3(line.points),
+      curve: new THREE.CatmullRomCurve3(
+        line.points.map((p) => new THREE.Vector3(p.x, p.y, p.z)),
+      ),
       uuid: line.uuid,
     }));
     return curvesData;
@@ -116,7 +114,9 @@ export function Erase({
   const handlePointerOver = useCallback(
     (uuid: string) => {
       if (active) {
-        setLinesData((current) => current.filter((line) => line.uuid !== uuid));
+        drawState.drawings = drawState.drawings.filter(
+          (line) => line.uuid !== uuid,
+        );
       }
       // console.log(active, uuid);
     },

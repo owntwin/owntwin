@@ -4,15 +4,15 @@ import { useThree } from "@react-three/fiber";
 
 import Comment, { CommentPrompt } from "./Comment";
 
-import { BACKEND_URL, defaultClient, twinId } from "../index";
+import { BACKEND_URL, twinId } from "../index";
 import * as store from "../store";
 
-import socketio from "@feathersjs/socketio-client";
-import io from "socket.io-client";
+// @ts-ignore
+import { io } from "socket.io-client";
 
 export default function DiscussAddon({ ...props }) {
   const [client, setClient] = useAtom(store.clientAtom);
-  const [comments] = useAtom(store.commentsAtom);
+  const [comments, setComments] = useAtom(store.commentsAtom);
   const [commentPrompt, setCommentPrompt] = useAtom(store.commentPromptAtom);
 
   const { scene, raycaster } = useThree();
@@ -21,41 +21,42 @@ export default function DiscussAddon({ ...props }) {
   const [, setStatus] = useAtom(store.statusAtom);
 
   useEffect(() => {
-    const socket = io(BACKEND_URL, {
-      transports: ["websocket", "polling"],
+    const socket = io(`${BACKEND_URL}/discuss/${twinId}`, {
+      transports: ["websocket"],
+      autoConnect: false,
     });
-    defaultClient.configure(socketio(socket));
-    setClient(defaultClient);
-
-    defaultClient
-      .service("api/subscription")
-      .create({ uid: twinId })
-      .catch((err: unknown) => {
-        // console.log({ err });
-      });
+    setClient(socket);
   }, []);
 
   useEffect(() => {
     if (!client) return;
     if (enabled) {
-      client.io.connect();
+      client.connect();
     } else {
-      // client.io.disconnect();
+      // client.disconnect();
     }
   }, [enabled, client]);
 
   useEffect(() => {
     if (!client) return;
-    client.io.on("reconnect", (err: unknown) => {
+    client.on("connect", (err: unknown) => {
+      client.emit("read", null, (comments: store.Comment[]) => {
+        setComments(comments);
+      });
+    });
+    client.on("reconnect", (err: unknown) => {
       setEnabled(true);
       setStatus("CONNECTED");
+      client.emit("read", null, (comments: store.Comment[]) => {
+        setComments(comments);
+      });
     });
-    client.io.on("connect_error", (err: unknown) => {
+    client.on("connect_error", (err: unknown) => {
       setEnabled(false);
       setStatus("ERROR");
     });
     return () => {
-      // client.io.off('connect');
+      // client.off('connect');
       client.io.off("connect_error");
     };
   }, [client]);

@@ -1,4 +1,6 @@
 export type Line = {
-  points: THREE.Vector3[];
+  points: { x: number; y: number; z: number }[];
   uuid: string;
 };
+
+export type Drawing = Line;

@@ -24,7 +24,7 @@ function Input({ ...props }) {
   // TODO: Here or somewhere else?
   useEffect(() => {
     if (!client) return;
-    client.service("api/discuss").on("created", (message: store.Comment) => {
+    client.on("created", (message: store.Comment) => {
       // console.log(message);
       setComments((comments) => [...comments, message]);
     });
@@ -39,13 +39,12 @@ function Input({ ...props }) {
       content: value,
       twinId: twinId, // TODO: Use anonymous auth instead
     };
-    client
-      .service("api/discuss")
-      .create(comment)
-      .catch((err: any) => {
+    client.timeout(5000).emit("create", comment, (err: any) => {
+      if (err) {
         console.log("err", err);
         setStatus("ERROR");
-      });
+      }
+    });
     setCommentPrompt(store.commentPromptInitialValue);
     setValue("");
   };
