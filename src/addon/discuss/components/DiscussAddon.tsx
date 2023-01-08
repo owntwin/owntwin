@@ -21,46 +21,47 @@ export default function DiscussAddon({ ...props }) {
   const [, setStatus] = useAtom(store.statusAtom);
 
   useEffect(() => {
-    const socket = io(`${BACKEND_URL}/discuss/${twinId}`, {
+    const apiUrl = `${BACKEND_URL}/discuss/${twinId}`;
+
+    const socket = io(apiUrl, {
       transports: ["websocket"],
       autoConnect: false,
     });
+
+    socket.on("connect", () => {
+      socket.emit("read", null, (comments: store.Comment[]) => {
+        setComments(comments);
+      });
+    });
+    socket.io.on("reconnect", () => {
+      setEnabled(true);
+      setStatus("CONNECTED");
+      socket.emit("read", null, (comments: store.Comment[]) => {
+        setComments(comments);
+      });
+    });
+    socket.on("connect_error", () => {
+      setEnabled(false);
+      setStatus("ERROR");
+    });
+
     setClient(socket);
+
+    return () => {
+      // client.off('connect');
+      client && client.io.off("connect_error");
+    };
   }, []);
 
   useEffect(() => {
     if (!client) return;
     if (enabled) {
+      // console.log("connecting");
       client.connect();
     } else {
       // client.disconnect();
     }
   }, [enabled, client]);
-
-  useEffect(() => {
-    if (!client) return;
-    client.on("connect", (err: unknown) => {
-      client.emit("read", null, (comments: store.Comment[]) => {
-        setComments(comments);
-      });
-    });
-    client.on("reconnect", (err: unknown) => {
-      setEnabled(true);
-      setStatus("CONNECTED");
-      client.emit("read", null, (comments: store.Comment[]) => {
-        setComments(comments);
-      });
-    });
-    client.on("connect_error", (err: unknown) => {
-      setEnabled(false);
-      setStatus("ERROR");
-    });
-    return () => {
-      // client.off('connect');
-      client.io.off("connect_error");
-    };
-  }, [client]);
-  // useEffect(() => console.log({ comments }), [comments]);
 
   return enabled ? (
     <>
