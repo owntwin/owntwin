@@ -288,7 +288,7 @@ function ItemInfo({
         "fixed top-4 left-4 flex flex-col bg-white shadow rounded right-4 sm:right-auto sm:w-72",
         paneOpen ? "bottom-20" : "bottom-auto",
       )}
-      style={{ ...props.style, maxHeight: "40rem", zIndex: "20000000" }}
+      style={{ ...props.style, maxHeight: "40rem", zIndex: 20000000 }}
     >
       <div>
         {back}

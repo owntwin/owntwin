@@ -13,6 +13,7 @@ export default function ExportModal({
   return (
     <div
       className="fixed z-10 inset-0 overflow-y-auto"
+      style={{ zIndex: 20000001 }}
       role="dialog"
       aria-modal="true"
     >
