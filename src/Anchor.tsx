@@ -19,7 +19,7 @@ function SphereAnchor({
     <mesh position={position}>
       <sphereBufferGeometry args={[40, 20, 20]} />
       <meshBasicMaterial color={color} opacity={0.5} transparent={true} />
-      <Html style={{ pointerEvents: "none" }}>
+      <Html style={{ pointerEvents: "none", userSelect: "none" }}>
         <div
           style={{
             display: true ? "block" : "none",
@@ -75,7 +75,7 @@ function BeamAnchor({
     <mesh position={position}>
       <cylinderGeometry ref={geom} args={[radius, radius, height, 8]} />
       <meshBasicMaterial color={color} opacity={0.5} transparent={true} />
-      <Html style={{ pointerEvents: "none" }}>
+      <Html style={{ pointerEvents: "none", userSelect: "none" }}>
         <div
           style={{
             display: labelVisibility === "always" || closeup ? "block" : "none",
