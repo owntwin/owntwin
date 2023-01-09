@@ -46,7 +46,7 @@ export type Definition = {
 
 export type Model = Omit<Definition, "bbox" | "terrain"> & {
   bbox: BBox;
-  terrain: { path: string; data: [number, number, number][] };
+  terrain: { path?: string; data: [number, number, number][] };
 };
 
 export type GeoJSON = {

@@ -85,8 +85,7 @@ async function completeModel(model: Partial<Model>, base?: string) {
       .then((resp) => resp.data)
       .catch(() => blankTerrain);
   } else {
-    model.terrain = model.terrain || {};
-    model.terrain.data = blankTerrain;
+    model.terrain = model.terrain ? model.terrain : { data: blankTerrain };
   }
 
   const blankBuilding = {

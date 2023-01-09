@@ -24,7 +24,7 @@ function Anchor({
   size = {},
   ...props
 }: {
-  coordinates: [number, number, number][];
+  coordinates: [number | string, number | string, number | string];
   bbox: BBox;
   terrain: Terrain;
   label?: string;
@@ -33,8 +33,8 @@ function Anchor({
   size?: { height?: number };
   color?: number | string;
 }) {
-  const originLng = parseFloat(coordinates[0]),
-    originLat = parseFloat(coordinates[1]);
+  const originLng = parseFloat(coordinates[0].toString()),
+    originLat = parseFloat(coordinates[1].toString());
 
   const origin = util.coordToPlane(bbox, originLng, originLat);
   // const z = 0; // coordinates[0][2]; // TODO: z from GeoJSON?
@@ -81,7 +81,7 @@ export default function CSVLayer({
 }: {
   url: string;
   clip?: boolean;
-  keys?: Record<string, any>;
+  keys: { lng: number; lat: number; label: string }; // TODO: Fix; maybe Record<string, ...>
   labelVisibility?: "auto" | "always";
   opacity?: number;
   color?: string | number;
@@ -109,7 +109,7 @@ export default function CSVLayer({
 
   return (
     // TODO: Fix
-    <group opacity={props.opacity ? props.opacity : 0.5}>
+    <group>
       {data &&
         model &&
         terrain &&
@@ -119,13 +119,14 @@ export default function CSVLayer({
             <Anchor
               key={i} // TODO: Fix key
               clip={clip}
-              coordinates={[record[props.keys.lng], record[props.keys.lat]]}
+              coordinates={[record[props.keys.lng], record[props.keys.lat], 0]}
               bbox={model.bbox}
               terrain={terrain}
               label={record[props.keys.label]}
               labelVisibility={props.labelVisibility}
               color={props.color}
               size={props.size}
+              opacity={props.opacity ? props.opacity : 0.5}
             />
           );
         })}
