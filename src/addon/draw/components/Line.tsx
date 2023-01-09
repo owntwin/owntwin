@@ -37,7 +37,7 @@ export function Line({
   const _points = useMemo(
     () =>
       points
-        .map((p: any) => new THREE.Vector3(p.x, p.y, p.z))
+        .map((p: any) => new THREE.Vector3(p.x, p.y, p.z + 1)) // NOTE: z+1 to avoid flickering
         .reduce(
           (prev: number[], current) => [...prev, ...current.toArray()],
           [],
