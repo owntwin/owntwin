@@ -129,6 +129,22 @@ function ModelView({
     });
   }, [model, basePath]);
 
+  useEffect(() => {
+    // NOTE: https://stackoverflow.com/a/43321596/10954858
+    const handler = (ev: any) => {
+      if (ev.detail > 1) {
+        ev.preventDefault();
+      }
+    };
+
+    if (window) {
+      window.addEventListener("mousedown", handler);
+      return () => {
+        window.removeEventListener("mousedown", handler);
+      };
+    }
+  }, []);
+
   const [layersState] = useAtom(store.layersStateAtom);
   const [, setEntity] = useAtom(store.entityAtom);
   const [, setDetailEntity] = useAtom(store.detailEntityAtom);
