@@ -4,6 +4,7 @@ import axios from "axios";
 
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
+import { Html } from "@react-three/drei";
 
 import * as store from "../lib/store";
 import * as util from "../lib/util";
@@ -15,6 +16,11 @@ import { BBox, GeoJSON } from "../types";
 import { useAtom } from "jotai";
 
 type Coordinate = [number, number, number];
+
+type ObjectData = {
+  geometry: THREE.BufferGeometry;
+  id?: string;
+};
 
 function extrudePolygonGeometry({
   coordinates,
@@ -68,34 +74,35 @@ function extrudePolygonGeometry({
   return geom;
 }
 
-function SelectableLayer({
-  geometries,
-}: {
-  geometries: THREE.BufferGeometry[];
-}) {
+function SelectableLayer({ geometries }: { geometries: ObjectData[] }) {
   const [entities, setEntities] = useState(
-    geometries.map((geom) => ({
-      geometry: geom,
+    geometries.map(({ id, geometry }) => ({
+      id,
+      geometry,
       visibility: "auto",
     })),
   );
 
-  const [, setHoveredEntity] = useAtom(store.hoveredEntityAtom);
+  const [hoveredEntity, setHoveredEntity] = useAtom(store.hoveredEntityAtom);
 
   const [meshes, setMeshes] = useState<any[]>([]);
   const [isPending, startTransition] = useTransition();
 
+  const [, setTimer] = useState<number>();
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+
   useEffect(() => {
     startTransition(() => {
       setMeshes(
-        entities.map(({ geometry, visibility }, i) => (
+        entities.map(({ id, geometry, visibility }, i) => (
           <mesh
             key={i}
             visible={false}
             geometry={geometry}
             onPointerOver={(ev) => {
               ev.object.visible = true;
-              setHoveredEntity({ entity: ev.object });
+              setHoveredEntity({ id, entity: ev.object });
+              // console.log(id);
             }}
             onPointerOut={(ev) => {
               if (ev.object.userData.visibility !== "always") {
@@ -118,7 +125,48 @@ function SelectableLayer({
     });
   }, []);
 
-  return <>{meshes}</>;
+  useEffect(() => {
+    setTimer((currentTimer) => {
+      if (!hoveredEntity || !hoveredEntity.id) {
+        if (currentTimer) clearTimeout(currentTimer);
+        setShowPopup(false);
+        return undefined;
+      }
+      if (currentTimer) clearTimeout(currentTimer);
+      setShowPopup(false);
+      const timer = setTimeout(() => setShowPopup(true), 500);
+      return timer;
+    });
+  }, [hoveredEntity]);
+
+  return (
+    <>
+      {meshes}
+      {hoveredEntity && hoveredEntity.id && showPopup && (
+        <Html
+          className="bg-gray-400 text-white rounded-full px-2 py-1"
+          style={{
+            pointerEvents: "none",
+            userSelect: "none",
+            transform: "translate3d(-50%,-100%,0)",
+            width: "max-content",
+            fontSize: "0.5rem",
+          }}
+          distanceFactor={1000}
+          position={(() => {
+            // TODO: Better performance
+            hoveredEntity.entity.geometry.computeBoundingBox();
+            const center = new THREE.Vector3();
+            hoveredEntity.entity.geometry.boundingBox?.getCenter(center);
+            const { x, y, z } = center;
+            return [x, y, z + 50];
+          })()}
+        >
+          {hoveredEntity.id}
+        </Html>
+      )}
+    </>
+  );
 }
 
 function GeoJSONLayer({
@@ -169,7 +217,7 @@ function GeoJSONLayer({
   const geometries = useMemo(() => {
     if (!geojson || !geojson.features) return;
 
-    const geometries: THREE.BufferGeometry[] = [];
+    const geometries: ObjectData[] = [];
     geojson.features.forEach((feature) => {
       if (!model.bbox || !terrain || !terrain.geometry) {
         // console.error(...);
@@ -196,7 +244,7 @@ function GeoJSONLayer({
         terrain: terrain as Terrain, // TODO: Refactoring
       });
 
-      geometries.push(poly);
+      geometries.push({ geometry: poly, id: feature.properties.id });
     });
     // geometries.forEach((obj, i) => { i === 0 && console.log(obj); });
     return geometries;
@@ -206,7 +254,7 @@ function GeoJSONLayer({
     if (!geometries || geometries.length === 0) return undefined;
 
     const mergedGeometry = BufferGeometryUtils.mergeBufferGeometries(
-      geometries,
+      geometries.map((v) => v.geometry),
       false,
     );
     // console.log(mergedGeometry);
