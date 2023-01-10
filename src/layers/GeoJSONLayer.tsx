@@ -99,10 +99,28 @@ function SelectableLayer({ geometries }: { geometries: ObjectData[] }) {
             key={i}
             visible={false}
             geometry={geometry}
-            onPointerOver={(ev) => {
+            onPointerMove={(ev) => {
+              // NOTE: using onPointerMove (not onPointerOver) to handle moving between overlapping entities
+              // NOTE: return if not the front object
+              // TODO: check object type in future
+              if (
+                ev.intersections.length === 0 ||
+                ev.intersections[0].object.uuid !== ev.object.uuid
+              ) {
+                if (ev.object.userData.visibility !== "always") {
+                  ev.object.visible = false;
+                }
+                setHoveredEntity((entity) => {
+                  // console.log(entity);
+                  return entity.entity === ev.object
+                    ? { entity: null }
+                    : entity;
+                });
+                return;
+              }
+              if (hoveredEntity.id === id) return;
               ev.object.visible = true;
               setHoveredEntity({ id, entity: ev.object });
-              // console.log(id);
             }}
             onPointerOut={(ev) => {
               if (ev.object.userData.visibility !== "always") {
