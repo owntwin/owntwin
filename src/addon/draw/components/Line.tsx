@@ -124,7 +124,7 @@ export const LinePen = forwardRef(
           position={position}
           ref={ref}
           // onDoubleClick={() => {
-          //   scene.orbitControls.enableRotate = !scene.orbitControls.enableRotate;
+          //   // NOTE: toggle enableRotate?
           // }}
           onPointerDown={() => onDown()}
           onPointerUp={() => {

@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { OrbitControls } from "three-stdlib";
 
 import throttle from "just-throttle";
 
@@ -10,6 +9,7 @@ import * as types from "../types";
 
 import { useAtom } from "jotai";
 import * as store from "../store";
+import { controlsStateAtom } from "../../../lib/store";
 
 import { subscribe, useSnapshot } from "valtio";
 import { drawState, BACKEND_URL, twinId } from "../share";
@@ -26,18 +26,18 @@ import BrushAddon from "./Brush";
 
 function Draw() {
   const three = useThree();
-  const scene = three.scene as THREE.Scene & { orbitControls: OrbitControls };
+  const scene = three.scene as THREE.Scene;
   const raycaster = three.raycaster;
 
   const pen = useRef<THREE.Mesh>(null);
 
+  const [, setControlsState] = useAtom(controlsStateAtom);
   useEffect(() => {
-    if (!scene.orbitControls) return;
-    scene.orbitControls.enableRotate = false;
+    setControlsState((state) => ({ ...state, enableRotate: false }));
     return () => {
-      scene.orbitControls.enableRotate = true;
+      setControlsState((state) => ({ ...state, enableRotate: true }));
     };
-  }, [scene.orbitControls]);
+  }, []);
 
   const terrain = scene.getObjectByName("terrain");
 

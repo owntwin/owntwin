@@ -16,6 +16,9 @@ const closeupAtom = atom(false);
 const hoveredEntityAtom = atom<{ id?: string; entity: any | null }>({
   entity: null,
 });
+const controlsStateAtom = atom<{ enableRotate: boolean }>({
+  enableRotate: true,
+});
 
 export {
   layersStateAtom,
@@ -24,4 +27,5 @@ export {
   debugAtom,
   closeupAtom,
   hoveredEntityAtom,
+  controlsStateAtom,
 };

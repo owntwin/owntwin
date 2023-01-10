@@ -10,11 +10,11 @@ import {
 import { useFrame, useThree, ThreeEvent } from "@react-three/fiber";
 import { Sphere } from "@react-three/drei";
 import * as THREE from "three";
-import { OrbitControls } from "three-stdlib";
 
 import { useAtom } from "jotai";
 // import * as store from "../store";
 import * as appStore from "../../../lib/store";
+import { controlsStateAtom } from "../../../lib/store";
 
 import { drawState } from "../share";
 
@@ -72,7 +72,7 @@ function Eraser({
 
 export function Erase({ linesData }: { linesData: Line[] }) {
   const three = useThree();
-  const scene = three.scene as THREE.Scene & { orbitControls: OrbitControls };
+  const scene = three.scene as THREE.Scene;
   const raycaster = three.raycaster;
 
   const [position, setPosition] = useState<[number, number, number]>([0, 0, 0]);
@@ -90,13 +90,13 @@ export function Erase({ linesData }: { linesData: Line[] }) {
     return curvesData;
   }, [linesData]);
 
+  const [, setControlsState] = useAtom(controlsStateAtom);
   useEffect(() => {
-    if (!scene.orbitControls) return;
-    scene.orbitControls.enableRotate = false;
+    setControlsState((state) => ({ ...state, enableRotate: false }));
     return () => {
-      scene.orbitControls.enableRotate = true;
+      setControlsState((state) => ({ ...state, enableRotate: true }));
     };
-  }, [scene.orbitControls]);
+  }, []);
 
   // TODO: useMemo?
   const terrain = scene.getObjectByName("terrain");

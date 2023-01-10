@@ -86,9 +86,22 @@ function ExtendedOrbitControls({ ...props }) {
 function ExtendedCameraControls({ ...props }) {
   const CLOSEUP_THRESHOLD = 1000;
   const [, setCloseup] = useAtom(store.closeupAtom);
+  const [controlsState] = useAtom(store.controlsStateAtom);
 
   const { camera } = useThree();
   const ref = useRef<CameraControls>(null);
+
+  useEffect(() => {
+    if (!ref || !ref.current) return;
+
+    const cameraControls = ref.current;
+
+    if (!controlsState.enableRotate) {
+      cameraControls.mouseButtons.left = CameraControlsDefault.ACTION.NONE;
+    } else {
+      cameraControls.mouseButtons.left = CameraControlsDefault.ACTION.ROTATE;
+    }
+  }, [controlsState]);
 
   const cb = useCallback((ev: any) => {
     const deboncedReset = debounce(() => {
@@ -149,6 +162,7 @@ function ExtendedCameraControls({ ...props }) {
 
   return (
     <CameraControls
+      attach="cameraControls" // NOTE: -> scene.cameraControls
       ref={ref}
       minDistance={100}
       maxDistance={1500}
