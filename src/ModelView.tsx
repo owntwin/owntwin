@@ -128,7 +128,7 @@ function ExtendedCameraControls({ ...props }) {
     cameraControls.setOrbitPoint(0, 0, 0);
 
     const updateConfig = (ev: KeyboardEvent) => {
-      if (ev.shiftKey || ev.ctrlKey || ev.altKey) {
+      if (ev.shiftKey || ev.ctrlKey || ev.altKey || ev.metaKey) {
         cameraControls.mouseButtons.left = CameraControlsDefault.ACTION.TRUCK;
       } else {
         cameraControls.mouseButtons.left = CameraControlsDefault.ACTION.ROTATE;
