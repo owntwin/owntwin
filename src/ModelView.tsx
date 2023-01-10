@@ -9,7 +9,7 @@ import debounce from "just-debounce-it";
 import { useAtom } from "jotai";
 import * as store from "./lib/store";
 
-import { CameraControls } from "./CameraControls";
+import { CameraControls } from "./lib/components/CameraControls";
 import CameraControlsDefault from "camera-controls";
 
 import Terrain from "./Terrain";
