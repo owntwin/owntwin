@@ -20,6 +20,7 @@
     "camera-controls": "^1.37.4",
     "clsx": "^1.2.1",
     "csv-parse": "^5.3.3",
+    "hold-event": "^0.2.0",
     "jotai": "^1.11.2",
     "just-debounce-it": "^3.2.0",
     "just-throttle": "^4.2.0",
