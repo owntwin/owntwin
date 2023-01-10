@@ -1,11 +1,16 @@
-import { useEffect, createContext, useState } from "react";
+import { useEffect, createContext, useState, useRef, useCallback } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
-// import { CameraHelper } from 'three';
+import { PerspectiveCamera } from "@react-three/drei";
+import * as THREE from "three";
+
 import axios from "axios";
+import debounce from "just-debounce-it";
 
 import { useAtom } from "jotai";
 import * as store from "./lib/store";
+
+import { CameraControls } from "./CameraControls";
+import CameraControlsDefault from "camera-controls";
 
 import Terrain from "./Terrain";
 import Layer from "./Layer";
@@ -13,7 +18,10 @@ import Building from "./Building";
 
 import DiscussAddon from "./addon/discuss/components/DiscussAddon";
 import DrawAddon from "./addon/draw/components/DrawAddon";
-import { Model } from "./types";
+import PointerAddon from "./addon/pointer/components/PointerAddon";
+import type { Model } from "./types";
+
+const ZERO = new THREE.Vector3(0, 0, 0);
 
 export const ModelContext = createContext<{ model: Partial<Model> }>({
   model: {},
@@ -31,7 +39,7 @@ const addons = import.meta.env.VITE_ADDONS
 
 function DefaultCamera({ ...props }) {
   // const camera = useRef();
-  // useHelper(camera, CameraHelper, 1, 'hotpink');
+  // useHelper(camera, THREE.CameraHelper, 1, 'hotpink');
 
   return (
     <PerspectiveCamera
@@ -41,12 +49,13 @@ function DefaultCamera({ ...props }) {
       fov={60}
       aspect={window.innerWidth / window.innerHeight}
       near={1}
-      far={2048}
+      far={2048 * 1.25}
       // ref={camera}
     />
   );
 }
 
+/*
 function ExtendedOrbitControls({ ...props }) {
   const CLOSEUP_THRESHOLD = 400000;
 
@@ -69,6 +78,86 @@ function ExtendedOrbitControls({ ...props }) {
         // console.log(dist2);
         dist2 < CLOSEUP_THRESHOLD ? setCloseup(true) : setCloseup(false);
       }}
+    />
+  );
+}
+*/
+
+function ExtendedCameraControls({ ...props }) {
+  const CLOSEUP_THRESHOLD = 1000;
+  const [, setCloseup] = useAtom(store.closeupAtom);
+
+  const { camera } = useThree();
+  const ref = useRef<CameraControls>(null);
+
+  const cb = useCallback((ev: any) => {
+    const deboncedReset = debounce(() => {
+      // console.log("reset");
+      const position = new THREE.Vector3();
+      ref.current?.getPosition(position);
+      const dist = position.distanceTo(ZERO);
+      // TODO: Handle constants properly
+      if (dist > 1200) {
+        ref.current?.setTarget(0, 0, 0, true);
+      }
+    }, 500);
+    deboncedReset();
+
+    // TODO: Use LOD instead
+    const position = new THREE.Vector3();
+    ref.current?.getPosition(position);
+    const dist2 = position.distanceTo(ZERO);
+    // console.log(dist2);
+    dist2 < CLOSEUP_THRESHOLD ? setCloseup(true) : setCloseup(false);
+  }, []);
+
+  useEffect(() => {
+    if (!ref || !ref.current) return;
+    // console.log(ref.current);
+
+    const cameraControls = ref.current;
+
+    // TODO: Handle constants properly
+    const bbox = new THREE.Box3(
+      new THREE.Vector3(-512 * 2, -512 * 2, 0),
+      new THREE.Vector3(512 * 2, 512 * 2, 512 * 3),
+    );
+    cameraControls.setBoundary(bbox);
+
+    cameraControls.setTarget(0, 0, 0);
+    cameraControls.setOrbitPoint(0, 0, 0);
+
+    const updateConfig = (ev: KeyboardEvent) => {
+      if (ev.shiftKey || ev.ctrlKey || ev.altKey) {
+        cameraControls.mouseButtons.left = CameraControlsDefault.ACTION.TRUCK;
+      } else {
+        cameraControls.mouseButtons.left = CameraControlsDefault.ACTION.ROTATE;
+      }
+    };
+
+    // cameraControls.removeEventListener("rest", cb);
+    cameraControls.addEventListener("rest", cb);
+    window.addEventListener("keydown", updateConfig);
+    window.addEventListener("keyup", updateConfig);
+
+    return () => {
+      cameraControls.removeEventListener("rest", cb);
+      window.removeEventListener("keydown", updateConfig);
+      window.removeEventListener("keyup", updateConfig);
+    };
+  }, [camera]);
+
+  return (
+    <CameraControls
+      ref={ref}
+      minDistance={100}
+      maxDistance={1500}
+      maxPolarAngle={Math.PI / 2 - 0.1}
+      dollyToCursor={true}
+      azimuthRotateSpeed={0.5}
+      polarRotateSpeed={0.5}
+      dollySpeed={0.5} // TODO: Set faster on mobile debices
+      boundaryEnclosesCamera={true}
     />
   );
 }
@@ -198,7 +287,9 @@ function ModelView({
           {addons.includes("draw") && <DrawAddon />}
         </Terrain>
       </ModelContext.Provider>
-      <ExtendedOrbitControls />
+      {/* <ExtendedOrbitControls /> */}
+      <ExtendedCameraControls />
+      {/* <Sphere args={[150, 32, 16]} /> */}
     </Canvas>
   );
 }
