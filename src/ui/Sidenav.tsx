@@ -2,7 +2,13 @@ import { mdiHelpCircleOutline, mdiAccountGroup, mdiFullscreen } from "@mdi/js";
 
 import DiscussInput from "../addon/discuss/components/Input";
 import DiscussButton from "../addon/discuss/components/Button";
-import { BrushButton, DrawButton, EraseButton } from "../addon/draw/components/Button";
+import {
+  // BrushButton,
+  DrawButton,
+  EraseButton,
+} from "../addon/draw/components/Button";
+
+import { Z_INDEX } from "../lib/constants";
 
 const addons = import.meta.env.VITE_ADDONS
   ? import.meta.env.VITE_ADDONS.split(",")
@@ -12,7 +18,10 @@ function Sidenav({ communityURL, ...props }: { communityURL?: string }) {
   const HELP_URL = "https://beta.owntwin.com/docs/about";
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 sm:right-auto flex items-center h-10">
+    <div
+      className="fixed bottom-4 left-4 right-4 sm:right-auto flex items-center h-10"
+      style={{ zIndex: Z_INDEX.sidenav }}
+    >
       <div className="flex items-center">
         <a href={HELP_URL} target="_blank" rel="noreferrer">
           <svg style={{ width: "24px", height: "24px" }} viewBox="0 0 24 24">

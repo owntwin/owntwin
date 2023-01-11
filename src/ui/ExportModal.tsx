@@ -1,5 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 
+import { Z_INDEX } from "../lib/constants";
+
 import { mdiDownload } from "@mdi/js";
 // import { Icon } from "@mdi/react";
 
@@ -13,7 +15,7 @@ export default function ExportModal({
   return (
     <div
       className="fixed z-10 inset-0 overflow-y-auto"
-      style={{ zIndex: 20000001 }}
+      style={{ zIndex: Z_INDEX.exportModal }}
       role="dialog"
       aria-modal="true"
     >
