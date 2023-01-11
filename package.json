@@ -23,6 +23,7 @@
     "hold-event": "^0.2.0",
     "jotai": "^1.11.2",
     "just-debounce-it": "^3.2.0",
+    "just-split": "^3.2.0",
     "just-throttle": "^4.2.0",
     "meshline": "^3.1.6",
     "postprocessing": "^6.29.3",

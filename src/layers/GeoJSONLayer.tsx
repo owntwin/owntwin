@@ -5,6 +5,7 @@ import axios from "axios";
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 import { Html } from "@react-three/drei";
+import ElevatedShapeGeometry from "../lib/components/ElevatedShapeGeometry";
 
 import * as store from "../lib/store";
 import * as util from "../lib/util";
@@ -21,6 +22,86 @@ type ObjectData = {
   geometry: THREE.BufferGeometry;
   id?: string;
 };
+
+function computeShape({
+  coordinates,
+  bbox,
+  terrain,
+  ...props
+}: {
+  coordinates: Coordinate[][];
+  bbox: BBox;
+  terrain: Terrain;
+}) {
+  // TODO: Support hole (coordinate[1])
+  // TODO: Fix naming
+  let _coordinates = coordinates[0];
+
+  const originLng = _coordinates[0][0],
+    originLat = _coordinates[0][1];
+
+  const origin = util.coordToPlane(bbox, originLng, originLat);
+  // const z = 0; // _coordinates[0][2]; // TODO: z from GeoJSON?
+  // TODO: Fix: terrain is [0,1023], origin.x/y is [-512,512]
+  const z =
+    util.getTerrainAltitude(
+      terrain,
+      origin.x + 1024 / 2,
+      origin.y + 1024 / 2,
+    ) || 0;
+
+  const shape = new THREE.Shape();
+
+  shape.moveTo(0, 0);
+  _coordinates
+    .slice()
+    .reverse()
+    .forEach((v) => {
+      const p = util.coordToPlane(bbox, v[0], v[1]);
+      shape.lineTo(p.x - origin.x, p.y - origin.y);
+    });
+
+  return shape;
+}
+
+function createElevatedShapeGeometry({
+  coordinates,
+  bbox,
+  terrain,
+  ...props
+}: {
+  coordinates: Coordinate[][];
+  bbox: BBox;
+  terrain: Terrain;
+}) {
+  // TODO: Support hole (coordinate[1])
+  // TODO: Fix naming
+  let _coordinates = coordinates[0];
+
+  const originLng = _coordinates[0][0],
+    originLat = _coordinates[0][1];
+
+  const origin = util.coordToPlane(bbox, originLng, originLat);
+
+  const shape = computeShape({ coordinates, bbox, terrain });
+
+  const elevatation = _coordinates
+    .slice()
+    .sort(util.coordSorter)
+    .map((v) => {
+      const p = util.coordToPlane(bbox, v[0], v[1]);
+      const z =
+        util.getTerrainAltitude(terrain, p.x + 1024 / 2, p.y + 1024 / 2) || 0;
+      return z;
+    });
+
+  //   const geom = new THREE.ShapeGeometry(shape, 1);
+  const geom = new ElevatedShapeGeometry(shape, 1, elevatation);
+
+  geom.translate(origin.x, origin.y, 1.5);
+
+  return geom;
+}
 
 function extrudePolygonGeometry({
   coordinates,
@@ -52,21 +133,13 @@ function extrudePolygonGeometry({
       origin.y + 1024 / 2,
     ) || 0;
 
-  const shape = new THREE.Shape();
-
-  shape.moveTo(0, 0);
-  _coordinates
-    .slice()
-    .reverse()
-    .forEach((v) => {
-      const p = util.coordToPlane(bbox, v[0], v[1]);
-      shape.lineTo(p.x - origin.x, p.y - origin.y);
-    });
+  const shape = computeShape({ coordinates, bbox, terrain });
 
   const extrudeSettings = {
     steps: 1,
     depth: depth || 10,
     bevelEnabled: false,
+    curveSegments: 1,
   };
   const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
   geom.translate(origin.x, origin.y, z);
@@ -190,10 +263,12 @@ function SelectableLayer({ geometries }: { geometries: ObjectData[] }) {
 function GeoJSONLayer({
   url,
   clip = true,
+  extrude = true,
   ...props
 }: {
   url: string;
   clip?: boolean;
+  extrude?: boolean;
   opacity?: 0.5;
 }) {
   const terrain = useContext(TerrainContext);
@@ -255,12 +330,22 @@ function GeoJSONLayer({
       )
         return;
 
-      const poly = extrudePolygonGeometry({
-        coordinates: feature.geometry.coordinates,
-        bbox: model.bbox,
-        height: feature.properties.attributes.measuredHeight,
-        terrain: terrain as Terrain, // TODO: Refactoring
-      });
+      let poly: any;
+
+      if (extrude) {
+        poly = extrudePolygonGeometry({
+          coordinates: feature.geometry.coordinates,
+          bbox: model.bbox,
+          height: feature.properties.attributes.measuredHeight,
+          terrain: terrain as Terrain, // TODO: Refactoring
+        });
+      } else {
+        poly = createElevatedShapeGeometry({
+          coordinates: feature.geometry.coordinates,
+          bbox: model.bbox,
+          terrain: terrain as Terrain, // TODO: Refactoring
+        });
+      }
 
       geometries.push({ geometry: poly, id: feature.properties.id });
     });

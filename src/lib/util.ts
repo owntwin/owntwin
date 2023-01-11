@@ -195,6 +195,9 @@ function getTerrainAltitude(terrain: any, x: number, y: number) {
   return terrain.vertices[pos * 3 + 2]; // pos.z
 }
 
+const coordSorter = (a: number[], b: number[]) =>
+  a[0] - b[0] != 0 ? a[0] - b[0] : a[1] - b[1] != 0 ? a[1] - b[1] : a[2] - b[2];
+
 export {
   canvas,
   coordToPlane,
@@ -202,4 +205,5 @@ export {
   coordToLocalPlane,
   localPlaneToCoord,
   getTerrainAltitude,
+  coordSorter,
 };
