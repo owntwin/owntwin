@@ -264,13 +264,24 @@ function GeoJSONLayer({
   url,
   clip = true,
   extrude = true,
+  colors,
   ...props
 }: {
   url: string;
   clip?: boolean;
   extrude?: boolean;
+  colors?: Record<string, any>;
   opacity?: 0.5;
 }) {
+  colors = Object.assign(
+    {
+      default: 0xd1d5db, // 0xe5e7eb, 0x9ca3af, 0xb0b0b0, 0xff00ff, 0xc0c0c0
+      // default: 0xffffff, // 0xe5e7eb, 0x9ca3af, 0xb0b0b0, 0xff00ff, 0xc0c0c0
+      hover: 0x666666,
+    },
+    colors,
+  );
+
   const terrain = useContext(TerrainContext);
   const { model } = useContext(ModelContext);
   const [geojson, setGeojson] = useState<GeoJSON>();
@@ -390,18 +401,12 @@ function GeoJSONLayer({
     return mergedGeometry;
   }, [geometries]); // TODO: Fix: model causes x4 calls
 
-  const color = {
-    default: 0xd1d5db, // 0xe5e7eb, 0x9ca3af, 0xb0b0b0, 0xff00ff, 0xc0c0c0
-    // default: 0xffffff, // 0xe5e7eb, 0x9ca3af, 0xb0b0b0, 0xff00ff, 0xc0c0c0
-    hover: 0x666666,
-  };
-
   return (
     <>
       {geom && (
         <mesh geometry={geom}>
           <meshBasicMaterial
-            color={color.default}
+            color={colors.default}
             transparent={true}
             opacity={props.opacity}
             polygonOffset={true}

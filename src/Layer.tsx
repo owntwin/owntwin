@@ -31,6 +31,7 @@ function Layer({
         <GeoJSONLayer
           url={def.path}
           opacity={0.5}
+          colors={def.colors}
           extrude={def.extrude}
         />
       </Suspense>
