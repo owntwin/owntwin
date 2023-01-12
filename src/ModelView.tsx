@@ -3,12 +3,12 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { AdaptiveEvents, PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
 
+import { ExtendedCameraControls } from "./Controls";
+
 import axios from "axios";
 
 import { useAtom } from "jotai";
 import * as store from "./lib/store";
-
-import { ExtendedCameraControls } from "./Controls";
 
 import Terrain from "./Terrain";
 import Layer from "./Layer";
@@ -18,10 +18,12 @@ import DiscussAddon from "./addon/discuss/components/DiscussAddon";
 import DrawAddon from "./addon/draw/components/DrawAddon";
 import PointerAddon from "./addon/pointer/components/PointerAddon";
 
-import type { Model } from "./types";
+import * as types from "./types";
+import type { Levelmap } from "./Terrain";
+
 import * as constants from "./lib/constants";
 
-export const ModelContext = createContext<{ model: Partial<Model> }>({
+export const ModelContext = createContext<{ model: Partial<types.Model> }>({
   model: {},
 });
 
@@ -65,7 +67,7 @@ function DefaultCamera({ ...props }) {
   );
 }
 
-async function completeModel(model: Partial<Model>, base?: string) {
+async function completeModel(model: Partial<types.Model>, base?: string) {
   const blankTerrain: [] = [];
 
   if (model.terrain && model.terrain.path) {
@@ -94,8 +96,8 @@ async function completeModel(model: Partial<Model>, base?: string) {
       .then((resp) => resp.data)
       .catch(() => blankBuilding);
   } else {
-    model.building = model.building || {};
-    model.building.data = blankBuilding;
+    // model.building = model.building || {};
+    // model.building.data = blankBuilding;
   }
 
   return model;
@@ -106,18 +108,18 @@ function ModelView({
   basePath,
   ...props
 }: {
-  model: Partial<Model>;
+  model: Partial<types.Model>;
   basePath: string;
 }) {
   // console.log({ model: JSON.stringify(model) });
 
-  const [levelmap, setLevelmap] = useState([]);
-  const [buildings, setBuildings] = useState([]);
+  const [levelmap, setLevelmap] = useState<Levelmap>([]);
+  const [buildings, setBuildings] = useState<types.Building[]>([]);
 
   useEffect(() => {
     completeModel(model, basePath).then((model) => {
-      setLevelmap(model.terrain.data);
-      setBuildings(model.building.data.buildings);
+      setLevelmap(model.terrain?.data || []);
+      setBuildings(model.building?.data.buildings);
     });
   }, [model, basePath]);
 
@@ -164,7 +166,7 @@ function ModelView({
             Object.values(model.modules)
               .reduce(
                 (acc, module) => acc.concat(module.definition.layers || []),
-                [],
+                [] as types.Layer[],
               )
               .map((layer) =>
                 layersState[layer.id] && layersState[layer.id].enabled ? (

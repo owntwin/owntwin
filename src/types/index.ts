@@ -5,6 +5,17 @@ export type Layer = {
   format: "png" | "svg" | "geojson" | string;
 } & Record<string, any>;
 
+export type Building = {
+  id: string;
+  name: string;
+  path: string;
+  base: [number, number][];
+  z: number;
+  depth: number;
+  type: string;
+  data?: any;
+};
+
 export type Action = {
   id: string;
   type: string;
@@ -39,7 +50,7 @@ export type Definition = {
   community: string;
   bbox: [number, number, number, number];
   terrain: { path: string };
-  building: { path: string };
+  building: Building;
   properties: Record<string, any>;
   modules: ModuleDefinition[];
 };
