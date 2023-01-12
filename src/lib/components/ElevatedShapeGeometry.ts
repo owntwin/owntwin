@@ -19,9 +19,9 @@ export default class ElevatedShapeGeometry extends THREE.ShapeGeometry {
 
     // console.log(this.getAttribute("position").array);
 
-    const positionAttributeArray = new Float32Array(
-      this.getAttribute("position").array,
-    );
+    // console.log("old", this.getAttribute("position"));
+
+    const positionAttributeArray = this.getAttribute("position").array;
 
     // console.log(positionAttributeArray);
 
@@ -58,19 +58,28 @@ export default class ElevatedShapeGeometry extends THREE.ShapeGeometry {
     // console.log("rndex", reorderedIndex);
     // console.log(positionAttributeArray.length, positionAttributeArray.length / 3, _coordinates.length);
     // this.setIndex(reorderedIndex);
+
+    // TODO: elevatation.length === ...
     elevatation.map((z, i) => {
+      // TODO: Fix
+      if (i * 3 + 2 > reorderedPositionAttributeArray.length) return;
       reorderedPositionAttributeArray[i * 3 + 2] = z;
     });
     // console.log("pre", Array.from(positionAttributeArray));
-    // console.log("new", reorderedPositionAttributeArray);
+    // console.log(
+    //   "evalated",
+    //   reorderedPositionAttributeArray.length,
+    //   reorderedPositionAttributeArray,
+    // );
+
     this.setAttribute(
       "position",
-      new THREE.BufferAttribute(
-        new Float32Array(reorderedPositionAttributeArray),
-        3,
-      ),
+      new THREE.Float32BufferAttribute(reorderedPositionAttributeArray, 3),
     );
     this.setIndex(reorderedIndex);
+
+    if (Array.from(this.getAttribute("position").array).includes(NaN))
+      console.log("new", this.getAttribute("position"));
     // console.log(this.getAttribute("position").array, this.getIndex());
     // console.log("");
   }

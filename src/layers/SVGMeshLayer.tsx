@@ -141,21 +141,22 @@ function SVGMeshLayer({
 
     // terrain
     ref.current.children.forEach((line) => {
-      let position = line.geometry.getAttribute("position");
-      let vertices = [];
-      vertices = position.array.map((v, i: number) => {
+      if (!(line instanceof THREE.Line)) return;
+      const positionAttributeArray = line.geometry.getAttribute("position")
+        .array as number[];
+      const position = Array.from(positionAttributeArray);
+      const vertices = position.map((v, i) => {
         if (i % 3 === 2) {
-          let z =
-            getTerrainAltitude(position.array[i - 2], position.array[i - 1]) +
-            2;
-          return z;
+          const z = getTerrainAltitude(position[i - 2], position[i - 1]);
+          return z ? z + 2 : v; // TODO: Fix
         } else {
           return v;
         }
       });
+      // console.log(vertices);
       line.geometry.setAttribute(
         "position",
-        new THREE.BufferAttribute(new Float32Array(vertices), 3),
+        new THREE.Float32BufferAttribute(vertices, 3),
       );
     });
 
