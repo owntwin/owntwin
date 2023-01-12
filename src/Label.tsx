@@ -27,6 +27,7 @@ function SVGStrokeFilter() {
 }
 
 // NOTE: Requires SVGStrokeFilter rendered beforehand
+// TODO: fix performance regression on mobile devices; use plain-text when needed?
 function Label({
   text,
   visible,
@@ -48,10 +49,10 @@ function Label({
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 400 10"
-          height="0.75rem"
+          viewBox="0 0 400 20"
+          height="1.5rem"
           // className="border"
-          style={{ dominantBaseline: "hanging" }}
+          // style={{ dominantBaseline: "hanging" }} // NOTE: Not working in Safari :(
         >
           {/* <filter id="stroke">
               <feMorphology
@@ -78,7 +79,7 @@ function Label({
             </filter> */}
           <text
             x="0"
-            y="0"
+            y="50%"
             style={{
               fontWeight: "normal",
               fontSize: "0.75rem",
