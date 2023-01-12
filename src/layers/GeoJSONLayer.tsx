@@ -310,17 +310,20 @@ function GeoJSONLayer({
   const geometries = useMemo(() => {
     if (!geojson || !geojson.features) return;
 
-    const geometries: ObjectData[] = [];
-    geojson.features.forEach((feature) => {
-      if (!model.bbox || !terrain || !terrain.geometry) {
-        // console.error(...);
-        return;
-      }
+    if (!model.bbox || !terrain || !terrain.geometry) {
+      // console.error(...);
+      return;
+    }
 
+    const bbox = model.bbox;
+
+    const geometries: ObjectData[] = [];
+
+    const isFeatureCovered = (feature: any) => {
       const originLng = feature.geometry.coordinates[0][0][0],
         originLat = feature.geometry.coordinates[0][0][1];
 
-      const origin = util.coordToPlane(model.bbox, originLng, originLat);
+      const origin = util.coordToPlane(bbox, originLng, originLat);
       if (
         clip &&
         (origin.x < -util.canvas.width / 2 ||
@@ -328,28 +331,51 @@ function GeoJSONLayer({
           origin.y < -util.canvas.height / 2 ||
           util.canvas.height / 2 <= origin.y)
       )
-        return;
+        return false;
+      else return true;
+    };
 
+    const parsePoly = (feature: any) => {
       let poly: any;
 
-      if (extrude) {
+      if (
+        extrude &&
+        (feature.properties.attributes?.measuredHeight ||
+          feature.properties.attributes?.height)
+      ) {
         poly = extrudePolygonGeometry({
           coordinates: feature.geometry.coordinates,
-          bbox: model.bbox,
+          bbox: bbox,
           height: feature.properties.attributes.measuredHeight,
           terrain: terrain as Terrain, // TODO: Refactoring
         });
       } else {
         poly = createElevatedShapeGeometry({
           coordinates: feature.geometry.coordinates,
-          bbox: model.bbox,
+          bbox: bbox,
           terrain: terrain as Terrain, // TODO: Refactoring
         });
       }
 
-      geometries.push({ geometry: poly, id: feature.properties.id });
+      return poly;
+    };
+
+    geojson.features.forEach((feature) => {
+      if (feature.geometry.type === "GeometryCollection") {
+        feature.geometry.geometries.forEach((partialFeature: any) => {
+          if (!isFeatureCovered(partialFeature)) return;
+          const poly = parsePoly(partialFeature);
+          geometries.push({ geometry: poly, id: feature.properties.id });
+        });
+      } else {
+        if (!isFeatureCovered(feature)) return;
+        const poly = parsePoly(feature);
+        geometries.push({ geometry: poly, id: feature.properties.id });
+      }
     });
+
     // geometries.forEach((obj, i) => { i === 0 && console.log(obj); });
+
     return geometries;
   }, [geojson, model.bbox, terrain, clip]); // TODO: Fix: model causes x4 calls
 
@@ -382,10 +408,12 @@ function GeoJSONLayer({
             polygonOffsetUnits={1}
             polygonOffsetFactor={1}
           />
-          <lineSegments>
-            <edgesGeometry attach="geometry" args={[geom, 45]} />
-            <lineBasicMaterial color={0xfefefe} attach="material" />
-          </lineSegments>
+          {extrude && (
+            <lineSegments>
+              <edgesGeometry attach="geometry" args={[geom, 45]} />
+              <lineBasicMaterial color={0xfefefe} attach="material" />
+            </lineSegments>
+          )}
         </mesh>
       )}
       {geometries && <SelectableLayer geometries={geometries} />}

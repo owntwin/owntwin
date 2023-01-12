@@ -28,7 +28,11 @@ function Layer({
   } else if (def.format === "geojson") {
     return (
       <Suspense>
-        <GeoJSONLayer url={def.path} opacity={0.5} />
+        <GeoJSONLayer
+          url={def.path}
+          opacity={0.5}
+          extrude={def.extrude}
+        />
       </Suspense>
     );
   } else if (def.format === "csv") {
