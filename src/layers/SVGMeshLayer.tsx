@@ -44,12 +44,12 @@ async function loadSVG(url: string) {
           points = points.map((p) => {
             let x = p.x;
             // TODO: Improve
-            if (x < 0) x = 0;
-            if (x >= widthSVG) x = widthSVG - 1;
+            // if (x < 0) x = 0;
+            // if (x >= widthSVG) x = widthSVG - 1;
             let y = heightSVG - p.y;
             // TODO: Improve
-            if (y < 0) y = 0;
-            if (y >= heightSVG) y = heightSVG - 1;
+            // if (y < 0) y = 0;
+            // if (y >= heightSVG) y = heightSVG - 1;
             p.x = x;
             p.y = y;
             return p;
@@ -132,10 +132,10 @@ function SVGMeshLayer({
       let pos =
         Math.floor(x / (width / segments)) +
         segments * (segments - 1 - Math.floor(y / (height / segments)));
-      if (pos < 0 || terrain.vertices.length <= pos) {
-        // console.log(x, y, pos);
-        return 0;
-      }
+      // if (pos < 0 || terrain.vertices.length <= pos) {
+      //   // console.log(x, y, pos);
+      //   return 0;
+      // }
       return terrain.vertices[pos * 3 + 2]; // pos.z
     }
 

@@ -42,6 +42,18 @@ function DefaultCamera({ ...props }) {
   // const camera = useRef();
   // useHelper(camera, THREE.CameraHelper, 1, 'hotpink');
 
+  const { gl } = useThree();
+
+  useEffect(() => {
+    if (!gl) return;
+    gl.clippingPlanes = [
+      new THREE.Plane(new THREE.Vector3(1, 0, 0), 512 - 2),
+      new THREE.Plane(new THREE.Vector3(-1, 0, 0), 512 - 2),
+      new THREE.Plane(new THREE.Vector3(0, 1, 0), 512 - 2),
+      new THREE.Plane(new THREE.Vector3(0, -1, 0), 512 - 2),
+    ];
+  }, []);
+
   return (
     <PerspectiveCamera
       makeDefault
