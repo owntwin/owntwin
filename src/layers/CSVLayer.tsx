@@ -32,6 +32,7 @@ function Anchor({
   clip?: boolean;
   size?: { height?: number };
   color?: number | string;
+  opacity?: number;
 }) {
   const [getTerrainAltitude] = useAtom(getTerrainAltitudeAtom);
 
@@ -90,6 +91,10 @@ export default function CSVLayer({
 }) {
   const _model = useContext(ModelContext);
   const model = _model.model; // TODO: Fix
+  const bbox = model.bbox;
+
+  if (!bbox) return null;
+
   const [data, setData] = useState<Record<string, any>>();
 
   /* load JSON from URL */
@@ -111,7 +116,6 @@ export default function CSVLayer({
     // TODO: Fix
     <group>
       {data &&
-        model &&
         data.map((record: Record<string, any>, i: number) => {
           // console.log(record);
           return (
@@ -119,7 +123,7 @@ export default function CSVLayer({
               key={i} // TODO: Fix key
               clip={clip}
               coordinates={[record[props.keys.lng], record[props.keys.lat], 0]}
-              bbox={model.bbox}
+              bbox={bbox}
               label={record[props.keys.label]}
               labelVisibility={props.labelVisibility}
               color={props.color}

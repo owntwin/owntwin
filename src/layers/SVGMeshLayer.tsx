@@ -96,16 +96,17 @@ function SVGMeshLayer({
 
       let merged = BufferGeometryUtils.mergeBufferGeometries(_lines);
 
-      setLines([
-        <lineSegments key={0} geometry={merged}>
-          <meshBasicMaterial
-            color={color}
-            side={THREE.DoubleSide}
-            depthWrite={false}
-            // depthTest={false}
-          />
-        </lineSegments>,
-      ]);
+      merged &&
+        setLines([
+          <lineSegments key={0} geometry={merged}>
+            <meshBasicMaterial
+              color={color}
+              side={THREE.DoubleSide}
+              depthWrite={false}
+              // depthTest={false}
+            />
+          </lineSegments>,
+        ]);
     })();
   }, [url, color]);
 
