@@ -2,6 +2,8 @@ import { useLayoutEffect, useRef } from "react";
 
 import { Html } from "@react-three/drei";
 
+import { Label } from "./Label";
+
 import { useAtom } from "jotai";
 import * as store from "./lib/store";
 
@@ -75,19 +77,62 @@ function BeamAnchor({
     <mesh position={position}>
       <cylinderGeometry ref={geom} args={[radius, radius, height, 8]} />
       <meshBasicMaterial color={color} opacity={0.5} transparent={true} />
-      <Html style={{ pointerEvents: "none", userSelect: "none" }}>
+      <Label text={label} visible={labelVisibility === "always" || closeup} />
+      {/* <Html style={{ pointerEvents: "none", userSelect: "none" }}>
         <div
           style={{
             display: labelVisibility === "always" || closeup ? "block" : "none",
-            fontSize: "0.75rem",
-            fontWeight: "normal",
+            // fontSize: "0.75rem",
+            // fontWeight: "normal",
             width: "10rem",
-            color: "rgb(156 163 175)",
+            // color: "rgb(156 163 175)",
           }}
         >
-          {label}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 400 10"
+            height="0.75rem"
+            // className="border"
+            style={{ dominantBaseline: "hanging" }}
+          > */}
+      {/* <filter id="stroke">
+              <feMorphology
+                in="SourceAlpha"
+                result="diated"
+                operator="dilate"
+                radius="1"
+              ></feMorphology>
+              <feFlood
+                floodColor="#ffffff"
+                floodOpacity="1"
+                result="color"
+              ></feFlood>
+              <feComposite
+                in="color"
+                in2="diated"
+                operator="in"
+                result="outer"
+              ></feComposite>
+              <feMerge>
+                <feMergeNode in="outer" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter> */}
+      {/* <text
+              x="0"
+              y="0"
+              style={{
+                fontWeight: "normal",
+                fontSize: "0.75rem",
+                fill: "rgb(107 114 128)",
+              }}
+              filter="url(#stroke)"
+            >
+              {label}
+            </text>
+          </svg>
         </div>
-      </Html>
+      </Html> */}
     </mesh>
   );
 }
