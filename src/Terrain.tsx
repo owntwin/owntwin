@@ -139,7 +139,10 @@ function Terrain({
       <BlankPlane width={width} height={height} />
       <mesh name="terrain" geometry={geom}>
         {/* <meshBasicMaterial color={0xe5e7eb} /> */}
-        <meshBasicMaterial color={0xfaf9f9} />
+        <meshBasicMaterial
+          color={0xfaf9f9}
+          depthWrite={false}
+        />
         {/* <meshBasicMaterial color={0xf1f3f4} /> */}
         {/* <meshBasicMaterial color={0xf8f9fa} /> */}
       </mesh>
