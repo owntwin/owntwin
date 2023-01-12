@@ -1,18 +1,12 @@
-import {
-  ReactNode,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { SVGLoader } from "three-stdlib/loaders/SVGLoader.js"; // NOTE: needs .js to use the pached file
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 import * as THREE from "three";
 
-import { TerrainContext } from "../Terrain";
 import * as util from "../lib/util";
+import { useAtom } from "jotai";
+import { getTerrainAltitudeAtom } from "../lib/store";
 
 const width = util.canvas.width,
   height = util.canvas.height;
@@ -77,7 +71,7 @@ function SVGMeshLayer({
   const [lines, setLines] = useState<ReactNode[]>([]);
   const [visible, setVisible] = useState(false);
 
-  const terrain = useContext(TerrainContext);
+  const [getTerrainAltitude] = useAtom(getTerrainAltitudeAtom);
 
   useEffect(() => {
     (async () => {
@@ -127,18 +121,6 @@ function SVGMeshLayer({
     ref.current.translateX(-size.x / 2);
     ref.current.translateY(-size.y / 2);
 
-    function getTerrainAltitude(x: number, y: number) {
-      if (!terrain.vertices) return 0;
-      let pos =
-        Math.floor(x / (width / segments)) +
-        segments * (segments - 1 - Math.floor(y / (height / segments)));
-      // if (pos < 0 || terrain.vertices.length <= pos) {
-      //   // console.log(x, y, pos);
-      //   return 0;
-      // }
-      return terrain.vertices[pos * 3 + 2]; // pos.z
-    }
-
     // terrain
     ref.current.children.forEach((line) => {
       if (!(line instanceof THREE.Line)) return;
@@ -161,7 +143,7 @@ function SVGMeshLayer({
     });
 
     setVisible(true);
-  }, [lines, terrain.vertices]);
+  }, [lines]);
 
   return (
     <group ref={ref} visible={visible}>

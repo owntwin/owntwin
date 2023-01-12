@@ -182,18 +182,18 @@ function localPlaneToCoord(bbox: BBox, x: number, y: number) {
   };
 }
 
-function getTerrainAltitude(terrain: any, x: number, y: number) {
-  if (!terrain.vertices) return 0;
-  let pos =
-    Math.floor(x / (canvas.width / canvas.segments)) +
-    canvas.segments *
-      (canvas.segments - 1 - Math.floor(y / (canvas.height / canvas.segments)));
-  if (pos < 0 || terrain.vertices.length <= pos) {
-    // console.log(x, y, pos);
-    return 0;
-  }
-  return terrain.vertices[pos * 3 + 2]; // pos.z
-}
+// function getTerrainAltitude(terrain: any, x: number, y: number) {
+//   if (!terrain.vertices) return 0;
+//   let pos =
+//     Math.floor(x / (canvas.width / canvas.segments)) +
+//     canvas.segments *
+//       (canvas.segments - 1 - Math.floor(y / (canvas.height / canvas.segments)));
+//   if (pos < 0 || terrain.vertices.length <= pos) {
+//     // console.log(x, y, pos);
+//     return 0;
+//   }
+//   return terrain.vertices[pos * 3 + 2]; // pos.z
+// }
 
 const coordSorter = (a: number[], b: number[]) =>
   a[0] - b[0] != 0 ? a[0] - b[0] : a[1] - b[1] != 0 ? a[1] - b[1] : a[2] - b[2];
@@ -204,6 +204,6 @@ export {
   planeToCoord,
   coordToLocalPlane,
   localPlaneToCoord,
-  getTerrainAltitude,
+  // getTerrainAltitude,
   coordSorter,
 };

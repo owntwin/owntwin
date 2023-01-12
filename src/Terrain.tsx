@@ -104,6 +104,7 @@ function Terrain({
   children?: ReactNode;
 }) {
   // const [vertices, setVertices] = useState(null);
+  const [, setTerrain] = useAtom(store.terrainAtom);
 
   const geom = useMemo(() => {
     return new THREE.PlaneGeometry(width, height, segments - 1, segments - 1);
@@ -134,15 +135,17 @@ function Terrain({
     return Array.from(positionAttributeArray);
   }, [levelmap, zoom]);
 
+  useEffect(() => {
+    if (!vertices) return;
+    setTerrain((current) => Object.assign(current, { vertices, ready: true }));
+  }, [vertices]);
+
   return (
     <>
       <BlankPlane width={width} height={height} />
       <mesh name="terrain" geometry={geom}>
         {/* <meshBasicMaterial color={0xe5e7eb} /> */}
-        <meshBasicMaterial
-          color={0xfaf9f9}
-          depthWrite={false}
-        />
+        <meshBasicMaterial color={0xfaf9f9} depthWrite={false} />
         {/* <meshBasicMaterial color={0xf1f3f4} /> */}
         {/* <meshBasicMaterial color={0xf8f9fa} /> */}
       </mesh>

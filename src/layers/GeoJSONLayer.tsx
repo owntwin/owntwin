@@ -10,7 +10,6 @@ import ElevatedShapeGeometry from "../lib/components/ElevatedShapeGeometry";
 import * as store from "../lib/store";
 import * as util from "../lib/util";
 
-import { Terrain, TerrainContext } from "../Terrain";
 import { ModelContext } from "../ModelView";
 
 import { BBox, GeoJSON } from "../types";
@@ -26,12 +25,10 @@ type ObjectData = {
 function computeShape({
   coordinates,
   bbox,
-  terrain,
   ...props
 }: {
   coordinates: Coordinate[][];
   bbox: BBox;
-  terrain: Terrain;
 }) {
   // TODO: Support hole (coordinate[1])
   // TODO: Fix naming
@@ -43,12 +40,7 @@ function computeShape({
   const origin = util.coordToPlane(bbox, originLng, originLat);
   // const z = 0; // _coordinates[0][2]; // TODO: z from GeoJSON?
   // TODO: Fix: terrain is [0,1023], origin.x/y is [-512,512]
-  const z =
-    util.getTerrainAltitude(
-      terrain,
-      origin.x + 1024 / 2,
-      origin.y + 1024 / 2,
-    ) || 0;
+  // const z = getTerrainAltitude(origin.x + 1024 / 2, origin.y + 1024 / 2) || 0;
 
   const shape = new THREE.Shape();
 
@@ -67,12 +59,12 @@ function computeShape({
 function createElevatedShapeGeometry({
   coordinates,
   bbox,
-  terrain,
+  getTerrainAltitude,
   ...props
 }: {
   coordinates: Coordinate[][];
   bbox: BBox;
-  terrain: Terrain;
+  getTerrainAltitude: Function;
 }) {
   // TODO: Support hole (coordinate[1])
   // TODO: Fix naming
@@ -83,15 +75,14 @@ function createElevatedShapeGeometry({
 
   const origin = util.coordToPlane(bbox, originLng, originLat);
 
-  const shape = computeShape({ coordinates, bbox, terrain });
+  const shape = computeShape({ coordinates, bbox });
 
   const elevatation = _coordinates
     .slice()
     .sort(util.coordSorter)
     .map((v) => {
       const p = util.coordToPlane(bbox, v[0], v[1]);
-      const z =
-        util.getTerrainAltitude(terrain, p.x + 1024 / 2, p.y + 1024 / 2) || 0;
+      const z = getTerrainAltitude(p.x + 1024 / 2, p.y + 1024 / 2) || 0;
       return z;
       // TODO: return v[2];
     });
@@ -107,12 +98,12 @@ function createElevatedShapeGeometry({
 function extrudePolygonGeometry({
   coordinates,
   bbox,
-  terrain,
+  getTerrainAltitude,
   ...props
 }: {
   coordinates: Coordinate[][];
   bbox: BBox;
-  terrain: Terrain;
+  getTerrainAltitude: Function;
   height: number;
 }) {
   const depth = props.height / 2;
@@ -127,14 +118,9 @@ function extrudePolygonGeometry({
   const origin = util.coordToPlane(bbox, originLng, originLat);
   // const z = 0; // _coordinates[0][2]; // TODO: z from GeoJSON?
   // TODO: Fix: terrain is [0,1023], origin.x/y is [-512,512]
-  const z =
-    util.getTerrainAltitude(
-      terrain,
-      origin.x + 1024 / 2,
-      origin.y + 1024 / 2,
-    ) || 0;
+  const z = getTerrainAltitude(origin.x + 1024 / 2, origin.y + 1024 / 2) || 0;
 
-  const shape = computeShape({ coordinates, bbox, terrain });
+  const shape = computeShape({ coordinates, bbox });
 
   const extrudeSettings = {
     steps: 1,
@@ -283,7 +269,9 @@ function GeoJSONLayer({
     colors,
   );
 
-  const terrain = useContext(TerrainContext);
+  const [terrain] = useAtom(store.terrainAtom);
+  const [getTerrainAltitude] = useAtom(store.getTerrainAltitudeAtom);
+
   const { model } = useContext(ModelContext);
   const [geojson, setGeojson] = useState<GeoJSON>();
 
@@ -322,7 +310,9 @@ function GeoJSONLayer({
   const geometries = useMemo(() => {
     if (!geojson || !geojson.features) return;
 
-    if (!model.bbox || !terrain || !terrain.geometry) {
+    if (!terrain.ready) return;
+
+    if (!model.bbox) {
       // console.error(...);
       return;
     }
@@ -350,22 +340,25 @@ function GeoJSONLayer({
     const parsePoly = (feature: any) => {
       let poly: any;
 
-      if (
-        extrude &&
-        (feature.properties.attributes?.measuredHeight ||
-          feature.properties.attributes?.height)
-      ) {
+      if (extrude) {
+        // NOTE: return null if cannot be extruded
+        if (
+          !feature.properties.attributes?.measuredHeight &&
+          !feature.properties.attributes?.height
+        ) {
+          return null;
+        }
         poly = extrudePolygonGeometry({
           coordinates: feature.geometry.coordinates,
           bbox: bbox,
           height: feature.properties.attributes.measuredHeight,
-          terrain: terrain as Terrain, // TODO: Refactoring
+          getTerrainAltitude,
         });
       } else {
         poly = createElevatedShapeGeometry({
           coordinates: feature.geometry.coordinates,
           bbox: bbox,
-          terrain: terrain as Terrain, // TODO: Refactoring
+          getTerrainAltitude,
         });
       }
 
@@ -377,11 +370,13 @@ function GeoJSONLayer({
         feature.geometry.geometries.forEach((partialFeature: any) => {
           if (!isFeatureCovered(partialFeature)) return;
           const poly = parsePoly(partialFeature);
+          if (!poly) return;
           geometries.push({ geometry: poly, id: feature.properties.id });
         });
       } else {
         if (!isFeatureCovered(feature)) return;
         const poly = parsePoly(feature);
+        if (!poly) return;
         geometries.push({ geometry: poly, id: feature.properties.id });
       }
     });
@@ -389,7 +384,7 @@ function GeoJSONLayer({
     // geometries.forEach((obj, i) => { i === 0 && console.log(obj); });
 
     return geometries;
-  }, [geojson, model.bbox, terrain, clip]); // TODO: Fix: model causes x4 calls
+  }, [geojson, model.bbox, terrain.ready, clip]); // TODO: Fix: model causes x4 calls
 
   const geom = useMemo(() => {
     if (!geometries || geometries.length === 0) return undefined;

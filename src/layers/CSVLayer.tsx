@@ -1,11 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 
 import axios from "axios";
 
 import { BBox } from "../types";
 import * as util from "../lib/util";
 
-import { Terrain, TerrainContext } from "../Terrain";
 import { ModelContext } from "../ModelView";
 import {
   // SphereAnchor,
@@ -14,10 +13,12 @@ import {
 
 import { parse as parseCSV } from "csv-parse/browser/esm/sync";
 
+import { useAtom } from "jotai";
+import { getTerrainAltitudeAtom } from "../lib/store";
+
 function Anchor({
   coordinates,
   bbox,
-  terrain,
   label,
   labelVisibility = "auto",
   clip = true,
@@ -26,25 +27,25 @@ function Anchor({
 }: {
   coordinates: [number | string, number | string, number | string];
   bbox: BBox;
-  terrain: Terrain;
   label?: string;
   labelVisibility?: "auto" | "always";
   clip?: boolean;
   size?: { height?: number };
   color?: number | string;
 }) {
-  const originLng = parseFloat(coordinates[0].toString()),
-    originLat = parseFloat(coordinates[1].toString());
+  const [getTerrainAltitude] = useAtom(getTerrainAltitudeAtom);
 
-  const origin = util.coordToPlane(bbox, originLng, originLat);
-  // const z = 0; // coordinates[0][2]; // TODO: z from GeoJSON?
-  // TODO: Fix: terrain is [0,1023], origin.x/y is [-512,512]
-  const z =
-    util.getTerrainAltitude(
-      terrain,
-      origin.x + 1024 / 2,
-      origin.y + 1024 / 2,
-    ) || 0;
+  const { origin, z } = useMemo(() => {
+    const originLng = parseFloat(coordinates[0].toString()),
+      originLat = parseFloat(coordinates[1].toString());
+    const origin = util.coordToPlane(bbox, originLng, originLat);
+
+    // const z = 0; // coordinates[0][2]; // TODO: z from GeoJSON?
+    // TODO: Fix: terrain is [0,1023], origin.x/y is [-512,512]
+    const z = getTerrainAltitude(origin.x + 1024 / 2, origin.y + 1024 / 2) || 0;
+
+    return { origin, z };
+  }, [coordinates]);
 
   // const geom = new THREE.SphereBufferGeometry(1, 20, 20);
   // geom.translate(origin.x, origin.y, z);
@@ -62,7 +63,7 @@ function Anchor({
   )
     return <></>;
 
-  return (
+  return z ? (
     <BeamAnchor
       position={[origin.x, origin.y, z]}
       label={label}
@@ -71,7 +72,7 @@ function Anchor({
       radius={2}
       color={props.color}
     />
-  );
+  ) : null;
 }
 
 export default function CSVLayer({
@@ -87,7 +88,6 @@ export default function CSVLayer({
   color?: string | number;
   size?: { height?: number };
 }) {
-  const terrain = useContext(TerrainContext);
   const _model = useContext(ModelContext);
   const model = _model.model; // TODO: Fix
   const [data, setData] = useState<Record<string, any>>();
@@ -112,7 +112,6 @@ export default function CSVLayer({
     <group>
       {data &&
         model &&
-        terrain &&
         data.map((record: Record<string, any>, i: number) => {
           // console.log(record);
           return (
@@ -121,7 +120,6 @@ export default function CSVLayer({
               clip={clip}
               coordinates={[record[props.keys.lng], record[props.keys.lat], 0]}
               bbox={model.bbox}
-              terrain={terrain}
               label={record[props.keys.label]}
               labelVisibility={props.labelVisibility}
               color={props.color}
