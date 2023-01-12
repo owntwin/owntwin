@@ -19,7 +19,6 @@ import { mdiArrowLeftThinCircleOutline, mdiCloseCircle } from "@mdi/js";
 
 import { model as defaultModel } from "./model";
 import { Definition, Model, Layer } from "./types";
-import { SVGStrokeFilter } from "./Label";
 
 // const DEBUG = false;
 
@@ -158,7 +157,6 @@ function App() {
       id="App"
       className={clsx("App", "fixed top-0 bottom-0 left-0 right-0")}
     >
-      <SVGStrokeFilter />
       <div
         className={clsx(
           "absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center text-sm text-gray-400 pointer-events-none",
