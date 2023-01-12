@@ -403,7 +403,7 @@ function ModelView({
       </ModelContext.Provider>
       {/* <ExtendedOrbitControls /> */}
       <ExtendedCameraControls />
-      <AdaptiveEvents />
+      {/* <AdaptiveEvents /> */}
       {/* <Sphere args={[150, 32, 16]} /> */}
     </Canvas>
   );
