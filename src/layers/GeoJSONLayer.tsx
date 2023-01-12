@@ -93,12 +93,13 @@ function createElevatedShapeGeometry({
       const z =
         util.getTerrainAltitude(terrain, p.x + 1024 / 2, p.y + 1024 / 2) || 0;
       return z;
+      // TODO: return v[2];
     });
 
   //   const geom = new THREE.ShapeGeometry(shape, 1);
   const geom = new ElevatedShapeGeometry(shape, 1, elevatation);
 
-  geom.translate(origin.x, origin.y, 1.5);
+  geom.translate(origin.x, origin.y, 1);
 
   return geom;
 }
