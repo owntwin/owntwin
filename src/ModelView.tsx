@@ -67,41 +67,51 @@ function DefaultCamera({ ...props }) {
   );
 }
 
-async function completeModel(model: Partial<types.Model>, base?: string) {
+const fetchTerrainData = async (
+  definition: types.Model["terrain"],
+  baseUrl?: string,
+) => {
   const blankTerrain: [] = [];
 
-  if (model.terrain && model.terrain.path) {
-    model.terrain.path = base
-      ? new URL(model.terrain.path, base).toString()
-      : model.terrain.path;
-    model.terrain.data = await axios
-      .get(model.terrain.path)
+  if (definition && definition.path) {
+    definition.path = baseUrl
+      ? new URL(definition.path, baseUrl).toString()
+      : definition.path;
+    const data = await axios
+      .get(definition.path)
       .then((resp) => resp.data)
       .catch(() => blankTerrain);
+    return data;
   } else {
-    model.terrain = model.terrain ? model.terrain : { data: blankTerrain };
+    // TODO: fix
+    return { data: blankTerrain };
   }
+};
 
+const fetchBuildingData = async (
+  buildingData: types.Building,
+  baseUrl?: string,
+) => {
   const blankBuilding = {
     routes: [],
     buildings: [],
   };
 
-  if (model.building && model.building.path) {
-    model.building.path = base
-      ? new URL(model.building.path, base).toString()
-      : model.building.path;
-    model.building.data = await axios
-      .get(model.building.path)
+  if (buildingData && buildingData.path) {
+    buildingData.path = baseUrl
+      ? new URL(buildingData.path, baseUrl).toString()
+      : buildingData.path;
+    const data = await axios
+      .get(buildingData.path)
       .then((resp) => resp.data)
       .catch(() => blankBuilding);
+    return data;
   } else {
-    // model.building = model.building || {};
-    // model.building.data = blankBuilding;
+    // buildingData = buildingData || {};
+    // const data = blankBuilding;
+    return;
   }
-
-  return model;
-}
+};
 
 function ModelView({
   model,
@@ -116,11 +126,18 @@ function ModelView({
   const [levelmap, setLevelmap] = useState<Levelmap>([]);
   const [buildings, setBuildings] = useState<types.Building[]>([]);
 
+  // TODO: move away this somewhere else
   useEffect(() => {
-    completeModel(model, basePath).then((model) => {
-      setLevelmap(model.terrain?.data || []);
-      setBuildings(model.building?.data.buildings);
-    });
+    (async () => {
+      if (model.terrain) {
+        model.terrain.data = await fetchTerrainData(model.terrain, basePath);
+        setLevelmap(model.terrain.data || []);
+      }
+      if (model.building) {
+        model.building.data = await fetchBuildingData(model.building, basePath);
+        setBuildings(model.building?.data.buildings);
+      }
+    })();
   }, [model, basePath]);
 
   useEffect(() => {
