@@ -1,6 +1,6 @@
 import { useEffect, createContext, useState, useRef, useCallback } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { PerspectiveCamera } from "@react-three/drei";
+import { AdaptiveEvents, PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
 
 import axios from "axios";
@@ -101,7 +101,17 @@ function ExtendedCameraControls({ ...props }) {
   const [, setCloseup] = useAtom(store.closeupAtom);
   const [controlsState] = useAtom(store.controlsStateAtom);
 
-  const { camera } = useThree();
+  const { camera, performance, regress } = useThree(({ camera, performance }) => ({
+    camera,
+    performance,
+    regress: performance.regress,
+  }));
+
+  useEffect(() => {
+    // performance.min = 0.5;
+    // performance.debounce = 200;
+  }, []);
+
   const ref = useRef<CameraControls>(null);
 
   useEffect(() => {
@@ -163,11 +173,13 @@ function ExtendedCameraControls({ ...props }) {
 
     // cameraControls.removeEventListener("rest", cb);
     cameraControls.addEventListener("rest", cb);
+    cameraControls.addEventListener("control", regress);
     window.addEventListener("keydown", updateConfig);
     window.addEventListener("keyup", updateConfig);
 
     return () => {
       cameraControls.removeEventListener("rest", cb);
+      cameraControls.removeEventListener("control", regress);
       window.removeEventListener("keydown", updateConfig);
       window.removeEventListener("keyup", updateConfig);
     };
@@ -387,6 +399,7 @@ function ModelView({
       </ModelContext.Provider>
       {/* <ExtendedOrbitControls /> */}
       <ExtendedCameraControls />
+      <AdaptiveEvents />
       {/* <Sphere args={[150, 32, 16]} /> */}
     </Canvas>
   );
