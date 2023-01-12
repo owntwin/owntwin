@@ -61,7 +61,7 @@ function Anchor({
       origin.y < -util.canvas.height / 2 ||
       util.canvas.height / 2 <= origin.y)
   )
-    return <></>;
+    return null;
 
   return z ? (
     <BeamAnchor

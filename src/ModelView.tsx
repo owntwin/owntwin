@@ -20,7 +20,9 @@ import Building from "./Building";
 import DiscussAddon from "./addon/discuss/components/DiscussAddon";
 import DrawAddon from "./addon/draw/components/DrawAddon";
 import PointerAddon from "./addon/pointer/components/PointerAddon";
+
 import type { Model } from "./types";
+import * as constants from "./lib/constants";
 
 const ZERO = new THREE.Vector3(0, 0, 0);
 
@@ -30,9 +32,9 @@ export const ModelContext = createContext<{ model: Partial<Model> }>({
 
 /* Constants */
 // TODO: Improve
-const terrainLevelZoom = 2;
-const width = 1024,
-  height = 1024;
+const defaultElevationZoom = 2;
+const width = constants.CANVAS.width,
+  height = constants.CANVAS.height;
 
 const addons = import.meta.env.VITE_ADDONS
   ? import.meta.env.VITE_ADDONS.split(",")
@@ -101,11 +103,13 @@ function ExtendedCameraControls({ ...props }) {
   const [, setCloseup] = useAtom(store.closeupAtom);
   const [controlsState] = useAtom(store.controlsStateAtom);
 
-  const { camera, performance, regress } = useThree(({ camera, performance }) => ({
-    camera,
-    performance,
-    regress: performance.regress,
-  }));
+  const { camera, performance, regress } = useThree(
+    ({ camera, performance }) => ({
+      camera,
+      performance,
+      regress: performance.regress,
+    }),
+  );
 
   useEffect(() => {
     // performance.min = 0.5;
@@ -363,7 +367,7 @@ function ModelView({
       <ModelContext.Provider value={{ model: model }}>
         <Terrain
           levelmap={levelmap}
-          zoom={terrainLevelZoom}
+          elevationZoom={defaultElevationZoom}
           width={width}
           height={height}
         >

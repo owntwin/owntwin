@@ -3,9 +3,7 @@ import {
   ReactNode,
   useContext,
   useEffect,
-  useLayoutEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 
@@ -19,8 +17,10 @@ import * as THREE from "three";
 import { useAtom } from "jotai";
 import * as store from "./lib/store";
 
-import { ModelContext } from "./ModelView";
 import * as util from "./lib/util";
+import { CANVAS } from "./lib/constants";
+
+import { ModelContext } from "./ModelView";
 
 export type Terrain = {
   geometry: THREE.PlaneGeometry;
@@ -30,10 +30,7 @@ export type Levelmap = [number, number, number][];
 
 export const TerrainContext = createContext<Partial<Terrain>>({
   geometry: undefined,
-  vertices: [],
 });
-
-const segments = util.canvas.segments;
 
 function BlankPlane({
   width,
@@ -92,21 +89,23 @@ function BlankPlane({
 
 function Terrain({
   levelmap,
-  zoom,
+  elevationZoom,
   width,
   height,
+  children,
   ...props
 }: {
   levelmap: Levelmap;
-  zoom: number;
+  elevationZoom: number;
   width: number;
   height: number;
   children?: ReactNode;
 }) {
   // const [vertices, setVertices] = useState(null);
   const [, setTerrain] = useAtom(store.terrainAtom);
+  const segments = CANVAS.segments;
 
-  const geom = useMemo(() => {
+  const geometry = useMemo(() => {
     return new THREE.PlaneGeometry(width, height, segments - 1, segments - 1);
   }, []);
 
@@ -114,7 +113,7 @@ function Terrain({
     if (!Array.isArray(levelmap) || levelmap.length === 0) return null;
 
     const positionAttributeArray = new Float32Array(
-      geom.getAttribute("position").array,
+      geometry.getAttribute("position").array,
     );
 
     const minLevel = levelmap.reduce(
@@ -124,16 +123,16 @@ function Terrain({
 
     levelmap.forEach((v) => {
       const pos = v[0] + segments * (segments - 1 - v[1]);
-      positionAttributeArray[pos * 3 + 2] = (v[2] - minLevel) * zoom; // pos.z
+      positionAttributeArray[pos * 3 + 2] = (v[2] - minLevel) * elevationZoom; // pos.z
     });
 
-    geom.setAttribute(
+    geometry.setAttribute(
       "position",
       new BufferAttribute(positionAttributeArray, 3),
     );
 
     return Array.from(positionAttributeArray);
-  }, [levelmap, zoom]);
+  }, [levelmap, elevationZoom]);
 
   useEffect(() => {
     if (!vertices) return;
@@ -143,7 +142,7 @@ function Terrain({
   return (
     <>
       <BlankPlane width={width} height={height} />
-      <mesh name="terrain" geometry={geom}>
+      <mesh name="terrain" geometry={geometry}>
         {/* <meshBasicMaterial color={0xe5e7eb} /> */}
         <meshBasicMaterial color={0xfaf9f9} depthWrite={false} />
         {/* <meshBasicMaterial color={0xf1f3f4} /> */}
@@ -151,9 +150,9 @@ function Terrain({
       </mesh>
       {vertices && (
         <TerrainContext.Provider
-          value={{ geometry: geom, vertices: vertices }} // should be geom?
+          value={{ geometry }} // should be geom?
         >
-          {props.children}
+          {children}
         </TerrainContext.Provider>
       )}
     </>

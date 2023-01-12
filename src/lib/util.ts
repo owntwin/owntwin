@@ -4,6 +4,7 @@
 import SphericalMercator from "@mapbox/sphericalmercator";
 
 import { BBox } from "../types";
+import { CANVAS } from "./constants";
 
 const sm = new SphericalMercator();
 
@@ -11,11 +12,7 @@ const RES = 156543.03392804097;
 const EXTENT_SHIFT = 20037508.342789244;
 
 // TODO: Support variable size
-const canvas = {
-  width: 1024,
-  height: 1024,
-  segments: 100,
-};
+const canvas = CANVAS;
 
 function planeToPixel(bbox: BBox, x: number, y: number) {
   const z = 18;
