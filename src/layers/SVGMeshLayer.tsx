@@ -4,13 +4,10 @@ import { SVGLoader } from "three-stdlib/loaders/SVGLoader.js"; // NOTE: needs .j
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 import * as THREE from "three";
 
-import * as util from "../lib/util";
+import { CANVAS } from "../lib/constants";
+
 import { useAtom } from "jotai";
 import { getTerrainAltitudeAtom } from "../lib/store";
-
-const width = util.canvas.width,
-  height = util.canvas.height;
-const segments = util.canvas.segments;
 
 const loader = new SVGLoader();
 
@@ -25,11 +22,9 @@ async function loadSVG(url: string) {
       const widthSVG = data.xml.viewBox.baseVal.width;
       const heightSVG = data.xml.viewBox.baseVal.height;
       const paths = data.paths;
-      let pathPoints: THREE.Vector2[][] = [];
+      const pathPoints: THREE.Vector2[][] = [];
 
-      for (let i = 0; i < paths.length; i++) {
-        let path = paths[i];
-
+      paths.forEach((path: any) => {
         const shapes: THREE.Shape[] = path.toShapes(true); // TODO: Why?
 
         shapes.forEach((shape) => {
@@ -51,7 +46,7 @@ async function loadSVG(url: string) {
 
           pathPoints.push(points);
         });
-      }
+      });
 
       return { pathPoints: pathPoints, width: widthSVG, height: heightSVG };
     })
@@ -68,10 +63,10 @@ function SVGMeshLayer({
   url: string;
   color?: string | number;
 }) {
+  const [getTerrainAltitude] = useAtom(getTerrainAltitudeAtom);
+
   const [lines, setLines] = useState<ReactNode[]>([]);
   const [visible, setVisible] = useState(false);
-
-  const [getTerrainAltitude] = useAtom(getTerrainAltitudeAtom);
 
   useEffect(() => {
     (async () => {
@@ -79,10 +74,10 @@ function SVGMeshLayer({
 
       if (!svg) return;
 
-      let _lines: THREE.BufferGeometry[] = [];
+      const _lines: THREE.BufferGeometry[] = [];
 
       svg.pathPoints.forEach((points, i: number) => {
-        let _points: THREE.Vector2[] = [];
+        const _points: THREE.Vector2[] = [];
         points.forEach((p, i: number) => {
           if (i > 0) {
             _points.push(points[i - 1]);
@@ -90,11 +85,11 @@ function SVGMeshLayer({
           }
         });
         const geometry = new THREE.BufferGeometry().setFromPoints(_points);
-        geometry.scale(width / svg.width, height / svg.height, 1);
+        geometry.scale(CANVAS.width / svg.width, CANVAS.height / svg.height, 1);
         _lines.push(geometry);
       });
 
-      let merged = BufferGeometryUtils.mergeBufferGeometries(_lines);
+      const merged = BufferGeometryUtils.mergeBufferGeometries(_lines);
 
       merged &&
         setLines([
@@ -117,7 +112,7 @@ function SVGMeshLayer({
 
     // let bbox = new THREE.Box3().setFromObject(ref.current);
     // let size = bbox.getSize(new THREE.Vector3());
-    let size = new THREE.Vector3(width, height, 0); // TODO: Improve
+    const size = new THREE.Vector3(CANVAS.width, CANVAS.height, 0); // TODO: Improve
     ref.current.position.set(0, 0, 0);
     ref.current.translateX(-size.x / 2);
     ref.current.translateY(-size.y / 2);

@@ -123,6 +123,10 @@ function ModelView({
 }) {
   // console.log({ model: JSON.stringify(model) });
 
+  const [layersState] = useAtom(store.layersStateAtom);
+  const [, setEntity] = useAtom(store.entityAtom);
+  const [, setDetailEntity] = useAtom(store.detailEntityAtom);
+
   const [levelmap, setLevelmap] = useState<Levelmap>([]);
   const [buildings, setBuildings] = useState<types.Building[]>([]);
 
@@ -155,10 +159,6 @@ function ModelView({
       };
     }
   }, []);
-
-  const [layersState] = useAtom(store.layersStateAtom);
-  const [, setEntity] = useAtom(store.entityAtom);
-  const [, setDetailEntity] = useAtom(store.detailEntityAtom);
 
   return (
     <Canvas
