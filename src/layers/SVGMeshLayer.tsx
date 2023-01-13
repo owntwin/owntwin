@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 
 import { SVGLoader } from "three-stdlib/loaders/SVGLoader.js"; // NOTE: needs .js to use the pached file
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
@@ -105,41 +105,43 @@ function SVGMeshLayer({
     })();
   }, [url, color]);
 
-  const ref = useRef<THREE.Group>(null);
+  const ref = useCallback(
+    (obj: THREE.Group) => {
+      if (!obj) return;
 
-  useLayoutEffect(() => {
-    if (!ref.current) return;
+      // let bbox = new THREE.Box3().setFromObject(obj);
+      // let size = bbox.getSize(new THREE.Vector3());
+      const size = new THREE.Vector3(CANVAS.width, CANVAS.height, 0); // TODO: Improve
 
-    // let bbox = new THREE.Box3().setFromObject(ref.current);
-    // let size = bbox.getSize(new THREE.Vector3());
-    const size = new THREE.Vector3(CANVAS.width, CANVAS.height, 0); // TODO: Improve
-    ref.current.position.set(0, 0, 0);
-    ref.current.translateX(-size.x / 2);
-    ref.current.translateY(-size.y / 2);
+      obj.position.set(0, 0, 0);
+      obj.translateX(-size.x / 2);
+      obj.translateY(-size.y / 2);
 
-    // terrain
-    ref.current.children.forEach((line) => {
-      if (!(line instanceof THREE.Line)) return;
-      const positionAttributeArray = line.geometry.getAttribute("position")
-        .array as number[];
-      const position = Array.from(positionAttributeArray);
-      const vertices = position.map((v, i) => {
-        if (i % 3 === 2) {
-          const z = getTerrainAltitude(position[i - 2], position[i - 1]);
-          return z ? z + 2 : v; // TODO: Fix
-        } else {
-          return v;
-        }
+      // terrain
+      obj.children.forEach((line) => {
+        if (!(line instanceof THREE.Line)) return;
+        const positionAttributeArray = line.geometry.getAttribute("position")
+          .array as number[];
+        const position = Array.from(positionAttributeArray);
+        const vertices = position.map((v, i) => {
+          if (i % 3 === 2) {
+            const z = getTerrainAltitude(position[i - 2], position[i - 1]);
+            return z ? z + 2 : v; // TODO: Fix
+          } else {
+            return v;
+          }
+        });
+        // console.log(vertices);
+        line.geometry.setAttribute(
+          "position",
+          new THREE.Float32BufferAttribute(vertices, 3),
+        );
       });
-      // console.log(vertices);
-      line.geometry.setAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(vertices, 3),
-      );
-    });
 
-    setVisible(true);
-  }, [lines]);
+      setVisible(true);
+    },
+    [lines],
+  );
 
   return (
     <group ref={ref} visible={visible}>
