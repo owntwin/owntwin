@@ -6,7 +6,7 @@ import { Html } from "@react-three/drei";
 
 import * as util from "./lib/util";
 
-import MeshBuilding from "./components/Building";
+import { DefaultMeshBuilding } from "./components/building";
 
 import { ModelContext } from "./ModelView";
 
@@ -61,7 +61,7 @@ function Building({
   const [hover, setHover] = useState(false);
 
   return (
-    <MeshBuilding
+    <DefaultMeshBuilding
       baseShape={baseShape}
       height={depth}
       position={[origin.x, origin.y, z]}
@@ -78,7 +78,7 @@ function Building({
           <Popup item={{ name: props.name || "", type: props.type || "" }} />
         )}
       </Html>
-    </MeshBuilding>
+    </DefaultMeshBuilding>
   );
 }
 

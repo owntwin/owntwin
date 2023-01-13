@@ -5,16 +5,16 @@ import axios from "axios";
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 import { Html } from "@react-three/drei";
-import ElevatedShapeGeometry from "../lib/components/ElevatedShapeGeometry";
+import ElevatedShapeGeometry from "../../lib/components/ElevatedShapeGeometry";
 
-import * as util from "../lib/util";
-import { CANVAS } from "../lib/constants";
-import { BBox } from "../types";
+import * as util from "../../lib/util";
+import { CANVAS } from "../../lib/constants";
+import { BBox } from "../../types";
 
 import { useAtom } from "jotai";
-import * as store from "../lib/store";
+import * as store from "../../lib/store";
 
-import { ModelContext } from "../ModelView";
+import { ModelContext } from "../../ModelView";
 
 type ObjectData = {
   geometry: THREE.BufferGeometry;
@@ -310,13 +310,17 @@ function GeoJSONLayer({
     const geometries: ObjectData[] = [];
 
     const isGeometryCovered = (geometry: GeoJSON.Geometry) => {
-      if (geometry.type !== "Polygon") {
+      let originLng: number, originLat: number;
+      if (geometry.type === "Polygon") {
+        originLng = geometry.coordinates[0][0][0];
+        originLat = geometry.coordinates[0][0][1];
+      } else if (geometry.type === "LineString") {
+        originLng = geometry.coordinates[0][0];
+        originLat = geometry.coordinates[0][1];
+      } else {
         console.error("Not implemented");
         return undefined;
       }
-
-      const originLng = geometry.coordinates[0][0][0],
-        originLat = geometry.coordinates[0][0][1];
 
       const origin = util.coordToPlane(bbox, originLng, originLat);
       if (

@@ -2,7 +2,20 @@ import { ReactNode, useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { MeshProps } from "@react-three/fiber";
 
-function Building({
+export function Building({
+  id,
+  position,
+  children,
+  ...props
+}: {
+  id: string;
+  position?: GeoJSON.Position;
+  children?: ReactNode;
+}) {
+  return <>{children}</>;
+}
+
+export function DefaultMeshBuilding({
   baseShape,
   height,
   position = [0, 0, 0],
@@ -72,5 +85,3 @@ function Building({
     </mesh>
   );
 }
-
-export default Building;
