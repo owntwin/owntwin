@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { canvas, getTerrainAltitude } from "./util";
+import { canvas } from "./util";
 
 const layersStateAtom = atom<
   Record<

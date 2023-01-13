@@ -139,7 +139,7 @@ function ModelView({
       }
       if (model.building) {
         model.building.data = await fetchBuildingData(model.building, basePath);
-        setBuildings(model.building?.data.buildings);
+        setBuildings(model.building?.data?.buildings || []);
       }
     })();
   }, [model, basePath]);
