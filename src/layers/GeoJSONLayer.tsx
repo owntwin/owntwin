@@ -285,28 +285,6 @@ function GeoJSONLayer({
       })();
   }, [url]);
 
-  // const raycaster = useMemo(() => new THREE.Raycaster(), []);
-  // const intersecting = useRef<THREE.Object3D | null>(null);
-
-  // useFrame((state) => {
-  //   raycaster.setFromCamera(state.pointer, state.camera);
-  //   const intersects = raycaster.intersectObjects(internalObjects, false);
-  //   if (intersects.length > 0) {
-  //     // console.log(intersects);
-  //     if (intersects.length > 0) {
-  //       const closest = intersects[0].object;
-  //       if (intersecting.current != closest) {
-  //         if (intersecting.current) intersecting.current.visible = false;
-  //         intersecting.current = closest;
-  //         intersecting.current.visible = true;
-  //       }
-  //     }
-  //   } else {
-  //     if (intersecting.current) intersecting.current.visible = false;
-  //     intersecting.current = null;
-  //   }
-  // });
-
   const geometries = useMemo(() => {
     if (!geojson || !geojson.features) return;
 
@@ -381,12 +359,10 @@ function GeoJSONLayer({
       }
     });
 
-    // geometries.forEach((obj, i) => { i === 0 && console.log(obj); });
-
     return geometries;
   }, [geojson, model.bbox, terrain.ready, clip]); // TODO: Fix: model causes x4 calls
 
-  const geom = useMemo(() => {
+  const mergedGeometry = useMemo(() => {
     if (!geometries || geometries.length === 0) return undefined;
 
     const mergedGeometry = BufferGeometryUtils.mergeBufferGeometries(
@@ -399,8 +375,8 @@ function GeoJSONLayer({
 
   return (
     <>
-      {geom && (
-        <mesh geometry={geom}>
+      {mergedGeometry && (
+        <mesh geometry={mergedGeometry}>
           <meshBasicMaterial
             color={colors.default}
             transparent={true}
@@ -411,7 +387,7 @@ function GeoJSONLayer({
           />
           {extrude && (
             <lineSegments>
-              <edgesGeometry attach="geometry" args={[geom, 45]} />
+              <edgesGeometry attach="geometry" args={[mergedGeometry, 45]} />
               <lineBasicMaterial color={0xfefefe} attach="material" />
             </lineSegments>
           )}

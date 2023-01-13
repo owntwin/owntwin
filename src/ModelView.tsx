@@ -179,17 +179,16 @@ function ModelView({
           width={width}
           height={height}
         >
-          {model.modules &&
-            Object.values(model.modules)
-              .reduce(
-                (acc, module) => acc.concat(module.definition.layers || []),
-                [] as types.Layer[],
-              )
-              .map((layer) =>
-                layersState[layer.id] && layersState[layer.id].enabled ? (
-                  <Layer key={layer.id} def={layer} basePath={basePath} />
-                ) : null,
-              )}
+          {Object.values(model.modules || [])
+            .reduce(
+              (acc, module) => acc.concat(module.definition.layers || []),
+              [] as types.Layer[],
+            )
+            .map((layer) =>
+              layersState[layer.id] && layersState[layer.id].enabled ? (
+                <Layer key={layer.id} def={layer} basePath={basePath} />
+              ) : null,
+            )}
           {buildings.map((building) => (
             <Building
               key={building.id}
@@ -210,7 +209,6 @@ function ModelView({
           {addons.includes("pointer") && <PointerAddon />}
         </Terrain>
       </ModelContext.Provider>
-      {/* <ExtendedOrbitControls /> */}
       <ExtendedCameraControls />
       {/* <AdaptiveEvents /> */}
       {/* <Sphere args={[150, 32, 16]} /> */}
