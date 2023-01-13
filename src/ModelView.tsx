@@ -16,7 +16,7 @@ import Building from "./Building";
 
 import DiscussAddon from "./addon/discuss/components/DiscussAddon";
 import DrawAddon from "./addon/draw/components/DrawAddon";
-import PointerAddon from "./addon/pointer/components/PointerAddon";
+// import PointerAddon from "./addon/pointer/components/PointerAddon";
 
 import * as types from "./types";
 import type { Levelmap } from "./Terrain";
@@ -206,7 +206,7 @@ function ModelView({
           ))}
           {addons.includes("discuss") && <DiscussAddon />}
           {addons.includes("draw") && <DrawAddon />}
-          {addons.includes("pointer") && <PointerAddon />}
+          {/* {addons.includes("pointer") && <PointerAddon />} */}
         </Terrain>
       </ModelContext.Provider>
       <ExtendedCameraControls />
