@@ -113,11 +113,11 @@ function SVGMeshLayer({
       // let size = bbox.getSize(new THREE.Vector3());
       const size = new THREE.Vector3(CANVAS.width, CANVAS.height, 0); // TODO: Improve
 
-      obj.position.set(0, 0, 0);
-      obj.translateX(-size.x / 2);
-      obj.translateY(-size.y / 2);
+      obj.position.set(-size.x / 2, -size.y / 2, 0);
+      // obj.translateX(-size.x / 2);
+      // obj.translateY(-size.y / 2);
 
-      // terrain
+      // Elevation
       obj.children.forEach((line) => {
         if (!(line instanceof THREE.Line)) return;
         const positionAttributeArray = line.geometry.getAttribute("position")
