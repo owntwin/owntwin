@@ -228,16 +228,17 @@ function SelectableLayer({ geometries }: { geometries: ObjectData[] }) {
             userSelect: "none",
             transform: "translate3d(-50%,-100%,0)",
             width: "max-content",
-            fontSize: "0.5rem",
+            fontSize: "0.75rem",
           }}
-          distanceFactor={1000}
+          // distanceFactor={1000}
           position={(() => {
             // TODO: Better performance
             hoveredEntity.entity.geometry.computeBoundingBox();
-            const center = new THREE.Vector3();
-            hoveredEntity.entity.geometry.boundingBox?.getCenter(center);
-            const { x, y, z } = center;
-            return [x, y, z + 50];
+            // const center = new THREE.Vector3();
+            // hoveredEntity.entity.geometry.boundingBox?.getCenter(center);
+            const max = hoveredEntity.entity.geometry.boundingBox.max;
+            const { x, y, z } = max;
+            return [x, y, z];
           })()}
         >
           {hoveredEntity.id}
