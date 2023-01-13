@@ -7,15 +7,14 @@ import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 import { Html } from "@react-three/drei";
 import ElevatedShapeGeometry from "../lib/components/ElevatedShapeGeometry";
 
-import * as store from "../lib/store";
 import * as util from "../lib/util";
+import { CANVAS } from "../lib/constants";
+import { BBox } from "../types";
+
+import { useAtom } from "jotai";
+import * as store from "../lib/store";
 
 import { ModelContext } from "../ModelView";
-
-import { BBox, GeoJSON } from "../types";
-import { useAtom } from "jotai";
-
-type Coordinate = [number, number, number];
 
 type ObjectData = {
   geometry: THREE.BufferGeometry;
@@ -27,7 +26,7 @@ function computeShape({
   bbox,
   ...props
 }: {
-  coordinates: Coordinate[][];
+  coordinates: GeoJSON.Position[][];
   bbox: BBox;
 }) {
   // TODO: Support hole (coordinate[1])
@@ -62,13 +61,13 @@ function createElevatedShapeGeometry({
   getTerrainAltitude,
   ...props
 }: {
-  coordinates: Coordinate[][];
+  coordinates: GeoJSON.Position[][];
   bbox: BBox;
   getTerrainAltitude: Function;
 }) {
   // TODO: Support hole (coordinate[1])
   // TODO: Fix naming
-  let _coordinates = coordinates[0];
+  const _coordinates = coordinates[0];
 
   const originLng = _coordinates[0][0],
     originLat = _coordinates[0][1];
@@ -95,13 +94,13 @@ function createElevatedShapeGeometry({
   return geom;
 }
 
-function extrudePolygonGeometry({
+function createExtrudeGeometry({
   coordinates,
   bbox,
   getTerrainAltitude,
   ...props
 }: {
-  coordinates: Coordinate[][];
+  coordinates: GeoJSON.Position[][];
   bbox: BBox;
   getTerrainAltitude: Function;
   height: number;
@@ -110,7 +109,7 @@ function extrudePolygonGeometry({
 
   // TODO: Support hole (coordinate[1])
   // TODO: Fix naming
-  let _coordinates = coordinates[0];
+  const _coordinates = coordinates[0];
 
   const originLng = _coordinates[0][0],
     originLat = _coordinates[0][1];
@@ -151,6 +150,7 @@ function SelectableLayer({ geometries }: { geometries: ObjectData[] }) {
   const [, setTimer] = useState<number>();
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
+  // TODO: use respective entity components here depending entity types, rather than <mesh>
   useEffect(() => {
     startTransition(() => {
       setMeshes(
@@ -232,7 +232,7 @@ function SelectableLayer({ geometries }: { geometries: ObjectData[] }) {
           }}
           // distanceFactor={1000}
           position={(() => {
-            // TODO: Better performance
+            // TODO: better performance
             hoveredEntity.entity.geometry.computeBoundingBox();
             // const center = new THREE.Vector3();
             // hoveredEntity.entity.geometry.boundingBox?.getCenter(center);
@@ -252,116 +252,139 @@ function GeoJSONLayer({
   url,
   clip = true,
   extrude = true,
+  edges = false,
   colors,
+  opacity = 0.5,
   ...props
 }: {
   url: string;
   clip?: boolean;
   extrude?: boolean;
+  edges?: boolean;
   colors?: Record<string, any>;
-  opacity?: 0.5;
+  opacity?: number;
 }) {
   colors = Object.assign(
     {
       default: 0xd1d5db, // 0xe5e7eb, 0x9ca3af, 0xb0b0b0, 0xff00ff, 0xc0c0c0
       // default: 0xffffff, // 0xe5e7eb, 0x9ca3af, 0xb0b0b0, 0xff00ff, 0xc0c0c0
       hover: 0x666666,
+      edges: 0xfefefe,
     },
     colors,
   );
+
+  // NOTE: for backward compatibility; to fix
+  edges = extrude;
 
   const [terrain] = useAtom(store.terrainAtom);
   const [getTerrainAltitude] = useAtom(store.getTerrainAltitudeAtom);
 
   const { model } = useContext(ModelContext);
-  const [geojson, setGeojson] = useState<GeoJSON>();
+  const [geojson, setGeojson] = useState<GeoJSON.FeatureCollection>();
 
-  /* load JSON from URL */
+  // Load JSON from URL
   useEffect(() => {
-    !!url &&
-      (async () => {
-        const data = await axios.get(url).then((resp) => resp.data);
-        // console.log(data);
-        setGeojson(data);
-      })();
+    if (!url) return;
+    (async () => {
+      const data: GeoJSON.FeatureCollection = await axios
+        .get(url)
+        .then((resp) => resp.data);
+      // console.log(data);
+      setGeojson(data);
+    })();
   }, [url]);
 
   const geometries = useMemo(() => {
-    if (!geojson || !geojson.features) return;
+    if (!geojson || !geojson.features) return undefined;
 
-    if (!terrain.ready) return;
+    if (!terrain.ready) return undefined;
 
     if (!model.bbox) {
       // console.error(...);
-      return;
+      return undefined;
     }
 
     const bbox = model.bbox;
 
     const geometries: ObjectData[] = [];
 
-    const isFeatureCovered = (feature: any) => {
-      const originLng = feature.geometry.coordinates[0][0][0],
-        originLat = feature.geometry.coordinates[0][0][1];
+    const isGeometryCovered = (geometry: GeoJSON.Geometry) => {
+      if (geometry.type !== "Polygon") {
+        console.error("Not implemented");
+        return undefined;
+      }
+
+      const originLng = geometry.coordinates[0][0][0],
+        originLat = geometry.coordinates[0][0][1];
 
       const origin = util.coordToPlane(bbox, originLng, originLat);
       if (
         clip &&
-        (origin.x < -util.canvas.width / 2 ||
-          util.canvas.width / 2 <= origin.x ||
-          origin.y < -util.canvas.height / 2 ||
-          util.canvas.height / 2 <= origin.y)
+        (origin.x < -CANVAS.width / 2 ||
+          CANVAS.width / 2 <= origin.x ||
+          origin.y < -CANVAS.height / 2 ||
+          CANVAS.height / 2 <= origin.y)
       )
         return false;
       else return true;
     };
 
-    const parsePoly = (feature: any) => {
-      let poly: any;
+    const createGeometryFromFeature = (feature: GeoJSON.Feature) => {
+      if (feature.geometry.type !== "Polygon") {
+        console.error("Not implemented");
+        return undefined;
+      }
+
+      let geometry: THREE.BufferGeometry;
 
       if (extrude) {
         // NOTE: return null if cannot be extruded
         if (
-          !feature.properties.attributes?.measuredHeight &&
-          !feature.properties.attributes?.height
+          !feature.properties?.attributes?.measuredHeight &&
+          !feature.properties?.attributes?.height
         ) {
           return null;
         }
-        poly = extrudePolygonGeometry({
+        geometry = createExtrudeGeometry({
           coordinates: feature.geometry.coordinates,
           bbox: bbox,
           height: feature.properties.attributes.measuredHeight,
           getTerrainAltitude,
         });
       } else {
-        poly = createElevatedShapeGeometry({
+        geometry = createElevatedShapeGeometry({
           coordinates: feature.geometry.coordinates,
           bbox: bbox,
           getTerrainAltitude,
         });
       }
 
-      return poly;
+      return geometry;
     };
 
     geojson.features.forEach((feature) => {
       if (feature.geometry.type === "GeometryCollection") {
-        feature.geometry.geometries.forEach((partialFeature: any) => {
-          if (!isFeatureCovered(partialFeature)) return;
-          const poly = parsePoly(partialFeature);
-          if (!poly) return;
-          geometries.push({ geometry: poly, id: feature.properties.id });
-        });
+        // feature.geometry.geometries.forEach((geometry) => {
+        //   if (!isGeometryCovered(geometry)) return;
+        //   // TODO: geometry cannot have properties and hence height values;
+        //   // Possibly, we may have an array of height values to map onto geometries
+        //   const threeGeometry = createGeometryFromFeature(geometry);
+        //   if (!threeGeometry) return;
+        //   geometries.push({
+        //     geometry: threeGeometry,
+        //     id: feature.properties?.id,
+        //   });
+        // });
       } else {
-        if (!isFeatureCovered(feature)) return;
-        const poly = parsePoly(feature);
-        if (!poly) return;
-        geometries.push({ geometry: poly, id: feature.properties.id });
+        if (!isGeometryCovered(feature.geometry)) return;
+        const geometry = createGeometryFromFeature(feature);
+        if (!geometry) return;
+        geometries.push({ geometry, id: feature.properties?.id });
       }
     });
-
     return geometries;
-  }, [geojson, model.bbox, terrain.ready, clip]); // TODO: Fix: model causes x4 calls
+  }, [geojson, model.bbox, terrain.ready, clip]);
 
   const mergedGeometry = useMemo(() => {
     if (!geometries || geometries.length === 0) return undefined;
@@ -370,9 +393,8 @@ function GeoJSONLayer({
       geometries.map((v) => v.geometry),
       false,
     );
-    // console.log(mergedGeometry);
     return mergedGeometry;
-  }, [geometries]); // TODO: Fix: model causes x4 calls
+  }, [geometries]);
 
   return (
     <>
@@ -381,15 +403,15 @@ function GeoJSONLayer({
           <meshBasicMaterial
             color={colors.default}
             transparent={true}
-            opacity={props.opacity}
+            opacity={opacity}
             polygonOffset={true}
             polygonOffsetUnits={1}
             polygonOffsetFactor={1}
           />
-          {extrude && (
+          {edges && (
             <lineSegments>
               <edgesGeometry attach="geometry" args={[mergedGeometry, 45]} />
-              <lineBasicMaterial color={0xfefefe} attach="material" />
+              <lineBasicMaterial color={colors.edges} attach="material" />
             </lineSegments>
           )}
         </mesh>

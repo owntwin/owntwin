@@ -1,3 +1,5 @@
+import type { GeoJSON as GeoJSONType } from "geojson";
+
 export type Layer = {
   id: string;
   name: string;
@@ -60,6 +62,4 @@ export type Model = Omit<Definition, "bbox" | "terrain"> & {
   terrain: { path?: string; data: [number, number, number][] };
 };
 
-export type GeoJSON = {
-  features?: any[];
-};
+export type GeoJSON = GeoJSONType;
