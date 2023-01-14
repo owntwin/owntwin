@@ -157,14 +157,14 @@ function App() {
       id="App"
       className={clsx("App", "fixed top-0 bottom-0 left-0 right-0")}
     >
-      <div
+      {/* <div
         className={clsx(
           "absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center text-sm text-gray-400 pointer-events-none",
           !detailEntity ? "flex" : "hidden",
         )}
       >
         <div>表示されない場合は再読み込み</div>
-      </div>
+      </div> */}
       <div
         className={clsx(
           "absolute top-0 bottom-0 left-0 right-0",
