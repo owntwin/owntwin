@@ -97,23 +97,31 @@ export const LinePen = forwardRef(
 
     const onMove = useCallback(
       (ev: ThreeEvent<PointerEvent>) => {
+        // ev.stopPropagation();
         // throttle(
         if (["touch", "pen"].includes(ev.pointerType) && !enabled) {
           setPoints([]);
           setEnabled(true);
         }
         if (enabled) {
-          setPoints((pts) => {
-            if (ref.current) {
-              const pt = ref.current.position.clone();
-              return [...pts, pt];
-            } else {
-              return pts;
-            }
-          });
+          if (ref.current) {
+            // NOTE: The line below could be slow, but what can we do?
+            const pt = ref.current.position.clone();
+            // const pt = ev.eventObject.position.clone(); // Seems slower
+
+            // NOTE: setTimeout here makes little sense, but we keep it for future improvements;
+            // The problem is that onPointerMove() call seems to be dropped when the pointer moves fast.
+            // We need performance tuning and/or something like getCoalescedEvents().
+            setTimeout(() => {
+              // console.log(pt);
+              setPoints((pts) => {
+                return [...pts, pt];
+              });
+            }, 0);
+          }
         }
       },
-      [enabled, setPoints],
+      [enabled],
     );
     // , null);
 

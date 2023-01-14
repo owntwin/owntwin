@@ -81,6 +81,7 @@ export function Erase({ linesData }: { linesData: Line[] }) {
   const [hoveredEntity] = useAtom(appStore.hoveredEntityAtom);
 
   const curvesData = useMemo(() => {
+    // NOTE: sometimes complex lines seem to cause error here
     const curvesData = linesData.map((line) => ({
       curve: new THREE.CatmullRomCurve3(
         line.points.map((p) => new THREE.Vector3(p.x, p.y, p.z)),
