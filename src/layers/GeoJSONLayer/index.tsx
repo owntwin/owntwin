@@ -14,7 +14,7 @@ import * as store from "../../lib/store";
 
 import { ModelContext } from "../../ModelView";
 
-import SelectableLayer from "./selectableLayer";
+import SelectableLayer from "./SelectableLayer";
 
 import polygon from "./polygon";
 import lineString from "./line-string";
