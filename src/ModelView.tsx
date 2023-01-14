@@ -153,9 +153,9 @@ function ModelView({
     };
 
     if (window) {
-      window.addEventListener("mousedown", handler);
+      window.addEventListener("pointerdown", handler);
       return () => {
-        window.removeEventListener("mousedown", handler);
+        window.removeEventListener("pointerdown", handler);
       };
     }
   }, []);

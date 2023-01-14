@@ -68,8 +68,10 @@ export function ExtendedCameraControls({ ...props }) {
 
     if (!controlsState.enableRotate) {
       cameraControls.mouseButtons.left = CameraControlsDefault.ACTION.NONE;
+      cameraControls.touches.one = CameraControlsDefault.ACTION.NONE;
     } else {
       cameraControls.mouseButtons.left = CameraControlsDefault.ACTION.ROTATE;
+      cameraControls.touches.one = CameraControlsDefault.ACTION.TOUCH_ROTATE;
     }
   }, [controlsState]);
 
