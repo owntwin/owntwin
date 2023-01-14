@@ -4,6 +4,7 @@ import axios from "axios";
 
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
+import { extend, Object3DNode } from "@react-three/fiber";
 
 import * as util from "../../lib/util";
 import { CANVAS } from "../../lib/constants";
@@ -16,12 +17,28 @@ import { ModelContext } from "../../ModelView";
 import SelectableLayer from "./selectableLayer";
 
 import polygon from "./polygon";
+import lineString from "./line-string";
+
+import {
+  MeshLineGeometry,
+  MeshLineMaterial,
+  //  MeshLineRaycast
+} from "meshline";
+
+extend({ MeshLineGeometry, MeshLineMaterial });
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      meshLineGeometry: Object3DNode<MeshLineGeometry, typeof MeshLineGeometry>;
+      meshLineMaterial: Object3DNode<MeshLineMaterial, typeof MeshLineMaterial>;
+    }
+  }
+}
 
 type ObjectData = {
   geometry: THREE.BufferGeometry;
   id?: string;
 };
-
 
 function GeoJSONLayer({
   url,
@@ -81,6 +98,10 @@ function GeoJSONLayer({
     }
 
     const bbox = model.bbox;
+    const context = {
+      bbox,
+      getTerrainAltitude,
+    };
 
     const geometries: ObjectData[] = [];
 
@@ -116,7 +137,13 @@ function GeoJSONLayer({
         geometry = polygon.createGeometry(
           feature as GeoJSON.Feature<GeoJSON.Polygon>,
           extrude,
-          { bbox, getTerrainAltitude },
+          context,
+        );
+      } else if (feature.geometry.type === "LineString") {
+        geometry = lineString.createGeometry(
+          feature as GeoJSON.Feature<GeoJSON.LineString>,
+          extrude,
+          context,
         );
       } else {
         console.error("Not implemented");
@@ -149,20 +176,32 @@ function GeoJSONLayer({
     return geometries;
   }, [geojson, model.bbox, terrain.ready, clip]);
 
-  const mergedGeometry = useMemo(() => {
-    if (!geometries || geometries.length === 0) return undefined;
+  const mergedGeometries = useMemo(() => {
+    if (!geometries || geometries.length === 0)
+      return { basic: undefined, meshline: undefined };
 
-    const mergedGeometry = BufferGeometryUtils.mergeBufferGeometries(
-      geometries.map((v) => v.geometry),
-      false,
-    );
-    return mergedGeometry;
+    const basicGeometries = geometries
+      .filter((v) => !(v.geometry instanceof MeshLineGeometry))
+      .map((v) => v.geometry);
+    const mergedBasicGeometry =
+      basicGeometries.length > 0
+        ? BufferGeometryUtils.mergeBufferGeometries(basicGeometries, false)
+        : null;
+
+    const meshlineGeometries = geometries
+      .filter((v) => v.geometry instanceof MeshLineGeometry)
+      .map((v) => v.geometry);
+    const mergedMeshlineGeometry =
+      meshlineGeometries.length > 0
+        ? BufferGeometryUtils.mergeBufferGeometries(meshlineGeometries, false)
+        : null;
+    return { basic: mergedBasicGeometry, meshline: mergedMeshlineGeometry };
   }, [geometries]);
 
   return (
     <>
-      {mergedGeometry && (
-        <mesh geometry={mergedGeometry}>
+      {mergedGeometries.basic && (
+        <mesh geometry={mergedGeometries.basic}>
           <meshBasicMaterial
             color={colors.default}
             transparent={true}
@@ -173,10 +212,29 @@ function GeoJSONLayer({
           />
           {edges && (
             <lineSegments>
-              <edgesGeometry attach="geometry" args={[mergedGeometry, 45]} />
+              <edgesGeometry
+                attach="geometry"
+                args={[mergedGeometries.basic, 45]}
+              />
               <lineBasicMaterial color={colors.edges} attach="material" />
             </lineSegments>
           )}
+        </mesh>
+      )}
+      {mergedGeometries.meshline && (
+        <mesh geometry={mergedGeometries.meshline}>
+          <meshLineMaterial
+            lineWidth={1}
+            color={colors.default}
+            // transparent={true}
+            // opacity={opacity}
+            transparent
+            depthTest={false}
+            // depthWrite={false}
+            // polygonOffset={true}
+            polygonOffsetUnits={1}
+            polygonOffsetFactor={-64}
+          />
         </mesh>
       )}
       {geometries && <SelectableLayer geometries={geometries} />}
