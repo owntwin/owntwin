@@ -13,6 +13,9 @@ import CameraControlsDefault from "camera-controls";
 
 const ZERO = new THREE.Vector3(0, 0, 0);
 
+const isTouch = () =>
+  window.matchMedia("(pointer: coarse)").matches ? true : false;
+
 /*
 function ExtendedOrbitControls({ ...props }) {
   const CLOSEUP_THRESHOLD = 400000;
@@ -215,7 +218,8 @@ export function ExtendedCameraControls({ ...props }) {
       dollyToCursor={true}
       azimuthRotateSpeed={0.5}
       polarRotateSpeed={0.5}
-      dollySpeed={0.5} // TODO: Set faster on mobile debices
+       // TODO: dynamically change speed depending on pointerType
+      dollySpeed={isTouch() ? 0.9 : 0.5}
       boundaryEnclosesCamera={true}
     />
   );
