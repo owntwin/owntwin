@@ -1,10 +1,12 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useId, useState } from "react";
 import clsx from "clsx";
 
 import ExportModal from "./ExportModal";
 
 import { useAtom } from "jotai";
 import * as store from "../lib/store";
+
+// import * as Checkbox from "@radix-ui/react-checkbox";
 
 import { Z_INDEX } from "../lib/constants";
 
@@ -52,6 +54,8 @@ function ModulePane({
   const layers = definition.layers;
   const actions = definition.actions || [];
   const filters: { name: string }[] = [];
+
+  const localId = useId();
 
   properties = properties || {};
 
@@ -205,8 +209,15 @@ function ModulePane({
               {layers.length > 0 ? (
                 layers.map((item, i: number) => {
                   return (
-                    <li key={i} className="flex items-center">
+                    <li key={i} className="flex items-center my-0.5 text-sm">
+                      {/* <Checkbox.Root
+                        className=""
+                        defaultChecked={layersState[item.id].enabled}
+                      >
+                        <Checkbox.Indicator className=""></Checkbox.Indicator>
+                      </Checkbox.Root> */}
                       <input
+                        id={`${localId}-${definition.name}-layer-checkbox-${i}`}
                         className="mr-1"
                         type="checkbox"
                         checked={layersState[item.id].enabled}
@@ -217,7 +228,9 @@ function ModulePane({
                           });
                         }}
                       />
-                      <span>{item.name}</span>
+                      <label htmlFor={`${localId}-${definition.name}-layer-checkbox-${i}`}>
+                        {item.name}
+                      </label>
                       {["csv"].includes(item.format) && ( // TODO: Improve
                         <span className="ml-1">
                           <a href={item.path}>
