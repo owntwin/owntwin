@@ -197,6 +197,8 @@ const coordSorter = (a: number[], b: number[]) =>
 
 export {
   canvas,
+  coordToPixel,
+  pixelToPlane,
   coordToPlane,
   planeToCoord,
   coordToLocalPlane,

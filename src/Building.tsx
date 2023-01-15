@@ -1,14 +1,12 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import * as THREE from "three";
 import { ThreeEvent } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 
-import * as util from "./lib/util";
-
 import { DefaultMeshBuilding } from "./components/building";
 
-import { ModelContext } from "./ModelView";
+import { useFieldState } from "./lib/hooks";
 
 function Popup({ item, ...props }: { item: { type: string; name: string } }) {
   return (
@@ -39,26 +37,35 @@ function Building({
   name?: string;
   type?: string;
 }) {
-  const { model } = useContext(ModelContext);
+  const fieldState = useFieldState();
 
   const originLng = base[0][0],
     originLat = base[0][1];
-  const origin = util.coordToPlane(model.bbox, originLng, originLat);
+  const origin = fieldState.coordToPlane(originLng, originLat);
+  if (!origin) return null;
 
   const baseShape = useMemo(() => {
     const shape = new THREE.Shape();
-    shape.moveTo(0, 0);
-    base
+
+    const reversedPoints = base
       .slice()
       .reverse()
-      .forEach((v) => {
-        const p = util.coordToPlane(model.bbox, v[0], v[1]);
-        shape.lineTo(p.x - origin.x, p.y - origin.y);
+      .map((v) => {
+        const p = fieldState.coordToPlane(v[0], v[1]);
+        return p;
       });
+
+    if (reversedPoints.some((p) => !p)) return undefined;
+    shape.moveTo(0, 0);
+    reversedPoints.forEach((p) => {
+      p && shape.lineTo(p.x - origin.x, p.y - origin.y);
+    });
     return shape;
-  }, [model, base, origin.x, origin.y, depth]);
+  }, [base, origin.x, origin.y, depth]);
 
   const [hover, setHover] = useState(false);
+
+  if (!baseShape) return null;
 
   return (
     <DefaultMeshBuilding

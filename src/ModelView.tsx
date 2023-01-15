@@ -1,4 +1,4 @@
-import { useEffect, createContext, useState } from "react";
+import { useEffect, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { AdaptiveEvents, PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
@@ -22,10 +22,6 @@ import * as types from "./types";
 import type { Levelmap } from "./Terrain";
 
 import * as constants from "./lib/constants";
-
-export const ModelContext = createContext<{ model: Partial<types.Model> }>({
-  model: {},
-});
 
 /* Constants */
 // TODO: Improve
@@ -172,43 +168,41 @@ function ModelView({
       <DefaultCamera />
       <ambientLight args={[0xffffff, 1]} />
       <pointLight position={[10, 10, 10]} />
-      <ModelContext.Provider value={{ model: model }}>
-        <Terrain
-          levelmap={levelmap}
-          elevationZoom={defaultElevationZoom}
-          width={width}
-          height={height}
-        >
-          {Object.values(model.modules || [])
-            .reduce(
-              (acc, module) => acc.concat(module.definition.layers || []),
-              [] as types.Layer[],
-            )
-            .map((layer) =>
-              layersState[layer.id] && layersState[layer.id].enabled ? (
-                <Layer key={layer.id} def={layer} basePath={basePath} />
-              ) : null,
-            )}
-          {buildings.map((building) => (
-            <Building
-              key={building.id}
-              base={building.base}
-              z={building.z}
-              depth={building.depth}
-              name={building.name}
-              type={building.type}
-              onPointerDown={(ev) => {
-                ev.stopPropagation();
-                setEntity(building);
-                setDetailEntity(building);
-              }}
-            />
-          ))}
-          {addons.includes("discuss") && <DiscussAddon />}
-          {addons.includes("draw") && <DrawAddon />}
-          {/* {addons.includes("pointer") && <PointerAddon />} */}
-        </Terrain>
-      </ModelContext.Provider>
+      <Terrain
+        levelmap={levelmap}
+        elevationZoom={defaultElevationZoom}
+        width={width}
+        height={height}
+      >
+        {Object.values(model.modules || [])
+          .reduce(
+            (acc, module) => acc.concat(module.definition.layers || []),
+            [] as types.Layer[],
+          )
+          .map((layer) =>
+            layersState[layer.id] && layersState[layer.id].enabled ? (
+              <Layer key={layer.id} def={layer} basePath={basePath} />
+            ) : null,
+          )}
+        {buildings.map((building) => (
+          <Building
+            key={building.id}
+            base={building.base}
+            z={building.z}
+            depth={building.depth}
+            name={building.name}
+            type={building.type}
+            onPointerDown={(ev) => {
+              ev.stopPropagation();
+              setEntity(building);
+              setDetailEntity(building);
+            }}
+          />
+        ))}
+        {addons.includes("discuss") && <DiscussAddon />}
+        {addons.includes("draw") && <DrawAddon />}
+        {/* {addons.includes("pointer") && <PointerAddon />} */}
+      </Terrain>
       <ExtendedCameraControls />
       {/* <AdaptiveEvents /> */}
       {/* <Sphere args={[150, 32, 16]} /> */}

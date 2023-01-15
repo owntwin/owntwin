@@ -1,11 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-  createContext,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useMemo, useLayoutEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Html } from "@react-three/drei";
 import * as THREE from "three";
@@ -14,8 +7,6 @@ import * as THREE from "three";
 import { useAtom } from "jotai";
 import * as store from "./lib/store";
 import * as util from "./lib/util";
-
-export const ModelContext = createContext();
 
 function DefaultCamera({ ...props }) {
   // const camera = useRef();

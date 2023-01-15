@@ -62,4 +62,6 @@ export type Model = Omit<Definition, "bbox" | "terrain"> & {
   terrain: { path?: string; data: [number, number, number][] };
 };
 
+export type FieldState = { coordToPlane: Function; getAltitude: Function };
+
 export type GeoJSON = GeoJSONType;

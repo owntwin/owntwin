@@ -1,7 +1,6 @@
 import {
   createContext,
   ReactNode,
-  useContext,
   useEffect,
   useMemo,
   useState,
@@ -19,8 +18,6 @@ import * as store from "./lib/store";
 
 import * as util from "./lib/util";
 import { CANVAS } from "./lib/constants";
-
-import { ModelContext } from "./ModelView";
 
 export type Terrain = {
   geometry: THREE.PlaneGeometry;
@@ -41,9 +38,7 @@ function BlankPlane({
   height: number;
   color?: number;
 }) {
-  // const { model } = useContext(ModelContext);
-  const _model = useContext(ModelContext);
-  const model = _model.model; // TODO: Fix
+  const [field] = useAtom(store.fieldAtom);
 
   const [, setCoords] = useState<string[]>([]);
 
@@ -54,10 +49,10 @@ function BlankPlane({
   }, [debug]);
 
   return (
-    <mesh // TODO: model && <mesh ?
+    <mesh // TODO: field && <mesh ?
       onDoubleClick={(ev) => {
-        if (!model.bbox) {
-          console.error("model.bbox is undefined");
+        if (!field.bbox) {
+          console.error("field.bbox is undefined");
           return;
         }
         if (ev.shiftKey) {
@@ -66,7 +61,7 @@ function BlankPlane({
           if (ev.intersections.length > 0) {
             let point = ev.intersections[0].point;
             // console.log(point);
-            let coord = util.planeToCoord(model.bbox, point.x, point.y);
+            let coord = util.planeToCoord(field.bbox, point.x, point.y);
             // setCoords((val) => [...val, `[${coord.lat}, ${coord.lng}, 0]`]);
             setCoords((val) => {
               let coords = [...val, `[${coord.lng}, ${coord.lat}]`];
@@ -102,7 +97,7 @@ function Terrain({
   children?: ReactNode;
 }) {
   // const [vertices, setVertices] = useState(null);
-  const [, setTerrain] = useAtom(store.terrainAtom);
+  const [, setField] = useAtom(store.fieldAtom);
   const segments = CANVAS.segments;
 
   const geometry = useMemo(() => {
@@ -136,7 +131,7 @@ function Terrain({
 
   useEffect(() => {
     if (!vertices) return;
-    setTerrain((current) => Object.assign(current, { vertices, ready: true }));
+    setField((current) => Object.assign(current, { vertices, ready: true }));
   }, [vertices]);
 
   return (

@@ -6,8 +6,7 @@ import * as THREE from "three";
 
 import { CANVAS } from "../lib/constants";
 
-import { useAtom } from "jotai";
-import { getTerrainAltitudeAtom } from "../lib/store";
+import { useFieldState } from "../lib/hooks";
 
 const loader = new SVGLoader();
 
@@ -63,7 +62,7 @@ function SVGMeshLayer({
   url: string;
   color?: string | number;
 }) {
-  const [getTerrainAltitude] = useAtom(getTerrainAltitudeAtom);
+  const fieldState = useFieldState();
 
   const [lines, setLines] = useState<ReactNode[]>([]);
   const [visible, setVisible] = useState(false);
@@ -125,7 +124,7 @@ function SVGMeshLayer({
         const position = Array.from(positionAttributeArray);
         const vertices = position.map((v, i) => {
           if (i % 3 === 2) {
-            const z = getTerrainAltitude(position[i - 2], position[i - 1]);
+            const z = fieldState.getAltitude(position[i - 2], position[i - 1]);
             return z ? z + 2 : v; // TODO: Fix
           } else {
             return v;

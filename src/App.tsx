@@ -104,6 +104,7 @@ function App() {
   const [modelLoaded, setModelLoaded] = useState(false);
 
   const [, setLayersState] = useAtom(store.layersStateAtom);
+  const [, setField] = useAtom(store.fieldAtom);
 
   const [entity, setEntity] = useAtom(store.entityAtom);
   const [detailEntity, setDetailEntity] = useAtom(store.detailEntityAtom);
@@ -113,6 +114,7 @@ function App() {
     (async () => {
       let model = await getModel();
       setModel(model);
+      setField((current) => ({ ...current, bbox: model.bbox }));
       setModelLoaded(true);
     })();
   }, []);

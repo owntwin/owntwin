@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import axios from "axios";
 
@@ -6,13 +6,12 @@ import * as THREE from "three";
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 import { extend, Object3DNode } from "@react-three/fiber";
 
-import * as util from "../../lib/util";
 import { CANVAS } from "../../lib/constants";
 
 import { useAtom } from "jotai";
 import * as store from "../../lib/store";
 
-import { ModelContext } from "../../ModelView";
+import { useFieldState } from "../../lib/hooks";
 
 import SelectableLayer from "./SelectableLayer";
 
@@ -69,10 +68,10 @@ function GeoJSONLayer({
   // NOTE: for backward compatibility; to fix
   edges = extrude;
 
-  const [terrain] = useAtom(store.terrainAtom);
-  const [getTerrainAltitude] = useAtom(store.getTerrainAltitudeAtom);
+  const [field] = useAtom(store.fieldAtom);
 
-  const { model } = useContext(ModelContext);
+  const fieldState = useFieldState();
+
   const [geojson, setGeojson] = useState<GeoJSON.FeatureCollection>();
 
   // Load JSON from URL
@@ -90,18 +89,11 @@ function GeoJSONLayer({
   const geometries = useMemo(() => {
     if (!geojson || !geojson.features) return undefined;
 
-    if (!terrain.ready) return undefined;
-
-    if (!model.bbox) {
+    if (!field.ready) return undefined;
+    if (!field.bbox) {
       // console.error(...);
       return undefined;
     }
-
-    const bbox = model.bbox;
-    const context = {
-      bbox,
-      getTerrainAltitude,
-    };
 
     const geometries: ObjectData[] = [];
 
@@ -118,7 +110,10 @@ function GeoJSONLayer({
         return undefined;
       }
 
-      const origin = util.coordToPlane(bbox, originLng, originLat);
+      const origin = fieldState.coordToPlane(originLng, originLat);
+
+      if (!origin) return false;
+
       if (
         clip &&
         (origin.x < -CANVAS.width / 2 ||
@@ -137,13 +132,12 @@ function GeoJSONLayer({
         geometry = polygon.createGeometry(
           feature as GeoJSON.Feature<GeoJSON.Polygon>,
           extrude,
-          context,
+          fieldState,
         );
       } else if (feature.geometry.type === "LineString") {
         geometry = lineString.createGeometry(
           feature as GeoJSON.Feature<GeoJSON.LineString>,
-          extrude,
-          context,
+          fieldState,
         );
       } else {
         console.error("Not implemented");
@@ -174,7 +168,7 @@ function GeoJSONLayer({
       }
     });
     return geometries;
-  }, [geojson, model.bbox, terrain.ready, clip]);
+  }, [geojson, field.bbox, field.ready, clip]);
 
   const mergedGeometries = useMemo(() => {
     if (!geometries || geometries.length === 0)

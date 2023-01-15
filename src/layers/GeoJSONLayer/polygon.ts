@@ -3,15 +3,14 @@ import ElevatedShapeGeometry from "../../lib/components/ElevatedShapeGeometry";
 
 import * as util from "../../lib/util";
 
-import { BBox } from "../../types";
+import { FieldState } from "../../types";
 
 function computeShape({
   coordinates,
-  bbox,
-  ...props
+  fieldState,
 }: {
   coordinates: GeoJSON.Position[][];
-  bbox: BBox;
+  fieldState: FieldState;
 }) {
   // TODO: Support hole (coordinate[1])
   // TODO: Fix naming
@@ -20,7 +19,7 @@ function computeShape({
   const originLng = _coordinates[0][0],
     originLat = _coordinates[0][1];
 
-  const origin = util.coordToPlane(bbox, originLng, originLat);
+  const origin = fieldState.coordToPlane(originLng, originLat);
   // const z = 0; // _coordinates[0][2]; // TODO: z from GeoJSON?
   // TODO: Fix: terrain is [0,1023], origin.x/y is [-512,512]
   // const z = getTerrainAltitude(origin.x + 1024 / 2, origin.y + 1024 / 2) || 0;
@@ -32,7 +31,7 @@ function computeShape({
     .slice()
     .reverse()
     .forEach((v) => {
-      const p = util.coordToPlane(bbox, v[0], v[1]);
+      const p = fieldState.coordToPlane(v[0], v[1]);
       shape.lineTo(p.x - origin.x, p.y - origin.y);
     });
 
@@ -41,13 +40,11 @@ function computeShape({
 
 function createElevatedShapeGeometry({
   coordinates,
-  bbox,
-  getTerrainAltitude,
+  fieldState,
   ...props
 }: {
   coordinates: GeoJSON.Position[][];
-  bbox: BBox;
-  getTerrainAltitude: Function;
+  fieldState: FieldState;
 }) {
   // TODO: Support hole (coordinate[1])
   // TODO: Fix naming
@@ -56,16 +53,16 @@ function createElevatedShapeGeometry({
   const originLng = _coordinates[0][0],
     originLat = _coordinates[0][1];
 
-  const origin = util.coordToPlane(bbox, originLng, originLat);
+  const origin = fieldState.coordToPlane(originLng, originLat);
 
-  const shape = computeShape({ coordinates, bbox });
+  const shape = computeShape({ coordinates, fieldState });
 
   const elevatation = _coordinates
     .slice()
     .sort(util.coordSorter)
     .map((v) => {
-      const p = util.coordToPlane(bbox, v[0], v[1]);
-      const z = getTerrainAltitude(p.x + 1024 / 2, p.y + 1024 / 2) || 0;
+      const p = fieldState.coordToPlane(v[0], v[1]);
+      const z = fieldState.getAltitude(p.x + 1024 / 2, p.y + 1024 / 2) || 0;
       return z;
       // TODO: return v[2];
     });
@@ -80,13 +77,11 @@ function createElevatedShapeGeometry({
 
 function createExtrudeGeometry({
   coordinates,
-  bbox,
-  getTerrainAltitude,
+  fieldState,
   ...props
 }: {
   coordinates: GeoJSON.Position[][];
-  bbox: BBox;
-  getTerrainAltitude: Function;
+  fieldState: FieldState;
   height: number;
 }) {
   const depth = props.height / 2;
@@ -98,12 +93,13 @@ function createExtrudeGeometry({
   const originLng = _coordinates[0][0],
     originLat = _coordinates[0][1];
 
-  const origin = util.coordToPlane(bbox, originLng, originLat);
+  const origin = fieldState.coordToPlane(originLng, originLat);
   // const z = 0; // _coordinates[0][2]; // TODO: z from GeoJSON?
   // TODO: Fix: terrain is [0,1023], origin.x/y is [-512,512]
-  const z = getTerrainAltitude(origin.x + 1024 / 2, origin.y + 1024 / 2) || 0;
+  const z =
+    fieldState.getAltitude(origin.x + 1024 / 2, origin.y + 1024 / 2) || 0;
 
-  const shape = computeShape({ coordinates, bbox });
+  const shape = computeShape({ coordinates, fieldState });
 
   const extrudeSettings = {
     steps: 1,
@@ -120,7 +116,8 @@ function createExtrudeGeometry({
 export function createGeometry(
   feature: GeoJSON.Feature<GeoJSON.Polygon>,
   extrude: boolean,
-  { bbox, getTerrainAltitude }: { bbox: BBox; getTerrainAltitude: Function },
+  fieldState: FieldState,
+  // { bbox, getTerrainAltitude }: { bbox: BBox; getTerrainAltitude: Function },
 ) {
   let geometry: THREE.BufferGeometry;
 
@@ -134,15 +131,13 @@ export function createGeometry(
     }
     geometry = createExtrudeGeometry({
       coordinates: feature.geometry.coordinates,
-      bbox: bbox,
       height: feature.properties.attributes.measuredHeight,
-      getTerrainAltitude,
+      fieldState,
     });
   } else {
     geometry = createElevatedShapeGeometry({
       coordinates: feature.geometry.coordinates,
-      bbox: bbox,
-      getTerrainAltitude,
+      fieldState,
     });
   }
 

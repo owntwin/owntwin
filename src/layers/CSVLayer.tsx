@@ -1,11 +1,9 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import axios from "axios";
 
-import { BBox } from "../types";
 import * as util from "../lib/util";
 
-import { ModelContext } from "../ModelView";
 import {
   // SphereAnchor,
   BeamAnchor,
@@ -13,12 +11,10 @@ import {
 
 import { parse as parseCSV } from "csv-parse/browser/esm/sync";
 
-import { useAtom } from "jotai";
-import { getTerrainAltitudeAtom } from "../lib/store";
+import { useFieldState } from "../lib/hooks";
 
 function Anchor({
   coordinates,
-  bbox,
   label,
   labelVisibility = "auto",
   clip = true,
@@ -26,7 +22,6 @@ function Anchor({
   ...props
 }: {
   coordinates: [number | string, number | string, number | string];
-  bbox: BBox;
   label?: string;
   labelVisibility?: "auto" | "always";
   clip?: boolean;
@@ -34,16 +29,20 @@ function Anchor({
   color?: number | string;
   opacity?: number;
 }) {
-  const [getTerrainAltitude] = useAtom(getTerrainAltitudeAtom);
+  const fieldState = useFieldState();
 
   const { origin, z } = useMemo(() => {
     const originLng = parseFloat(coordinates[0].toString()),
       originLat = parseFloat(coordinates[1].toString());
-    const origin = util.coordToPlane(bbox, originLng, originLat);
+    const origin = fieldState.coordToPlane(originLng, originLat);
+
+    if (!origin)
+      return { origin: { x: undefined, y: undefined }, z: undefined };
 
     // const z = 0; // coordinates[0][2]; // TODO: z from GeoJSON?
     // TODO: Fix: terrain is [0,1023], origin.x/y is [-512,512]
-    const z = getTerrainAltitude(origin.x + 1024 / 2, origin.y + 1024 / 2) || 0;
+    const z =
+      fieldState.getAltitude(origin.x + 1024 / 2, origin.y + 1024 / 2) || 0;
 
     return { origin, z };
   }, [coordinates]);
@@ -52,6 +51,8 @@ function Anchor({
   // geom.translate(origin.x, origin.y, z);
 
   // console.log(coordinates, origin, [origin.x, origin.y, z]);
+
+  if (!origin.x || !origin.y) return null;
 
   // NOTE: Clip off-terrain anchors
   // TODO: Fix
@@ -89,12 +90,6 @@ export default function CSVLayer({
   color?: string | number;
   size?: { height?: number };
 }) {
-  const _model = useContext(ModelContext);
-  const model = _model.model; // TODO: Fix
-  const bbox = model.bbox;
-
-  if (!bbox) return null;
-
   const [data, setData] = useState<Record<string, any>>();
 
   /* load JSON from URL */
@@ -123,7 +118,6 @@ export default function CSVLayer({
               key={i} // TODO: Fix key
               clip={clip}
               coordinates={[record[props.keys.lng], record[props.keys.lat], 0]}
-              bbox={bbox}
               label={record[props.keys.label]}
               labelVisibility={props.labelVisibility}
               color={props.color}
