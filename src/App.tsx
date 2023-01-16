@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { useAtom } from "jotai";
 import * as store from "./lib/store";
 
+import { Helmet } from "react-helmet-async";
 import axios from "axios";
 
 import ModelView from "./ModelView";
@@ -159,6 +160,7 @@ function App() {
       id="App"
       className={clsx("App", "fixed top-0 bottom-0 left-0 right-0")}
     >
+      <Helmet>{model.name && <title>{model.name} - OwnTwin</title>}</Helmet>
       {/* <div
         className={clsx(
           "absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center text-sm text-gray-400 pointer-events-none",
