@@ -77,7 +77,9 @@ function BeamAnchor({
     <mesh position={position}>
       <cylinderGeometry ref={geometry} args={[radius, radius, height, 8]} />
       <meshBasicMaterial color={color} opacity={0.5} transparent={true} />
-      <Label text={label} visible={labelVisibility === "always" || closeup} />
+      <Label visible={labelVisibility === "always" || closeup}>
+        <pre>{label}</pre>
+      </Label>
     </mesh>
   );
 }

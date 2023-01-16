@@ -1,5 +1,6 @@
 import { useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
+import { ReactNode } from "react";
 
 function SVGStrokeFilter() {
   return (
@@ -50,8 +51,8 @@ function SVGLabel({
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 400 20"
           height="1.5rem"
-          // style={{ display: visible && current > 0.5 ? "block" : "none" }}
-          // style={{ dominantBaseline: "hanging" }} // NOTE: Not working in Safari :(
+        // style={{ display: visible && current > 0.5 ? "block" : "none" }}
+        // style={{ dominantBaseline: "hanging" }} // NOTE: Not working in Safari :(
         >
           {/* <filter id="stroke">
               <feMorphology
@@ -95,12 +96,12 @@ function SVGLabel({
 }
 
 function Label({
-  text,
   visible,
+  children,
   ...props
 }: {
-  text?: string;
   visible: boolean;
+  children?: ReactNode,
 }) {
   return (
     <Html
@@ -125,7 +126,7 @@ function Label({
           color: "white",
         }}
       >
-        {text}
+        {children}
       </div>
       <div
         style={{
@@ -137,7 +138,7 @@ function Label({
           color: "rgb(107 114 128)",
         }}
       >
-        {text}
+        {children}
       </div>
     </Html>
   );
