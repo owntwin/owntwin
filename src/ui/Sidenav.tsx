@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Toolbar from "@radix-ui/react-toolbar";
 
@@ -7,6 +7,7 @@ import {
   mdiAccountGroup,
   mdiFullscreen,
   mdiCursorPointer,
+  mdiCursorMove,
 } from "@mdi/js";
 import { Icon } from "@mdi/react";
 
@@ -19,7 +20,10 @@ import {
 } from "../addon/draw/components/Button";
 
 import { useAtom } from "jotai";
+import * as appStore from "../lib/store";
 import * as drawStore from "../addon/draw/store";
+
+import { testTouch } from "../lib/util";
 
 import { Z_INDEX } from "../lib/constants";
 
@@ -99,43 +103,117 @@ function FullscreenButton() {
   );
 }
 
-function CursorControlButton({ size }: { size: number | string }) {
+function CursorControlButton({
+  size,
+  className,
+  ...props
+}: {
+  size: number | string;
+  className?: string;
+}) {
   const [, setSelectedTool] = useAtom(drawStore.selectedToolAtom);
 
   return (
-    <div className="relative flex items-center">
-      <button
-        className="focus:outline-none"
-        onClick={() => {
-          setSelectedTool(null);
-        }}
-      >
-        <Icon
-          className="fill-current text-gray-600 hover:text-black"
-          path={mdiCursorPointer}
-          size={size}
-        />
-      </button>
-    </div>
+    <button
+      className={`focus:outline-none ${className}`}
+      onClick={() => {
+        setSelectedTool(null);
+      }}
+      {...props}
+    >
+      <Icon
+        className="fill-current text-gray-600 hover:text-black"
+        path={mdiCursorPointer}
+        size={size}
+      />
+    </button>
+  );
+}
+
+function CursorMoveButton({
+  size,
+  className,
+  as = "button",
+  ...props
+}: {
+  size: number | string;
+  className?: string;
+  as?: "button" | "div";
+}) {
+  const [, setControlsState] = useAtom(appStore.controlsStateAtom);
+
+  return (
+    <button
+      className={`focus:outline-none ${className}`}
+      onClick={() => {
+        setControlsState((state) => {
+          return Object.assign(state, { truckMode: !state.truckMode });
+        });
+      }}
+      {...props}
+    >
+      <Icon
+        className="fill-current text-gray-600 hover:text-black"
+        path={mdiCursorMove}
+        size={size}
+      />
+    </button>
   );
 }
 
 function InteractionToolbar() {
-  const [selectedTool] = useAtom(drawStore.selectedToolAtom);
+  const [value, setValue] = useState("cursor-control");
+  const [selectedTool, setSelectedTool] = useAtom(drawStore.selectedToolAtom);
+  const [, setControlsState] = useAtom(appStore.controlsStateAtom);
 
+  const isTouch = useMemo(() => testTouch(), []);
+
+  // TODO: ensure performance
+  useEffect(() => {
+    if (selectedTool !== null && !["draw", "erase"].includes(value)) {
+      setSelectedTool(null);
+    }
+    if (
+      (selectedTool === null &&
+        !["cursor-control", "cursor-move"].includes(value)) ||
+      !value
+    ) {
+      setValue("cursor-control");
+    }
+    // TODO: performance fix
+    if (value !== "cursor-move") {
+      setControlsState((state) => {
+        return Object.assign(state, { truckMode: false });
+      });
+    }
+  }, [value, selectedTool]);
+
+  // TODO: fix invalid button inside button
+  // TODO: toggle cursor mode depending modifier keys
   return (
     <Toolbar.Root>
       <Toolbar.ToggleGroup
         type="single"
         className="ml-3 flex items-center relative gap-1.5 bg-white rounded-full border px-3 py-1 h-9"
+        value={value}
+        onValueChange={(value) => {
+          setValue(value);
+        }}
       >
         <Toolbar.ToggleItem
-          value="cursor"
-          className="hover:border-b-2 radix-state-on:border-b-2 pr-1"
-          data-state={selectedTool === null ? "on" : "off"}
+          value="cursor-control"
+          className="hover:border-b-2 radix-state-on:border-b-2 relative flex items-center px-[2px] py-[1px]"
         >
           <CursorControlButton size="22px" />
         </Toolbar.ToggleItem>
+        {!isTouch && (
+          <Toolbar.ToggleItem
+            value="cursor-move"
+            className="hover:border-b-2 radix-state-on:border-b-2 relative flex items-center px-[2px] py-[1px]"
+          >
+            <CursorMoveButton size="22px" />
+          </Toolbar.ToggleItem>
+        )}
         {addons.includes("draw") && (
           <>
             <Toolbar.ToggleItem

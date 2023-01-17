@@ -69,14 +69,21 @@ export function ExtendedCameraControls({ ...props }) {
 
     const cameraControls = ref.current;
 
+    // TODO: ensure proper order
+    if (controlsState.truckMode) {
+      cameraControls.mouseButtons.left = CameraControlsDefault.ACTION.TRUCK;
+    } else {
+      cameraControls.mouseButtons.left = CameraControlsDefault.ACTION.ROTATE;
+    }
+
     if (!controlsState.enableRotate) {
       cameraControls.mouseButtons.left = CameraControlsDefault.ACTION.NONE;
       cameraControls.touches.one = CameraControlsDefault.ACTION.NONE;
     } else {
-      cameraControls.mouseButtons.left = CameraControlsDefault.ACTION.ROTATE;
+      // cameraControls.mouseButtons.left = CameraControlsDefault.ACTION.ROTATE;
       cameraControls.touches.one = CameraControlsDefault.ACTION.TOUCH_ROTATE;
     }
-  }, [controlsState]);
+  }, [controlsState, controlsState.enableRotate, controlsState.truckMode]);
 
   const cb = useCallback((ev: any) => {
     const deboncedReset = debounce(() => {
@@ -218,7 +225,7 @@ export function ExtendedCameraControls({ ...props }) {
       dollyToCursor={true}
       azimuthRotateSpeed={0.5}
       polarRotateSpeed={0.5}
-       // TODO: dynamically change speed depending on pointerType
+      // TODO: dynamically change speed depending on pointerType
       dollySpeed={isTouch() ? 0.9 : 0.5}
       boundaryEnclosesCamera={true}
     />

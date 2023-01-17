@@ -195,6 +195,10 @@ function localPlaneToCoord(bbox: BBox, x: number, y: number) {
 const coordSorter = (a: number[], b: number[]) =>
   a[0] - b[0] != 0 ? a[0] - b[0] : a[1] - b[1] != 0 ? a[1] - b[1] : a[2] - b[2];
 
+const testTouch = () => {
+  return window.matchMedia("(pointer: coarse)").matches ? true : false;
+};
+
 export {
   canvas,
   coordToPixel,
@@ -205,4 +209,5 @@ export {
   localPlaneToCoord,
   // getTerrainAltitude,
   coordSorter,
+  testTouch,
 };

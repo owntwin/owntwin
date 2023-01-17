@@ -18,8 +18,9 @@ const hoveredEntityAtom = atom<{ id: string | null; entity: any | null }>({
   id: null,
   entity: null,
 });
-const controlsStateAtom = atom<{ enableRotate: boolean }>({
+const controlsStateAtom = atom<{ enableRotate: boolean; truckMode: boolean }>({
   enableRotate: true,
+  truckMode: false,
 });
 
 const fieldAtom = atom<{
