@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 import { mdiHelpCircleOutline, mdiAccountGroup, mdiFullscreen } from "@mdi/js";
@@ -72,6 +73,13 @@ function HelpMenuButton() {
 }
 
 function Sidenav({ communityURL, ...props }: { communityURL?: string }) {
+  const [isFullscreenAvailable, setIsFullscreenAvailable] = useState(true);
+
+  useEffect(() => {
+    // NOTE: fullscreen is unavailable on iPhone; what about on Android?
+    setIsFullscreenAvailable(document.fullscreenEnabled);
+  }, []);
+
   return (
     <div
       className="fixed bottom-4 left-4 right-4 sm:right-auto flex items-center h-10"
@@ -89,21 +97,23 @@ function Sidenav({ communityURL, ...props }: { communityURL?: string }) {
           </a>
         </div>
       )}
-      <div className="ml-3 flex items-center">
-        <button
-          className="focus:outline-none"
-          onClick={() => {
-            const requestFullscreen =
-              document.body.requestFullscreen ||
-              (document.body as any).webkitRequestFullscreen;
-            requestFullscreen.call(document.body);
-          }}
-        >
-          <svg style={{ width: "24px", height: "24px" }} viewBox="0 0 24 24">
-            <path fill="#000000" d={mdiFullscreen} />
-          </svg>
-        </button>
-      </div>
+      {isFullscreenAvailable && (
+        <div className="ml-3 flex items-center">
+          <button
+            className="focus:outline-none"
+            onClick={() => {
+              const requestFullscreen =
+                document.body.requestFullscreen ||
+                (document.body as any).webkitRequestFullscreen;
+              requestFullscreen.call(document.body);
+            }}
+          >
+            <svg style={{ width: "24px", height: "24px" }} viewBox="0 0 24 24">
+              <path fill="#000000" d={mdiFullscreen} />
+            </svg>
+          </button>
+        </div>
+      )}
       {addons.includes("draw") && (
         <div className="ml-3 flex items-center relative gap-1.5 bg-white/75 rounded-full border px-3 py-1">
           <DrawButton size="24px" />
