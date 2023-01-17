@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import * as Toolbar from "@radix-ui/react-toolbar";
 
-import { mdiHelpCircleOutline, mdiAccountGroup, mdiFullscreen } from "@mdi/js";
+import {
+  mdiHelpCircleOutline,
+  mdiAccountGroup,
+  mdiFullscreen,
+  mdiCursorPointer,
+} from "@mdi/js";
 import { Icon } from "@mdi/react";
 
 import DiscussInput from "../addon/discuss/components/Input";
@@ -11,6 +17,9 @@ import {
   DrawButton,
   EraseButton,
 } from "../addon/draw/components/Button";
+
+import { useAtom } from "jotai";
+import * as drawStore from "../addon/draw/store";
 
 import { Z_INDEX } from "../lib/constants";
 
@@ -72,6 +81,82 @@ function HelpMenuButton() {
   );
 }
 
+function FullscreenButton() {
+  return (
+    <button
+      className="focus:outline-none"
+      onClick={() => {
+        const requestFullscreen =
+          document.body.requestFullscreen ||
+          (document.body as any).webkitRequestFullscreen;
+        requestFullscreen.call(document.body);
+      }}
+    >
+      <svg style={{ width: "24px", height: "24px" }} viewBox="0 0 24 24">
+        <path fill="#000000" d={mdiFullscreen} />
+      </svg>
+    </button>
+  );
+}
+
+function CursorControlButton({ size }: { size: number | string }) {
+  const [, setSelectedTool] = useAtom(drawStore.selectedToolAtom);
+
+  return (
+    <div className="relative flex items-center">
+      <button
+        className="focus:outline-none"
+        onClick={() => {
+          setSelectedTool(null);
+        }}
+      >
+        <Icon
+          className="fill-current text-gray-600 hover:text-black"
+          path={mdiCursorPointer}
+          size={size}
+        />
+      </button>
+    </div>
+  );
+}
+
+function InteractionToolbar() {
+  const [selectedTool] = useAtom(drawStore.selectedToolAtom);
+
+  return (
+    <Toolbar.Root>
+      <Toolbar.ToggleGroup
+        type="single"
+        className="ml-3 flex items-center relative gap-1.5 bg-white rounded-full border px-3 py-1 h-9"
+      >
+        <Toolbar.ToggleItem
+          value="cursor"
+          className="hover:border-b-2 radix-state-on:border-b-2 pr-1"
+          data-state={selectedTool === null ? "on" : "off"}
+        >
+          <CursorControlButton size="22px" />
+        </Toolbar.ToggleItem>
+        {addons.includes("draw") && (
+          <>
+            <Toolbar.ToggleItem
+              value="draw"
+              className="hover:border-b-2 radix-state-on:border-b-2"
+            >
+              <DrawButton size="24px" />
+            </Toolbar.ToggleItem>
+            <Toolbar.ToggleItem
+              value="erase"
+              className="hover:border-b-2 radix-state-on:border-b-2"
+            >
+              <EraseButton size="24px" />
+            </Toolbar.ToggleItem>
+          </>
+        )}
+      </Toolbar.ToggleGroup>
+    </Toolbar.Root>
+  );
+}
+
 function Sidenav({ communityURL, ...props }: { communityURL?: string }) {
   const [isFullscreenAvailable, setIsFullscreenAvailable] = useState(true);
 
@@ -99,28 +184,17 @@ function Sidenav({ communityURL, ...props }: { communityURL?: string }) {
       )}
       {isFullscreenAvailable && (
         <div className="ml-3 flex items-center">
-          <button
-            className="focus:outline-none"
-            onClick={() => {
-              const requestFullscreen =
-                document.body.requestFullscreen ||
-                (document.body as any).webkitRequestFullscreen;
-              requestFullscreen.call(document.body);
-            }}
-          >
-            <svg style={{ width: "24px", height: "24px" }} viewBox="0 0 24 24">
-              <path fill="#000000" d={mdiFullscreen} />
-            </svg>
-          </button>
+          <FullscreenButton />
         </div>
       )}
-      {addons.includes("draw") && (
+      <InteractionToolbar />
+      {/* {addons.includes("draw") && (
         <div className="ml-3 flex items-center relative gap-1.5 bg-white/75 rounded-full border px-3 py-1">
           <DrawButton size="24px" />
-          {/* <BrushButton size="24px" /> */}
+          // <BrushButton size="24px" />
           <EraseButton size="24px" />
         </div>
-      )}
+      )} */}
       {addons.includes("discuss") && (
         <>
           <div className="ml-3 flex items-center relative">
