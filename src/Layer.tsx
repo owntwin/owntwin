@@ -34,6 +34,7 @@ function Layer({
       <Suspense>
         <GeoJSONLayer
           url={layer.path}
+          data={layer.data}
           opacity={0.5}
           colors={layer.colors}
           extrude={layer.extrude}

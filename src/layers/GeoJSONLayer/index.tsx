@@ -41,6 +41,7 @@ type ObjectData = {
 
 function GeoJSONLayer({
   url,
+  data,
   clip = true,
   extrude = true,
   edges = false,
@@ -48,7 +49,8 @@ function GeoJSONLayer({
   opacity = 0.5,
   ...props
 }: {
-  url: string;
+  url?: string;
+  data?: any;
   clip?: boolean;
   extrude?: boolean;
   edges?: boolean;
@@ -76,14 +78,17 @@ function GeoJSONLayer({
 
   // Load JSON from URL
   useEffect(() => {
-    if (!url) return;
-    (async () => {
-      const data: GeoJSON.FeatureCollection = await axios
-        .get(url)
-        .then((resp) => resp.data);
-      // console.log(data);
+    if (url) {
+      (async () => {
+        const data: GeoJSON.FeatureCollection = await axios
+          .get(url)
+          .then((resp) => resp.data);
+        // console.log(data);
+        setGeojson(data);
+      })();
+    } else if (data) {
       setGeojson(data);
-    })();
+    }
   }, [url]);
 
   const geometries = useMemo(() => {
