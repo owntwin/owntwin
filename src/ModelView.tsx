@@ -133,7 +133,7 @@ function ModelView({
     (async () => {
       if (model.terrain) {
         model.terrain.data = await fetchTerrainData(model.terrain, basePath);
-        setLevelmap(model.terrain.data || []);
+        model.terrain.data && setLevelmap(model.terrain.data);
       }
       if (model.building) {
         model.building.data = await fetchBuildingData(model.building, basePath);
