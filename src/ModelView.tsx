@@ -123,7 +123,9 @@ function ModelView({
   const [, setEntity] = useAtom(store.entityAtom);
   const [, setDetailEntity] = useAtom(store.detailEntityAtom);
 
-  const [levelmap, setLevelmap] = useState<Levelmap>([]);
+  const [levelmap, setLevelmap] = useState<Levelmap>(
+    Array(1000).fill([0, 0, 0]),
+  );
   const [buildings, setBuildings] = useState<types.Building[]>([]);
 
   // TODO: move away this somewhere else

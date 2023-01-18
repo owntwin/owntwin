@@ -1,10 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, ReactNode, useEffect, useMemo, useState } from "react";
 
 // import { Plane } from '@react-three/drei';
 import {
@@ -75,6 +69,7 @@ function BlankPlane({
       <planeGeometry args={[width, height]} />
       <meshBasicMaterial
         color={color}
+        depthWrite={false}
         polygonOffset={true}
         polygonOffsetFactor={1}
       />
@@ -87,6 +82,7 @@ function Terrain({
   elevationZoom,
   width,
   height,
+  color = 0xfaf9f9,
   children,
   ...props
 }: {
@@ -94,6 +90,7 @@ function Terrain({
   elevationZoom: number;
   width: number;
   height: number;
+  color?: number | string;
   children?: ReactNode;
 }) {
   // const [vertices, setVertices] = useState(null);
@@ -139,7 +136,7 @@ function Terrain({
       <BlankPlane width={width} height={height} />
       <mesh name="terrain" geometry={geometry}>
         {/* <meshBasicMaterial color={0xe5e7eb} /> */}
-        <meshBasicMaterial color={0xfaf9f9} depthWrite={false} />
+        <meshBasicMaterial color={color} />
         {/* <meshBasicMaterial color={0xf1f3f4} /> */}
         {/* <meshBasicMaterial color={0xf8f9fa} /> */}
       </mesh>
