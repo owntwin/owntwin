@@ -84,7 +84,7 @@ function createExtrudeGeometry({
   fieldState: FieldState;
   height: number;
 }) {
-  const depth = props.height / 2;
+  const depth = props.height * fieldState.pixelPerMeter;
 
   // TODO: Support hole (coordinate[1])
   // TODO: Fix naming
