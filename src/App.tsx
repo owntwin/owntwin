@@ -19,7 +19,7 @@ import "./App.css";
 import { mdiArrowLeftThinCircleOutline, mdiCloseCircle } from "@mdi/js";
 
 import { model as defaultModel } from "./model";
-import { Definition, Model, Layer } from "./types";
+import { Model, Layer } from "./types";
 
 // const DEBUG = false;
 
@@ -128,7 +128,7 @@ function App() {
 
       // TODO: Refactoring
       Object.entries(model.modules).forEach(([id, module]) => {
-        const layers = module.definition.layers || [];
+        const layers = module.layers || [];
         layers.forEach((layer) => {
           acc[`${layer.id}`] = {
             enabled:
@@ -169,12 +169,7 @@ function App() {
       >
         <div>表示されない場合は再読み込み</div>
       </div> */}
-      <div
-        className={clsx(
-          "absolute top-0 bottom-0 left-0 right-0",
-          !detailEntity ? "block" : "hidden",
-        )}
-      >
+      <div className="absolute top-0 bottom-0 left-0 right-0">
         {modelLoaded && <ModelView model={model} basePath={model._basePath} />}
       </div>
       <Transition nodeRef={transitionRef} in={!!detailEntity} timeout={1}>

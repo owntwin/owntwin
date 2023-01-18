@@ -178,14 +178,15 @@ function ModelView({
       >
         {Object.values(model.modules || [])
           .reduce(
-            (acc, module) => acc.concat(module.definition.layers || []),
+            (acc, module) => acc.concat(module.layers || []),
             [] as types.Layer[],
           )
-          .map((layer) =>
-            layersState[layer.id] && layersState[layer.id].enabled ? (
-              <Layer key={layer.id} def={layer} basePath={basePath} />
-            ) : null,
-          )}
+          .map((layer) => {
+            if (!layersState[layer.id] || !layersState[layer.id].enabled) {
+              return null;
+            }
+            return <Layer key={layer.id} layer={layer} basePath={basePath} />;
+          })}
         {buildings.map((building) => (
           <Building
             key={building.id}

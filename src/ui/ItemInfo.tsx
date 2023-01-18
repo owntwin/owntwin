@@ -50,9 +50,8 @@ function ModulePane({
   const [layersState, setLayersState] = useAtom(store.layersStateAtom);
   const [entity] = useAtom(store.entityAtom);
 
-  const definition = module.definition;
-  const layers = definition.layers;
-  const actions = definition.actions || [];
+  const layers = module.layers;
+  const actions = module.actions || [];
   const filters: { name: string }[] = [];
 
   const localId = useId();

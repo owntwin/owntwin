@@ -7,43 +7,47 @@ import CSVLayer from "./layers/CSVLayer";
 import { Layer as ILayer } from "./types";
 
 function Layer({
-  def,
+  layer,
   basePath,
   ...props
 }: {
-  def: ILayer;
+  layer: ILayer;
   basePath?: string;
 }) {
-  if (basePath) {
-    def.path = basePath ? new URL(def.path, basePath).toString() : def.path;
+  // console.log("layer", layer);
+
+  if (layer.path && basePath) {
+    layer.path = basePath
+      ? new URL(layer.path, basePath).toString()
+      : layer.path;
   }
-  if (def.format === "svg") {
-    return <SVGMeshLayer url={def.path} color={def.color} />;
-  } else if (def.format === "png") {
+  if (layer.format === "svg") {
+    return <SVGMeshLayer url={layer.path} color={layer.color} />;
+  } else if (layer.format === "png") {
     return (
       <Suspense>
-        <PNGLayer url={def.path} opacity={0.5} />
+        <PNGLayer url={layer.path} opacity={0.5} />
       </Suspense>
     );
-  } else if (def.format === "geojson") {
+  } else if (layer.format === "geojson") {
     return (
       <Suspense>
         <GeoJSONLayer
-          url={def.path}
+          url={layer.path}
           opacity={0.5}
-          colors={def.colors}
-          extrude={def.extrude}
+          colors={layer.colors}
+          extrude={layer.extrude}
         />
       </Suspense>
     );
-  } else if (def.format === "csv") {
+  } else if (layer.format === "csv") {
     return (
       <CSVLayer
-        url={def.path}
-        keys={def.keys}
-        color={def.color}
-        labelVisibility={def.labelVisibility}
-        size={def.size}
+        url={layer.path}
+        keys={layer.keys}
+        color={layer.color}
+        labelVisibility={layer.labelVisibility}
+        size={layer.size}
         opacity={0.5}
       />
     );
