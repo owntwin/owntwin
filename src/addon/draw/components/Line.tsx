@@ -37,11 +37,8 @@ export function Line({
   const _points = useMemo(
     () =>
       points
-        .map((p: any) => new THREE.Vector3(p.x, p.y, p.z + 1)) // NOTE: z+1 to avoid flickering
-        .reduce(
-          (prev: number[], current) => [...prev, ...current.toArray()],
-          [],
-        ),
+        .map((p: any) => [p.x, p.y, p.z + 1]) // NOTE: z+1 to avoid flickering
+        .reduce((prev: number[], current) => [...prev, ...current], []),
     [points],
   );
 
@@ -86,7 +83,10 @@ export const LinePen = forwardRef(
     }
 
     const [enabled, setEnabled] = useState(false);
-    const [points, setPoints] = useState<THREE.Vector3[]>([]);
+    // const [points, setPoints] = useState<THREE.Vector3[]>([]);
+    const [points, setPoints] = useState<{ x: number; y: number; z: number }[]>(
+      [],
+    );
 
     const onDown = (ev?: unknown) => {
       if (!enabled) {
@@ -106,7 +106,12 @@ export const LinePen = forwardRef(
         if (enabled) {
           if (ref.current) {
             // NOTE: The line below could be slow, but what can we do?
-            const pt = ref.current.position.clone();
+            // const pt = ref.current.position.clone();
+            const pt = {
+              x: ref.current.position.x,
+              y: ref.current.position.y,
+              z: ref.current.position.z,
+            };
             // const pt = ev.eventObject.position.clone(); // Seems slower
 
             // NOTE: setTimeout here makes little sense, but we keep it for future improvements;
@@ -138,9 +143,9 @@ export const LinePen = forwardRef(
           onPointerUp={() => {
             setEnabled(false);
             const size = Math.log(points.length) * 10;
-            const curvePoints = new THREE.CatmullRomCurve3(points).getPoints(
-              size,
-            );
+            const curvePoints = new THREE.CatmullRomCurve3(
+              points.map((p) => new THREE.Vector3(p.x, p.y, p.z)),
+            ).getPoints(size);
             drawState.drawings.push({
               points: curvePoints.map((p) => ({ x: p.x, y: p.y, z: p.z })),
               uuid: THREE.MathUtils.generateUUID(),
