@@ -67,7 +67,7 @@ function ModulePane({
         }}
       >
         <div className="flex items-center">
-          <div className="flex-grow">{definition.name}</div>
+          <div className="flex-grow">{module.name}</div>
           <div className="flex items-center">
             <div
               className="rounded p-1 hover:bg-blue-200"
@@ -98,7 +98,7 @@ function ModulePane({
               <div className="my-1">説明</div>
               <div className="p-2 text-sm bg-gray-100 rounded">
                 <pre className="break-words whitespace-pre-wrap">
-                  {definition.description || (
+                  {module.description || (
                     <span className="text-gray-600">未登録</span>
                   )}
                 </pre>
@@ -106,7 +106,7 @@ function ModulePane({
               <div className="mt-2 mb-1">利用条件</div>
               <div className="p-2 text-sm bg-gray-100 rounded">
                 <pre className="break-words whitespace-pre-wrap">
-                  {definition.license || (
+                  {module.license || (
                     <span className="text-gray-600">未登録</span>
                   )}
                 </pre>
@@ -216,7 +216,7 @@ function ModulePane({
                         <Checkbox.Indicator className=""></Checkbox.Indicator>
                       </Checkbox.Root> */}
                       <input
-                        id={`${localId}-${definition.name}-layer-checkbox-${i}`}
+                        id={`${localId}-${module.name}-layer-checkbox-${i}`}
                         className="mr-1"
                         type="checkbox"
                         checked={layersState[item.id].enabled}
@@ -227,7 +227,9 @@ function ModulePane({
                           });
                         }}
                       />
-                      <label htmlFor={`${localId}-${definition.name}-layer-checkbox-${i}`}>
+                      <label
+                        htmlFor={`${localId}-${module.name}-layer-checkbox-${i}`}
+                      >
                         {item.name}
                       </label>
                       {["csv"].includes(item.format) && ( // TODO: Improve
@@ -276,16 +278,18 @@ function ModulePane({
 }
 
 function ItemInfo({
-  name,
   type,
   iri,
+  name,
   item,
   modules,
   properties,
   isOpen,
   back,
   ...props
-}: Pick<Definition, "name" | "type" | "iri" | "modules" | "properties"> & {
+}: Pick<Definition, "@type" | "@id" | "name" | "modules" | "properties"> & {
+  type?: string;
+  iri?: string;
   item: { description?: string }; // TODO: Fix
   isOpen: boolean;
   back: ReactNode;

@@ -95,10 +95,9 @@ function Debug() {
 
 function App() {
   const [model, setModel] = useState<Partial<Model>>({
-    id: undefined,
+    "@type": undefined,
+    "@id": undefined,
     name: undefined,
-    type: undefined,
-    iri: undefined,
     description: undefined,
     modules: [],
   });
@@ -143,7 +142,7 @@ function App() {
   }, [setLayersState, model.modules, model.properties]);
 
   useEffect(() => {
-    !entity && model && model.id && setEntity(model);
+    !entity && model && setEntity(model);
     if (!entity) return;
     setItem({
       name: entity.name,
@@ -201,9 +200,9 @@ function App() {
       </Transition>
       {modelLoaded && (
         <ItemInfo
-          name={item.name}
-          type={item.type}
-          iri={item.iri}
+          type={model["@type"]}
+          iri={model["@id"]}
+          name={model.name}
           item={item}
           modules={model.modules || []}
           properties={model.properties}
@@ -237,7 +236,7 @@ function App() {
       )}
       <Debug />
       <div className="absolute top-4 left-auto right-4 hidden sm:flex gap-2 h-10">
-        <ExportButton iri={model.iri} />
+        <ExportButton iri={model["@id"]} />
         <Clock />
       </div>
       {modelLoaded && <Sidenav communityURL={model.community} />}
