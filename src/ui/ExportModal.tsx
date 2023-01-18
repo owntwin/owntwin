@@ -48,7 +48,7 @@ export default function ExportModal({
                 </h3>
                 <div className="mt-2 flex justify-center sm:justify-start">
                   <a
-                    href={`${iri}/twin.json`} // TODO: Fix
+                    href={`${iri}/twinmodel.json`} // TODO: Fix
                     className="flex items-center text-gray-600 hover:text-gray-700"
                     target="_blank"
                     rel="noreferrer"

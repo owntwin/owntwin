@@ -33,10 +33,10 @@ async function getModel(): Promise<Partial<Model>> {
   if (params.has("twin")) {
     basePath = params.get("twin");
     if (typeof basePath !== "string") return {};
-    path = new URL("./twin.json", basePath).toString();
+    path = new URL("./twinmodel.json", basePath).toString();
   } else {
     basePath = null;
-    path = "./twin.json";
+    path = "./twinmodel.json";
   }
   let modelData = await axios
     .get(path)
