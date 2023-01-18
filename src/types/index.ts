@@ -26,13 +26,11 @@ export type Action = {
 } & Record<string, any>;
 
 export type ModuleDefinition = {
-  definition: {
-    name: string;
-    description: string;
-    license: string;
-    actions: Action[];
-    layers: Layer[];
-  };
+  name: string;
+  description: string;
+  license: string;
+  actions: Action[];
+  layers: Layer[];
 };
 
 export type BBox = {
@@ -43,18 +41,18 @@ export type BBox = {
 };
 
 export type Definition = {
-  id: string;
+  "@id": string;
+  "@type": string;
   name: string;
-  type: string;
-  iri: string;
   description: string;
   license: string;
   community: string;
   bbox: [number, number, number, number];
   terrain: { path: string };
-  building: Building;
   properties: Record<string, any>;
+  // layers: Layer[];
   modules: ModuleDefinition[];
+  building?: Building;
 };
 
 export type Model = Omit<Definition, "bbox" | "terrain"> & {
@@ -62,6 +60,10 @@ export type Model = Omit<Definition, "bbox" | "terrain"> & {
   terrain: { path?: string; data: [number, number, number][] };
 };
 
-export type FieldState = { coordToPlane: Function; getAltitude: Function };
+export type FieldState = {
+  pixelPerMeter: number;
+  coordToPlane: Function;
+  getAltitude: Function;
+};
 
 export type GeoJSON = GeoJSONType;
