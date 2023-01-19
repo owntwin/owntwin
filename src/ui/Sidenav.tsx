@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Toolbar from "@radix-ui/react-toolbar";
+// import * as Popover from "@radix-ui/react-popover";
 
 import {
   mdiHelpCircleOutline,
@@ -170,7 +171,10 @@ function InteractionToolbar() {
 
   // TODO: ensure performance
   useEffect(() => {
-    if (selectedTool !== null && !["draw", "erase"].includes(value)) {
+    if (
+      selectedTool !== null &&
+      !["draw", "highlight", "brush", "erase"].includes(value)
+    ) {
       setSelectedTool(null);
     }
     if (
@@ -222,6 +226,30 @@ function InteractionToolbar() {
             >
               <DrawButton size="24px" />
             </Toolbar.ToggleItem>
+            {/* <Toolbar.ToggleItem
+              value="highlight"
+              className="hover:border-b-2 radix-state-on:border-b-2"
+            >
+              <HighlightButton size="22px" />
+            </Toolbar.ToggleItem> */}
+            {/* <Toolbar.ToggleItem
+              value="brush"
+              className="hover:border-b-2 radix-state-on:border-b-2"
+            >
+              <BrushButton size="22px" />
+            </Toolbar.ToggleItem> */}
+            {/* <Popover.Root>
+              <Toolbar.Button asChild>
+                <Popover.Trigger>P</Popover.Trigger>
+              </Toolbar.Button>
+              <Popover.Portal>
+                <Popover.Content side="top" sideOffset={8}>
+                  <div className="bg-white border rounded h-20 w-20">hello</div>
+                  <Popover.Close />
+                  <Popover.Arrow />
+                </Popover.Content>
+              </Popover.Portal>
+            </Popover.Root> */}
             <Toolbar.ToggleItem
               value="erase"
               className="hover:border-b-2 radix-state-on:border-b-2"
