@@ -6,7 +6,7 @@ import { Icon } from "@mdi/react";
 
 import ExportModal from "./ExportModal";
 
-export default function ExportButton({ iri }: { iri?: string }) {
+export default function ExportButton({ homepage }: { homepage?: string }) {
   const [exportModalOpen, setExportModalOpen] = useState(false);
 
   return (
@@ -18,8 +18,8 @@ export default function ExportButton({ iri }: { iri?: string }) {
         <Icon path={mdiExportVariant} size={0.75} />
         {/* <div>共有</div> */}
       </button>
-      {exportModalOpen && !!iri && (
-        <ExportModal iri={iri} setOpen={setExportModalOpen} />
+      {exportModalOpen && !!homepage && (
+        <ExportModal homepage={homepage} setOpen={setExportModalOpen} />
       )}
     </>
   );

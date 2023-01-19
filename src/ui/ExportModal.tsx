@@ -6,10 +6,10 @@ import { mdiDownload } from "@mdi/js";
 // import { Icon } from "@mdi/react";
 
 export default function ExportModal({
-  iri,
+  homepage,
   setOpen,
 }: {
-  iri: string;
+  homepage: string;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
   return (
@@ -37,7 +37,7 @@ export default function ExportModal({
                   <input
                     type="text"
                     className="border rounded w-full px-2 py-1 bg-gray-100 text-gray-600"
-                    value={iri}
+                    value={homepage}
                     onFocus={(ev) => ev.target.select()}
                   />
                 </div>
@@ -48,7 +48,7 @@ export default function ExportModal({
                 </h3>
                 <div className="mt-2 flex justify-center sm:justify-start">
                   <a
-                    href={`${iri}/twinmodel.json`} // TODO: Fix
+                    href={`${homepage}/twinmodel.json`} // TODO: Fix
                     className="flex items-center text-gray-600 hover:text-gray-700"
                     target="_blank"
                     rel="noreferrer"

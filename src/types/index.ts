@@ -41,9 +41,10 @@ export type BBox = {
 };
 
 export type Definition = {
-  "@id": string;
-  "@type": string;
+  id: string;
   name: string;
+  type: string;
+  homepage: string;
   description: string;
   license: string;
   community: string;
@@ -51,7 +52,7 @@ export type Definition = {
   terrain: { path: string };
   properties: Record<string, any>;
   // layers: Layer[];
-  modules: ModuleDefinition[];
+  modules: Record<string, ModuleDefinition>;
   building?: Building;
 };
 

@@ -2,8 +2,7 @@ const model = {
   id: null,
   name: null,
   type: null,
-  iri: null,
-  url: null,
+  homepage: null,
   community: null,
   description: null,
   bbox: {

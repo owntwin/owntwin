@@ -95,11 +95,11 @@ function Debug() {
 
 function App() {
   const [model, setModel] = useState<Partial<Model>>({
-    "@type": undefined,
-    "@id": undefined,
+    id: undefined,
     name: undefined,
+    type: undefined,
     description: undefined,
-    modules: [],
+    modules: {},
   });
   const [modelLoaded, setModelLoaded] = useState(false);
 
@@ -147,7 +147,7 @@ function App() {
     setItem({
       name: entity.name,
       type: entity.type_label || entity.type,
-      iri: entity.iri,
+      homepage: entity.homepage,
       description: entity.description,
     });
   }, [entity, setEntity, model]);
@@ -200,11 +200,11 @@ function App() {
       </Transition>
       {modelLoaded && (
         <ItemInfo
-          type={model["@type"]}
-          iri={model["@id"]}
+          type={model.type}
+          homepage={model.homepage}
           name={model.name}
           item={item}
-          modules={model.modules || []}
+          modules={model.modules}
           properties={model.properties}
           back={
             detailEntity && (
@@ -236,7 +236,7 @@ function App() {
       )}
       <Debug />
       <div className="absolute top-4 left-auto right-4 hidden sm:flex gap-2 h-10">
-        <ExportButton iri={model["@id"]} />
+        <ExportButton homepage={model.homepage} />
         <Clock />
       </div>
       {modelLoaded && <Sidenav communityURL={model.community} />}

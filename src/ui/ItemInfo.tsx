@@ -278,20 +278,20 @@ function ModulePane({
 }
 
 function ItemInfo({
-  type,
-  iri,
   name,
+  type,
+  homepage,
   item,
-  modules,
-  properties,
+  modules = {},
+  properties = {},
   isOpen,
   back,
   ...props
-}: Pick<Definition, "@type" | "@id" | "name" | "modules" | "properties"> & {
-  type?: string;
-  iri?: string;
+}: Partial<
+  Pick<Definition, "type" | "homepage" | "name" | "modules" | "properties">
+> & {
   item: { description?: string }; // TODO: Fix
-  isOpen: boolean;
+  isOpen?: boolean;
   back: ReactNode;
   style?: Record<string, string>;
 }) {
@@ -318,19 +318,19 @@ function ItemInfo({
           <div className="text-xs">{type}</div>
           <div>{name}</div>
           <div className="text-xs text-gray-600 break-all">
-            {iri ? (
+            {homepage ? (
               <span
                 className="hover:bg-gray-100 hover:rounded-full hover:px-1 cursor-pointer"
                 onClick={() => setExportModalOpen(true)}
               >
-                {iri}
+                {homepage}
               </span>
             ) : (
               "未登録"
             )}
           </div>
-          {exportModalOpen && (
-            <ExportModal iri={iri} setOpen={setExportModalOpen} />
+          {exportModalOpen && homepage && (
+            <ExportModal homepage={homepage} setOpen={setExportModalOpen} />
           )}
         </div>
       </div>
