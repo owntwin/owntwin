@@ -137,16 +137,22 @@ export function Erase({ linesData }: { linesData: Line[] }) {
   return (
     <>
       <Eraser position={position} size={12} setActive={setActive} />
-      {curvesData.map(({ curve, uuid }) => (
-        <mesh
-          visible={false}
-          key={uuid}
-          onPointerOver={() => handlePointerOver(uuid)}
-        >
-          <tubeGeometry args={[curve, 32, 16, 4]} />
-          <meshBasicMaterial color={0x000000} />
-        </mesh>
-      ))}
+      {curvesData.map(({ curve, uuid }) => {
+        // NOTE: avoid error
+        if (curve.points.length === 0) {
+          return null;
+        }
+        return (
+          <mesh
+            visible={false}
+            key={uuid}
+            onPointerOver={() => handlePointerOver(uuid)}
+          >
+            <tubeGeometry args={[curve, 32, 16, 4]} />
+            <meshBasicMaterial color={0x000000} />
+          </mesh>
+        );
+      })}
     </>
   );
 }
