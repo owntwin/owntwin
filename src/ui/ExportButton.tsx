@@ -18,7 +18,7 @@ export default function ExportButton({ homepage }: { homepage?: string }) {
         <Icon path={mdiExportVariant} size={0.75} />
         {/* <div>共有</div> */}
       </button>
-      {exportModalOpen && !!homepage && (
+      {exportModalOpen && (
         <ExportModal homepage={homepage} setOpen={setExportModalOpen} />
       )}
     </>

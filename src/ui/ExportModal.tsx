@@ -9,7 +9,7 @@ export default function ExportModal({
   homepage,
   setOpen,
 }: {
-  homepage: string;
+  homepage?: string;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
   return (
@@ -38,6 +38,7 @@ export default function ExportModal({
                     type="text"
                     className="border rounded w-full px-2 py-1 bg-gray-100 text-gray-600"
                     value={homepage}
+                    placeholder="未登録"
                     onFocus={(ev) => ev.target.select()}
                   />
                 </div>
