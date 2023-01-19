@@ -1,7 +1,7 @@
 import clsx from "clsx";
 
 import { Icon } from "@mdi/react";
-import { mdiBrushVariant, mdiDraw, mdiEraserVariant } from "@mdi/js";
+import { mdiBrushVariant, mdiDraw, mdiEraserVariant, mdiMarker } from "@mdi/js";
 
 import { useAtom } from "jotai";
 import * as store from "../store";
@@ -44,6 +44,35 @@ export function DrawButton({ size }: { size: number | string }) {
         <Icon
           className="fill-current text-gray-600 hover:text-black"
           path={mdiDraw}
+          size={size}
+        />
+      </button>
+      <ButtonIndicator enabled={selectedTool === "draw"} />
+    </div>
+  );
+}
+
+export function HighlightButton({ size }: { size: number | string }) {
+  const [selectedTool, setSelectedTool] = useAtom(store.selectedToolAtom);
+  const [, setPenState] = useAtom(store.penStateAtom);
+
+  return (
+    <div className="relative flex items-center">
+      <button
+        className="focus:outline-none"
+        onClick={() => {
+          setPenState((state) => ({
+            ...state,
+            lineWidth: 36,
+            color: "yellow",
+            opacity: 0.2,
+          }));
+          setSelectedTool((current) => (current === "draw" ? null : "draw"));
+        }}
+      >
+        <Icon
+          className="fill-current text-gray-600 hover:text-black"
+          path={mdiMarker}
           size={size}
         />
       </button>
