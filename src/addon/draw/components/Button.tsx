@@ -25,14 +25,21 @@ function ButtonIndicator({ enabled }: { enabled: boolean }) {
 
 export function DrawButton({ size }: { size: number | string }) {
   const [selectedTool, setSelectedTool] = useAtom(store.selectedToolAtom);
+  const [, setPenState] = useAtom(store.penStateAtom);
 
   return (
     <div className="relative flex items-center">
       <button
         className="focus:outline-none"
-        onClick={() =>
-          setSelectedTool((current) => (current === "draw" ? null : "draw"))
-        }
+        onClick={() => {
+          setPenState((state) => ({
+            ...state,
+            lineWidth: 4,
+            color: undefined,
+            opacity: undefined,
+          }));
+          setSelectedTool((current) => (current === "draw" ? null : "draw"));
+        }}
       >
         <Icon
           className="fill-current text-gray-600 hover:text-black"

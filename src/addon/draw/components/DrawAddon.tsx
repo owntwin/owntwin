@@ -72,7 +72,13 @@ export default function DrawAddon({
       {selectedTool === "draw" && <Draw />}
       {selectedTool === "erase" && <Erase linesData={drawSnap.drawings} />}
       {drawSnap.drawings.map((linepts, i) => (
-        <Line key={i} points={linepts.points} />
+        <Line
+          key={i}
+          points={linepts.points}
+          lineWidth={linepts.lineWidth}
+          color={linepts.color}
+          opacity={linepts.opacity}
+        />
       ))}
       {brush && <BrushAddon />}
     </>

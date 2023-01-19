@@ -27,11 +27,10 @@ declare global {
 export function Line({
   points,
   color = "rgb(55, 65, 81)",
+  lineWidth = 4,
+  opacity = 0.75,
   ...props
-}: {
-  points: types.Line["points"] | THREE.Vector3[];
-  color?: string | number;
-}) {
+}: Omit<types.Line, "uuid">) {
   const ref = useRef<THREE.Mesh>(null);
 
   const _points = useMemo(
@@ -58,9 +57,9 @@ export function Line({
         attach="material"
         transparent
         depthTest={false}
-        lineWidth={4}
+        lineWidth={lineWidth}
         color={color}
-        opacity={0.75}
+        opacity={opacity}
         {...props}
         // dashArray={0.05}
         // dashRatio={0.95}
@@ -71,7 +70,17 @@ export function Line({
 
 export const LinePen = forwardRef(
   (
-    { position }: { position: [number, number, number] },
+    {
+      position,
+      lineWidth,
+      opacity,
+      color,
+    }: {
+      position: [number, number, number];
+      lineWidth?: number;
+      color?: string | number;
+      opacity?: number;
+    },
     ref: Ref<THREE.Mesh>,
   ) => {
     // const { scene } = useThree();
@@ -88,17 +97,34 @@ export const LinePen = forwardRef(
       [],
     );
 
-    const onDown = (ev?: unknown) => {
-      if (!enabled) {
-        setPoints([]);
-        setEnabled(true);
-      }
-    };
+    const handlePointerDown = useCallback(
+      (ev?: ThreeEvent<PointerEvent>) => {
+        if (!enabled) {
+          setPoints([]);
+          setEnabled(true);
+        }
+      },
+      [enabled],
+    );
 
-    const onMove = useCallback(
+    const handlePointerUp = useCallback(() => {
+      setEnabled(false);
+      const size = Math.log(points.length) * 10;
+      const curvePoints = new THREE.CatmullRomCurve3(
+        points.map((p) => new THREE.Vector3(p.x, p.y, p.z)),
+      ).getPoints(size);
+      drawState.drawings.push({
+        points: curvePoints.map((p) => ({ x: p.x, y: p.y, z: p.z })),
+        lineWidth,
+        color,
+        opacity,
+        uuid: THREE.MathUtils.generateUUID(),
+      });
+    }, [points, lineWidth, color, opacity]);
+
+    const handlePointerMove = useCallback(
       (ev: ThreeEvent<PointerEvent>) => {
         // ev.stopPropagation();
-        // throttle(
         if (["touch", "pen"].includes(ev.pointerType) && !enabled) {
           setPoints([]);
           setEnabled(true);
@@ -128,7 +154,6 @@ export const LinePen = forwardRef(
       },
       [enabled],
     );
-    // , null);
 
     return (
       <>
@@ -139,30 +164,20 @@ export const LinePen = forwardRef(
           // onDoubleClick={() => {
           //   // NOTE: toggle enableRotate?
           // }}
-          onPointerDown={() => onDown()}
-          onPointerUp={() => {
-            setEnabled(false);
-            const size = Math.log(points.length) * 10;
-            const curvePoints = new THREE.CatmullRomCurve3(
-              points.map((p) => new THREE.Vector3(p.x, p.y, p.z)),
-            ).getPoints(size);
-            drawState.drawings.push({
-              points: curvePoints.map((p) => ({ x: p.x, y: p.y, z: p.z })),
-              uuid: THREE.MathUtils.generateUUID(),
-            });
-            // setLinesData((current) => [
-            //   ...current,
-            //   {
-            //     points: curvePoints,
-            //     uuid: THREE.MathUtils.generateUUID(),
-            //   },
-            // ]);
-          }}
-          onPointerMove={(ev) => onMove(ev)}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+          onPointerMove={handlePointerMove}
         >
           <meshBasicMaterial attach="material" color="#f3f3f3" />
         </Sphere>
-        {enabled && <Line points={points} />}
+        {enabled && (
+          <Line
+            points={points}
+            lineWidth={lineWidth}
+            color={color}
+            opacity={opacity}
+          />
+        )}
       </>
     );
   },

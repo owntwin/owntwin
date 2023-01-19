@@ -5,10 +5,13 @@ import * as THREE from "three";
 
 import { useAtom } from "jotai";
 import { controlsStateAtom } from "../../../lib/store";
+import { penStateAtom } from "../store";
 
 import { LinePen } from "./Line";
 
 export function Draw() {
+  const [penState] = useAtom(penStateAtom);
+
   const three = useThree();
   const scene = three.scene as THREE.Scene;
   const raycaster = three.raycaster;
@@ -41,5 +44,13 @@ export function Draw() {
   });
 
   // TODO: Fix initial position
-  return <LinePen position={[0, 0, 0]} ref={pen} />;
+  return (
+    <LinePen
+      position={[0, 0, 0]}
+      ref={pen}
+      lineWidth={penState.lineWidth}
+      color={penState.color}
+      opacity={penState.opacity}
+    />
+  );
 }
