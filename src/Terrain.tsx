@@ -12,6 +12,7 @@ import * as store from "./lib/store";
 
 import * as util from "./lib/util";
 import { CANVAS } from "./lib/constants";
+import { useFieldState } from "./lib/hooks";
 
 export type Terrain = {
   geometry: THREE.PlaneGeometry;
@@ -97,6 +98,8 @@ function Terrain({
   const [, setField] = useAtom(store.fieldAtom);
   const segments = CANVAS.segments;
 
+  const fieldState = useFieldState();
+
   const geometry = useMemo(() => {
     return new THREE.PlaneGeometry(width, height, segments - 1, segments - 1);
   }, []);
@@ -108,14 +111,13 @@ function Terrain({
       geometry.getAttribute("position").array,
     );
 
-    const minLevel = levelmap.reduce(
-      (min, v) => Math.min(min, v[2]),
-      levelmap[0][2],
-    );
+    const minLevel =
+      levelmap.reduce((min, v) => Math.min(min, v[2]), levelmap[0][2]) - 4; // Offset 4
 
     levelmap.forEach((v) => {
       const pos = v[0] + segments * (segments - 1 - v[1]);
-      positionAttributeArray[pos * 3 + 2] = (v[2] - minLevel) * elevationZoom; // pos.z
+      positionAttributeArray[pos * 3 + 2] =
+        (v[2] - minLevel) * fieldState.pixelPerMeter * elevationZoom; // pos.z
     });
 
     geometry.setAttribute(
