@@ -63,6 +63,7 @@ function createElevatedShapeGeometry({
     .map((v) => {
       const p = fieldState.coordToPlane(v[0], v[1]);
       const z = fieldState.getAltitude(p.x + 1024 / 2, p.y + 1024 / 2) || 0;
+      // return v[2] * fieldState.pixelPerMeter * 2;
       return z;
       // TODO: return v[2];
     });
