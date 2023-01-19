@@ -207,7 +207,7 @@ function GeoJSONLayer({
             opacity={opacity}
             polygonOffset={true}
             polygonOffsetUnits={1}
-            polygonOffsetFactor={1}
+            polygonOffsetFactor={extrude ? 1 : -36} // TODO: Set appropriate value
           />
           {edges && (
             <lineSegments>
