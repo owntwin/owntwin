@@ -10,6 +10,7 @@ import { CANVAS } from "../../lib/constants";
 
 import { useAtom } from "jotai";
 import * as store from "../../lib/store";
+import { entityStoreAtom } from "./store";
 
 import { useFieldState } from "../../lib/hooks";
 
@@ -17,6 +18,8 @@ import SelectableLayer from "./SelectableLayer";
 
 import polygon from "./polygon";
 import lineString from "./line-string";
+
+import * as types from "./types";
 
 import {
   MeshLineGeometry,
@@ -33,11 +36,6 @@ declare global {
     }
   }
 }
-
-type ObjectData = {
-  geometry: THREE.BufferGeometry;
-  id?: string;
-};
 
 function GeoJSONLayer({
   url,
@@ -66,14 +64,13 @@ function GeoJSONLayer({
     },
     colors,
   );
-
   // NOTE: for backward compatibility; to fix
   edges = extrude;
 
   const [field] = useAtom(store.fieldAtom);
-
   const fieldState = useFieldState();
 
+  const [, updateEntityStore] = useAtom(entityStoreAtom);
   const [geojson, setGeojson] = useState<GeoJSON.FeatureCollection>();
 
   // Load JSON from URL
@@ -100,7 +97,7 @@ function GeoJSONLayer({
       return undefined;
     }
 
-    const geometries: ObjectData[] = [];
+    const geometries: types.ObjectData[] = [];
 
     const isGeometryCovered = (geometry: GeoJSON.Geometry) => {
       let originLng: number, originLat: number;
@@ -167,9 +164,34 @@ function GeoJSONLayer({
         // });
       } else {
         if (!isGeometryCovered(feature.geometry)) return;
+
+        const { id } = feature.properties || {};
+        const { name, visibility, ...restProperties } =
+          feature.properties?.attributes || {};
+
+        // Skip hidden features
+        if (visibility === "hidden") return;
+
         const geometry = createGeometryFromFeature(feature);
         if (!geometry) return;
-        geometries.push({ geometry, id: feature.properties?.id });
+
+        if (id && name) {
+          updateEntityStore((store) => {
+            const entry = {
+              ...(store[id] || {}),
+              name,
+            };
+            const updatedStore = { ...store, [id]: entry };
+            return updatedStore;
+          });
+        }
+
+        geometries.push({
+          geometry,
+          id,
+          visibility: visibility,
+          properties: restProperties || {},
+        });
       }
     });
     return geometries;

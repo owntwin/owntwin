@@ -5,25 +5,26 @@ import { Html } from "@react-three/drei";
 import { useAtom } from "jotai";
 import { useAtomCallback } from "jotai/utils";
 import * as store from "../../lib/store";
+import { entityStoreAtom } from "./store";
 
-type ObjectData = {
-  geometry: THREE.BufferGeometry;
-  id?: string;
-};
+import * as types from "./types";
 
 export default function SelectableLayer({
   geometries,
 }: {
-  geometries: ObjectData[];
+  geometries: types.ObjectData[];
 }) {
   const [entities, setEntities] = useState(
-    geometries.map(({ id, geometry }) => ({
-      id,
-      geometry,
-      visibility: "auto",
-    })),
+    geometries.map(({ id, geometry, visibility }) => {
+      return {
+        id,
+        geometry,
+        visibility: visibility || "auto",
+      };
+    }),
   );
 
+  const [entityStore] = useAtom(entityStoreAtom);
   const [hoveredEntity, setHoveredEntity] = useAtom(store.hoveredEntityAtom);
 
   const [meshes, setMeshes] = useState<any[]>([]);
@@ -46,13 +47,13 @@ export default function SelectableLayer({
         ev.intersections.length === 0 ||
         ev.intersections[0].object.uuid !== ev.object.uuid
       ) {
-        if (ev.object.userData.visibility !== "always") {
-          ev.object.visible = false;
-          // setHoveredEntity((entity) => {
-          //   // return entity.entity === ev.object
-          //   return entity.id === id ? { id: null, entity: null } : entity;
-          // });
-        }
+        // if (ev.object.userData.visibility !== "always") {
+        ev.object.visible = false;
+        // setHoveredEntity((entity) => {
+        //   // return entity.entity === ev.object
+        //   return entity.id === id ? { id: null, entity: null } : entity;
+        // });
+        // }
         return;
       }
       const hoveredEntity = get(store.hoveredEntityAtom);
@@ -70,55 +71,60 @@ export default function SelectableLayer({
   useEffect(() => {
     startTransition(() => {
       setMeshes(
-        entities.map(({ id, geometry, visibility }, i) => (
-          <mesh
-            key={i}
-            visible={false}
-            geometry={geometry}
-            onClick={(ev) => handleClick({ ev, id })}
-            onPointerMove={(ev) => handlePointerMove({ ev, id })}
-            // onPointerMove={(ev) => {
-            //   // NOTE: using onPointerMove (not onPointerOver) to handle moving between overlapping entities
-            //   // NOTE: return if not the front object
-            //   // TODO: check object type in future
-            //   if (
-            //     ev.intersections.length === 0 ||
-            //     ev.intersections[0].object.uuid !== ev.object.uuid
-            //   ) {
-            //     if (ev.object.userData.visibility !== "always") {
-            //       ev.object.visible = false;
-            //     }
-            //     // setHoveredEntity((entity) => {
-            //     //   console.log(entity);
-            //     //   // return entity.entity === ev.object
-            //     //   return entity.id === id ? { entity: null } : entity;
-            //     // });
-            //     return;
-            //   }
-            //   console.log(hoveredEntity);
-            //   if (hoveredEntity.id === id) return;
-            //   ev.object.visible = true;
-            //   setHoveredEntity(Object.assign({}, { id, entity: ev.object }));
-            // }}
-            onPointerOut={(ev) => {
-              if (ev.object.userData.visibility !== "always") {
+        entities.map(({ id, geometry, visibility }, i) => {
+          // console.log("visibility", visibility);
+          return (
+            <mesh
+              key={i}
+              // visible={visibility === "always" ? true : false}
+              visible={false}
+              userData={{ visibility }}
+              geometry={geometry}
+              onClick={(ev) => handleClick({ ev, id })}
+              onPointerMove={(ev) => handlePointerMove({ ev, id })}
+              // onPointerMove={(ev) => {
+              //   // NOTE: using onPointerMove (not onPointerOver) to handle moving between overlapping entities
+              //   // NOTE: return if not the front object
+              //   // TODO: check object type in future
+              //   if (
+              //     ev.intersections.length === 0 ||
+              //     ev.intersections[0].object.uuid !== ev.object.uuid
+              //   ) {
+              //     if (ev.object.userData.visibility !== "always") {
+              //       ev.object.visible = false;
+              //     }
+              //     // setHoveredEntity((entity) => {
+              //     //   console.log(entity);
+              //     //   // return entity.entity === ev.object
+              //     //   return entity.id === id ? { entity: null } : entity;
+              //     // });
+              //     return;
+              //   }
+              //   console.log(hoveredEntity);
+              //   if (hoveredEntity.id === id) return;
+              //   ev.object.visible = true;
+              //   setHoveredEntity(Object.assign({}, { id, entity: ev.object }));
+              // }}
+              onPointerOut={(ev) => {
+                // if (ev.object.userData.visibility !== "always") {
                 ev.object.visible = false;
-              }
-              setHoveredEntity((entity) => {
-                // console.log(entity);
-                return entity.entity === ev.object
-                  ? { id: null, entity: null }
-                  : entity;
-              });
-            }}
-          >
-            <meshBasicMaterial
-              color={0xf3f4f6}
-              transparent={true}
-              opacity={0.75}
-            />
-          </mesh>
-        )),
+                // }
+                setHoveredEntity((entity) => {
+                  // console.log(entity);
+                  return entity.entity === ev.object
+                    ? { id: null, entity: null }
+                    : entity;
+                });
+              }}
+            >
+              <meshBasicMaterial
+                color={0xf3f4f6}
+                transparent={true}
+                opacity={0.75}
+              />
+            </mesh>
+          );
+        }),
       );
     });
   }, []);
@@ -161,7 +167,9 @@ export default function SelectableLayer({
             return [x, y, z];
           })()}
         >
-          {hoveredEntity.id}
+          {entityStore[hoveredEntity.id]?.name
+            ? entityStore[hoveredEntity.id]?.name
+            : hoveredEntity.id}
         </Html>
       )}
     </>
