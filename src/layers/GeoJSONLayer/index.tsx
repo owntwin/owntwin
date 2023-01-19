@@ -227,6 +227,7 @@ function GeoJSONLayer({
             color={colors.default}
             transparent={true}
             opacity={opacity}
+            depthWrite={false}
             polygonOffset={true}
             polygonOffsetUnits={1}
             polygonOffsetFactor={extrude ? 1 : -36} // TODO: Set appropriate value
@@ -237,7 +238,11 @@ function GeoJSONLayer({
                 attach="geometry"
                 args={[mergedGeometries.basic, 45]}
               />
-              <lineBasicMaterial color={colors.edges} attach="material" />
+              <lineBasicMaterial
+                color={colors.edges}
+                attach="material"
+                depthWrite={true}
+              />
             </lineSegments>
           )}
         </mesh>
