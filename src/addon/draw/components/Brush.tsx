@@ -10,8 +10,6 @@ import { useFrame, useThree, ThreeEvent } from "@react-three/fiber";
 import { Sphere } from "@react-three/drei";
 import * as THREE from "three";
 
-// import { throttle } from 'lodash-es';
-
 import { useAtom } from "jotai";
 import * as store from "../store";
 import * as appStore from "../../../lib/store";
@@ -20,10 +18,12 @@ import { controlsStateAtom } from "../../../lib/store";
 function BrushPen({
   position,
   size,
+  color = 0xf3f3f3,
   setActive,
 }: {
   position: [number, number, number];
   size: number;
+  color?: number | string;
   setActive: Dispatch<SetStateAction<boolean>>;
 }) {
   const [_active, _setActive] = useState(false);
@@ -61,13 +61,13 @@ function BrushPen({
           setActive(false);
         }}
       >
-        <meshBasicMaterial attach="material" color={0xf3f3f3} />
+        <meshBasicMaterial attach="material" color={color} />
       </Sphere>
     </>
   );
 }
 
-function Brush() {
+function Brush({ color }: { color?: number | string }) {
   const three = useThree();
   const scene = three.scene as THREE.Scene;
   const raycaster = three.raycaster;
@@ -101,7 +101,7 @@ function Brush() {
   useEffect(() => {
     if (active && hoveredEntity.entity) {
       // console.log(hoveredEntity.entity);
-      hoveredEntity.entity.material.color = new THREE.Color(0x93c5fd);
+      hoveredEntity.entity.material.color = new THREE.Color(color);
       // hoveredEntity.entity.material.transparent = true;
       // hoveredEntity.entity.material.opacity = 1;
       hoveredEntity.entity.userData.visibility = "always";
@@ -114,6 +114,7 @@ function Brush() {
 
 export default function BrushAddon({ ...props }) {
   const [selectedTool] = useAtom(store.selectedToolAtom);
+  const color = "#fef445";
 
-  return <>{selectedTool === "brush" && <Brush />}</>;
+  return <>{selectedTool === "brush" && <Brush color={color} />}</>;
 }
