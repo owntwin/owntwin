@@ -12,7 +12,6 @@ import * as store from "./lib/store";
 
 import Terrain from "./Terrain";
 import Layer from "./Layer";
-import Building from "./Building";
 
 import DiscussAddon from "./addon/discuss/components/DiscussAddon";
 import DrawAddon from "./addon/draw/components/DrawAddon";
@@ -21,13 +20,13 @@ import DrawAddon from "./addon/draw/components/DrawAddon";
 import * as types from "./types";
 import type { Levelmap } from "./Terrain";
 
-import * as constants from "./lib/constants";
+import { CANVAS } from "./lib/constants";
 
 /* Constants */
 // TODO: Improve
 const defaultElevationZoom = 2;
-const width = constants.CANVAS.width,
-  height = constants.CANVAS.height;
+const width = CANVAS.width,
+  height = CANVAS.height;
 
 const addons = import.meta.env.VITE_ADDONS
   ? import.meta.env.VITE_ADDONS.split(",")
@@ -42,6 +41,7 @@ function DefaultCamera() {
   useEffect(() => {
     if (!gl) return;
     gl.clippingPlanes = [
+      // TODO: use CANVAS.width/CANVAS.height
       new THREE.Plane(new THREE.Vector3(1, 0, 0), 512 - 2),
       new THREE.Plane(new THREE.Vector3(-1, 0, 0), 512 - 2),
       new THREE.Plane(new THREE.Vector3(0, 1, 0), 512 - 2),
@@ -49,6 +49,7 @@ function DefaultCamera() {
     ];
   }, []);
 
+   // TODO: fix constants
   return (
     <PerspectiveCamera
       makeDefault
@@ -84,31 +85,6 @@ const fetchTerrainData = async (
   }
 };
 
-const fetchBuildingData = async (
-  buildingData: types.Building,
-  baseUrl?: string,
-) => {
-  const blankBuilding = {
-    routes: [],
-    buildings: [],
-  };
-
-  if (buildingData && buildingData.path) {
-    buildingData.path = baseUrl
-      ? new URL(buildingData.path, baseUrl).toString()
-      : buildingData.path;
-    const data = await axios
-      .get(buildingData.path)
-      .then((resp) => resp.data)
-      .catch(() => blankBuilding);
-    return data;
-  } else {
-    // buildingData = buildingData || {};
-    // const data = blankBuilding;
-    return;
-  }
-};
-
 function ModelView({
   model,
   basePath,
@@ -117,13 +93,10 @@ function ModelView({
   basePath: string;
 }) {
   const [layersState] = useAtom(store.layersStateAtom);
-  const [, setEntity] = useAtom(store.entityAtom);
-  const [, setDetailEntity] = useAtom(store.detailEntityAtom);
 
   const [levelmap, setLevelmap] = useState<Levelmap>(
     Array(1000).fill([0, 0, 0]),
   );
-  const [buildings, setBuildings] = useState<types.Building[]>([]);
 
   // TODO: move away this somewhere else
   useEffect(() => {
@@ -131,10 +104,6 @@ function ModelView({
       if (model.terrain) {
         model.terrain.data = await fetchTerrainData(model.terrain, basePath);
         model.terrain.data && setLevelmap(model.terrain.data);
-      }
-      if (model.building) {
-        model.building.data = await fetchBuildingData(model.building, basePath);
-        setBuildings(model.building?.data?.buildings || []);
       }
     })();
   }, [model, basePath]);
@@ -157,8 +126,8 @@ function ModelView({
   return (
     <Canvas
       id="model-view-canvas"
-      linear={false} // NOTE: See https://github.com/pmndrs/react-three-fiber/releases/tag/v8.0.0
-      flat={true} // TODO: Reconsideration
+      linear={false} // NOTE: see https://github.com/pmndrs/react-three-fiber/releases/tag/v8.0.0
+      flat={true} // TODO: reconsideration
       dpr={Math.min(2, window.devicePixelRatio)}
       gl={{ powerPreference: "default", antialias: false }}
       // frameloop="demand"
@@ -183,21 +152,6 @@ function ModelView({
             }
             return <Layer key={layer.id} layer={layer} basePath={basePath} />;
           })}
-        {buildings.map((building) => (
-          <Building
-            key={building.id}
-            base={building.base}
-            z={building.z}
-            depth={building.depth}
-            name={building.name}
-            type={building.type}
-            onPointerDown={(ev) => {
-              ev.stopPropagation();
-              setEntity(building);
-              setDetailEntity(building);
-            }}
-          />
-        ))}
         {addons.includes("discuss") && <DiscussAddon />}
         {addons.includes("draw") && <DrawAddon />}
         {/* {addons.includes("pointer") && <PointerAddon />} */}
