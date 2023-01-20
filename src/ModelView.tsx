@@ -49,7 +49,7 @@ function DefaultCamera() {
     ];
   }, []);
 
-   // TODO: fix constants
+  // TODO: fix constants
   return (
     <PerspectiveCamera
       makeDefault
@@ -90,7 +90,7 @@ function ModelView({
   basePath,
 }: {
   model: Partial<types.Model>;
-  basePath: string;
+  basePath?: string;
 }) {
   const [layersState] = useAtom(store.layersStateAtom);
 

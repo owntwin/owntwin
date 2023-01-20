@@ -8,22 +8,24 @@ import * as store from "./lib/store";
 import { Helmet } from "react-helmet-async";
 import axios from "axios";
 
-import ModelView from "./ModelView";
-import DetailView from "./DetailView";
 import Sidenav from "./ui/Sidenav";
 import ItemInfo from "./ui/ItemInfo";
 import Clock from "./ui/Clock";
 import ExportButton from "./ui/ExportButton";
+import ModelView from "./ModelView";
+import DetailView from "./DetailView";
+import Debug from "./Debug";
 
 import "./App.css";
-import { mdiArrowLeftThinCircleOutline, mdiCloseCircle } from "@mdi/js";
+import { mdiArrowLeftThinCircleOutline } from "@mdi/js";
 
 import { model as defaultModel } from "./model";
 import { Model, Layer } from "./types";
 
-// const DEBUG = false;
-
-async function getModel(): Promise<Partial<Model>> {
+async function getModel(): Promise<{
+  model: Partial<Model> | null;
+  basePath: string | null;
+}> {
   let basePath, path;
 
   const url = new URL(window.location.href);
@@ -32,7 +34,7 @@ async function getModel(): Promise<Partial<Model>> {
   // TODO: Debug only
   if (params.has("twin")) {
     basePath = params.get("twin");
-    if (typeof basePath !== "string") return {};
+    if (typeof basePath !== "string") return { model: null, basePath: null };
     path = new URL("./twinmodel.json", basePath).toString();
   } else {
     basePath = null;
@@ -45,8 +47,6 @@ async function getModel(): Promise<Partial<Model>> {
 
   let model = modelData;
 
-  model._basePath = basePath;
-
   if (params.has("no-terrain")) {
     model.terrain = null;
   }
@@ -58,39 +58,7 @@ async function getModel(): Promise<Partial<Model>> {
     maxlat: model.bbox[3],
   };
 
-  return model;
-}
-
-function Debug() {
-  const [debugOpen, setDebugOpen] = useState(false);
-  const [debug, setDebug] = useAtom(store.debugAtom);
-
-  useEffect(() => {
-    if (!!debug) setDebugOpen(true);
-  }, [debug]);
-
-  return (
-    <div
-      id="debug"
-      className={clsx(
-        "rounded-t-md bg-gray-800 text-white fixed bottom-0 left-0 right-0 h-48 p-4 text-sm shadow-md",
-        debugOpen ? "block" : "hidden",
-      )}
-    >
-      <div
-        className="absolute top-4 right-4 cursor-pointer"
-        onClick={() => {
-          setDebugOpen(false);
-          setDebug("");
-        }}
-      >
-        <svg style={{ width: "18px", height: "18px" }} viewBox="0 0 24 24">
-          <path fill="#eee" d={mdiCloseCircle} />
-        </svg>
-      </div>
-      <div className="overflow-y-scroll w-full h-full">{debug}</div>
-    </div>
-  );
+  return { model, basePath };
 }
 
 function App() {
@@ -101,19 +69,22 @@ function App() {
     description: undefined,
     modules: {},
   });
+  const [basePath, setBasePath] = useState<string>();
   const [modelLoaded, setModelLoaded] = useState(false);
-
-  const [, setLayersState] = useAtom(store.layersStateAtom);
-  const [, setField] = useAtom(store.fieldAtom);
 
   const [entity, setEntity] = useAtom(store.entityAtom);
   const [detailEntity, setDetailEntity] = useAtom(store.detailEntityAtom);
 
+  const [, setLayersState] = useAtom(store.layersStateAtom);
+  const [, setField] = useAtom(store.fieldAtom);
+
   useEffect(() => {
     (async () => {
-      let model = await getModel();
+      const { model, basePath } = await getModel();
+      if (!model) return;
       setModel(model);
-      setField((current) => ({ ...current, bbox: model.bbox }));
+      basePath && setBasePath(basePath);
+      model.bbox && setField((current) => ({ ...current, bbox: model.bbox }));
       setModelLoaded(true);
     })();
   }, []);
@@ -165,7 +136,7 @@ function App() {
         <div>表示されない場合は再読み込み</div>
       </div> */}
       <div className="absolute top-0 bottom-0 left-0 right-0">
-        {modelLoaded && <ModelView model={model} basePath={model._basePath} />}
+        {modelLoaded && <ModelView model={model} basePath={basePath} />}
       </div>
       <Transition nodeRef={transitionRef} in={!!detailEntity} timeout={1}>
         {(state) => (
