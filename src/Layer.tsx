@@ -4,6 +4,7 @@ import PNGLayer from "./layers/PNGLayer";
 import SVGMeshLayer from "./layers/SVGMeshLayer";
 import GeoJSONLayer from "./layers/GeoJSONLayer";
 import CSVLayer from "./layers/CSVLayer";
+
 import { Layer as ILayer } from "./types";
 
 function Layer({

@@ -83,7 +83,7 @@ function Terrain({
   elevationZoom,
   width,
   height,
-  color = 0xfaf9f9,
+  color = 0xfaf9f9, // 0xe5e7eb, 0xf1f3f4, 0xf8f9fa
   children,
   ...props
 }: {
@@ -137,18 +137,13 @@ function Terrain({
     <>
       <BlankPlane width={width} height={height} />
       <mesh name="terrain" geometry={geometry}>
-        {/* <meshBasicMaterial color={0xe5e7eb} /> */}
         <meshBasicMaterial color={color} depthTest={false} />
-        {/* <meshBasicMaterial color={0xf1f3f4} /> */}
-        {/* <meshBasicMaterial color={0xf8f9fa} /> */}
       </mesh>
-      {vertices && (
-        <TerrainContext.Provider
-          value={{ geometry }} // should be geom?
-        >
-          {children}
-        </TerrainContext.Provider>
-      )}
+      <TerrainContext.Provider
+        value={{ geometry }} // should be geom?
+      >
+        {children}
+      </TerrainContext.Provider>
     </>
   );
 }

@@ -33,7 +33,7 @@ const addons = import.meta.env.VITE_ADDONS
   ? import.meta.env.VITE_ADDONS.split(",")
   : [];
 
-function DefaultCamera({ ...props }) {
+function DefaultCamera() {
   // const camera = useRef();
   // useHelper(camera, THREE.CameraHelper, 1, 'hotpink');
 
@@ -112,13 +112,10 @@ const fetchBuildingData = async (
 function ModelView({
   model,
   basePath,
-  ...props
 }: {
   model: Partial<types.Model>;
   basePath: string;
 }) {
-  // console.log({ model: JSON.stringify(model) });
-
   const [layersState] = useAtom(store.layersStateAtom);
   const [, setEntity] = useAtom(store.entityAtom);
   const [, setDetailEntity] = useAtom(store.detailEntityAtom);
@@ -149,7 +146,6 @@ function ModelView({
         ev.preventDefault();
       }
     };
-
     if (window) {
       window.addEventListener("pointerdown", handler);
       return () => {
