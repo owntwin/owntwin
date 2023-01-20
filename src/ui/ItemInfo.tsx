@@ -281,16 +281,18 @@ function ItemInfo({
   name,
   type,
   homepage,
-  item,
+  description,
   modules = {},
   properties = {},
   isOpen,
   back,
   ...props
 }: Partial<
-  Pick<Definition, "type" | "homepage" | "name" | "modules" | "properties">
+  Pick<
+    Definition,
+    "type" | "homepage" | "name" | "description" | "modules" | "properties"
+  >
 > & {
-  item: { description?: string }; // TODO: Fix
   isOpen?: boolean;
   back: ReactNode;
   style?: Record<string, string>;
@@ -298,7 +300,6 @@ function ItemInfo({
   const [paneOpen, setPaneOpen] = useState(isOpen || false);
   const [helpClicked, setHelpClicked] = useState(false);
   const [exportModalOpen, setExportModalOpen] = useState(false);
-  const description = item.description || null;
 
   return (
     <div

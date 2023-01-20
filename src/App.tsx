@@ -108,7 +108,6 @@ function App() {
 
   const [entity, setEntity] = useAtom(store.entityAtom);
   const [detailEntity, setDetailEntity] = useAtom(store.detailEntityAtom);
-  const [item, setItem] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -141,15 +140,12 @@ function App() {
     });
   }, [setLayersState, model.modules, model.properties]);
 
+  // TODO: refactoring
   useEffect(() => {
-    !entity && model && setEntity(model);
-    if (!entity) return;
-    setItem({
-      name: entity.name,
-      type: entity.type_label || entity.type,
-      homepage: entity.homepage,
-      description: entity.description,
-    });
+    if (!model) return;
+    if (!entity) {
+      setEntity(model);
+    }
   }, [entity, setEntity, model]);
 
   const transitionRef = useRef(null);
@@ -203,10 +199,11 @@ function App() {
           type={model.type}
           homepage={model.homepage}
           name={model.name}
-          item={item}
+          description={model.description}
           modules={model.modules}
           properties={model.properties}
           back={
+            entity &&
             detailEntity && (
               <div
                 className="text-sm text-gray-600 px-2 py-2 cursor-pointer flex items-center bg-gray-50 hover:bg-gray-100"
