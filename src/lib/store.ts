@@ -35,28 +35,7 @@ const fieldAtom = atom<{
   ready: false,
 });
 
-// // TODO: fix performance degression
-// const getTerrainAltitudeAtom = atom((get) => {
-//   const getTerrainAltitude = (x: number, y: number) => {
-//     // TODO: vertices should be given outside the function
-//     const { canvas, vertices } = get(terrainAtom);
-//     if (!vertices) return undefined;
-
-//     const pos =
-//       Math.floor(x / (canvas.width / canvas.segments)) +
-//       canvas.segments *
-//         (canvas.segments -
-//           1 -
-//           Math.floor(y / (canvas.height / canvas.segments)));
-//     if (pos < 0 || vertices.length <= pos) {
-//       // console.log(x, y, pos);
-//       return 0;
-//     }
-//     return vertices[pos * 3 + 2]; // pos.z
-//   };
-
-//   return getTerrainAltitude;
-// });
+const entityStoreAtom = atom<Record<string, { name: undefined } & any>>({});
 
 export {
   layersStateAtom,
@@ -67,4 +46,5 @@ export {
   hoveredEntityAtom,
   controlsStateAtom,
   fieldAtom,
+  entityStoreAtom,
 };

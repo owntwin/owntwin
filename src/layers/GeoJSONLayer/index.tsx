@@ -10,7 +10,6 @@ import { CANVAS } from "../../lib/constants";
 
 import { useAtom } from "jotai";
 import * as store from "../../lib/store";
-import { entityStoreAtom } from "./store";
 
 import { useFieldState } from "../../lib/hooks";
 
@@ -70,7 +69,7 @@ function GeoJSONLayer({
   const [field] = useAtom(store.fieldAtom);
   const fieldState = useFieldState();
 
-  const [, updateEntityStore] = useAtom(entityStoreAtom);
+  const [, updateEntityStore] = useAtom(store.entityStoreAtom);
   const [geojson, setGeojson] = useState<GeoJSON.FeatureCollection>();
 
   // Load JSON from URL

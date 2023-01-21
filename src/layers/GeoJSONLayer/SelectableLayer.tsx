@@ -5,7 +5,6 @@ import { Html } from "@react-three/drei";
 import { useAtom } from "jotai";
 import { useAtomCallback } from "jotai/utils";
 import * as store from "../../lib/store";
-import { entityStoreAtom } from "./store";
 
 import * as types from "./types";
 
@@ -24,7 +23,7 @@ export default function SelectableLayer({
     }),
   );
 
-  const [entityStore] = useAtom(entityStoreAtom);
+  const [entityStore] = useAtom(store.entityStoreAtom);
   const [hoveredEntity, setHoveredEntity] = useAtom(store.hoveredEntityAtom);
 
   const [meshes, setMeshes] = useState<any[]>([]);
