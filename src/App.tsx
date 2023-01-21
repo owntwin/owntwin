@@ -133,13 +133,34 @@ function App() {
     });
   }, [model.modules, model.properties]);
 
+  const [, updateEntityStore] = useAtom(store.entityStoreAtom);
+
+  useEffect(() => {
+    if (!model.entities) return;
+    const entities = model.entities;
+    updateEntityStore((store) => {
+      const storeFragment: typeof store = {};
+      Object.entries(entities).forEach(([id, v]) => {
+        const entry = {
+          ...(store[id] || {}),
+          ...v,
+        };
+        storeFragment[id] = entry;
+      });
+      return {
+        ...store,
+        ...storeFragment,
+      };
+    });
+  }, [model.entities]);
+
   // TODO: refactoring
   useEffect(() => {
     if (!model) return;
     if (!entity) {
       setEntity(model);
     }
-  }, [entity, setEntity, model]);
+  }, [entity, model]);
 
   const transitionRef = useRef(null);
 

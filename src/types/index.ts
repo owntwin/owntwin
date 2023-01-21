@@ -50,6 +50,7 @@ export type Definition = {
   community: string;
   bbox: [number, number, number, number];
   terrain: { path: string };
+  entities: Record<string, any>;
   properties: Record<string, any>;
   // layers: Layer[];
   modules: Record<string, ModuleDefinition>;
