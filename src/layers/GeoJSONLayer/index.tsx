@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import axios from "axios";
+import { groupBy } from "../../lib/util";
 
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
@@ -69,7 +70,7 @@ function GeoJSONLayer({
   const [field] = useAtom(store.fieldAtom);
   const fieldState = useFieldState();
 
-  const [, updateEntityStore] = useAtom(store.entityStoreAtom);
+  const [entityStore, updateEntityStore] = useAtom(store.entityStoreAtom);
   const [geojson, setGeojson] = useState<GeoJSON.FeatureCollection>();
 
   // Load JSON from URL
@@ -165,8 +166,14 @@ function GeoJSONLayer({
         if (!isGeometryCovered(feature.geometry)) return;
 
         const { id } = feature.properties || {};
-        const { name, visibility, ...restProperties } =
-          feature.properties?.attributes || {};
+        const {
+          name,
+          visibility,
+          ...restProperties
+        }: { name: string; visibility: string } = {
+          ...(entityStore[id] || {}),
+          ...(feature.properties?.attributes || {}),
+        };
 
         // Skip hidden features
         if (visibility === "hidden") return;
@@ -174,16 +181,16 @@ function GeoJSONLayer({
         const geometry = createGeometryFromFeature(feature);
         if (!geometry) return;
 
-        if (id && name) {
-          updateEntityStore((store) => {
-            const entry = {
-              ...(store[id] || {}),
-              name,
-            };
-            const updatedStore = { ...store, [id]: entry };
-            return updatedStore;
-          });
-        }
+        // if (id && name) {
+        //   updateEntityStore((store) => {
+        //     const entry = {
+        //       ...(store[id] || {}),
+        //       name,
+        //     };
+        //     const updatedStore = { ...store, [id]: entry };
+        //     return updatedStore;
+        //   });
+        // }
 
         geometries.push({
           geometry,
@@ -197,70 +204,104 @@ function GeoJSONLayer({
   }, [geojson, field.bbox, field.ready, clip]);
 
   const mergedGeometries = useMemo(() => {
-    if (!geometries || geometries.length === 0)
-      return { basic: undefined, meshline: undefined };
+    // TODO: fix
+    const result: { basic: any[]; meshline: any[] } = {
+      basic: [],
+      meshline: [],
+    };
 
-    const basicGeometries = geometries
-      .filter((v) => !(v.geometry instanceof MeshLineGeometry))
-      .map((v) => v.geometry);
-    const mergedBasicGeometry =
-      basicGeometries.length > 0
-        ? BufferGeometryUtils.mergeBufferGeometries(basicGeometries, false)
-        : null;
+    if (!geometries || geometries.length === 0) return result;
 
-    const meshlineGeometries = geometries
-      .filter((v) => v.geometry instanceof MeshLineGeometry)
-      .map((v) => v.geometry);
-    const mergedMeshlineGeometry =
-      meshlineGeometries.length > 0
-        ? BufferGeometryUtils.mergeBufferGeometries(meshlineGeometries, false)
-        : null;
-    return { basic: mergedBasicGeometry, meshline: mergedMeshlineGeometry };
+    const colorGroups = groupBy(
+      geometries,
+      (x) => x.properties.colors || colors,
+    );
+    // console.log("colorGroups", colorGroups);
+
+    colorGroups.map(([colors, mergingGeometries]) => {
+      const basicGeometries = mergingGeometries
+        .filter((v) => !(v.geometry instanceof MeshLineGeometry))
+        .map((v) => v.geometry);
+      const mergedBasicGeometry =
+        basicGeometries.length > 0
+          ? BufferGeometryUtils.mergeBufferGeometries(basicGeometries, false)
+          : null;
+
+      if (mergedBasicGeometry)
+        result.basic.push({
+          colors: colors,
+          geometry: mergedBasicGeometry,
+        });
+
+      const meshlineGeometries = mergingGeometries
+        .filter((v) => v.geometry instanceof MeshLineGeometry)
+        .map((v) => v.geometry);
+      const mergedMeshlineGeometry =
+        meshlineGeometries.length > 0
+          ? BufferGeometryUtils.mergeBufferGeometries(meshlineGeometries, false)
+          : null;
+
+      if (mergedMeshlineGeometry)
+        result.basic.push({
+          colors: colors,
+          geometry: mergedMeshlineGeometry,
+        });
+    });
+
+    return result;
   }, [geometries]);
 
   return (
     <>
-      {mergedGeometries.basic && (
-        <mesh geometry={mergedGeometries.basic}>
-          <meshBasicMaterial
-            color={colors.default}
-            transparent={true}
-            opacity={opacity}
-            depthWrite={false}
-            polygonOffset={true}
-            polygonOffsetUnits={1}
-            polygonOffsetFactor={extrude ? 1 : -36} // TODO: Set appropriate value
-          />
-          {edges && (
-            <lineSegments>
-              <edgesGeometry
-                attach="geometry"
-                args={[mergedGeometries.basic, 45]}
+      {mergedGeometries.basic.map(
+        ({ colors, geometry: mergedGeometry }, i) =>
+          mergedGeometry &&
+          colors && (
+            <mesh key={i} geometry={mergedGeometry}>
+              <meshBasicMaterial
+                color={colors.default}
+                transparent={true}
+                opacity={opacity}
+                depthWrite={false}
+                polygonOffset={true}
+                polygonOffsetUnits={1}
+                polygonOffsetFactor={extrude ? 1 : -36} // TODO: Set appropriate value
               />
-              <lineBasicMaterial
-                color={colors.edges}
-                attach="material"
-                depthWrite={true}
-              />
-            </lineSegments>
-          )}
-        </mesh>
+              {edges && (
+                <lineSegments>
+                  <edgesGeometry
+                    attach="geometry"
+                    args={[mergedGeometry, 45]}
+                  />
+                  <lineBasicMaterial
+                    color={colors.edges}
+                    attach="material"
+                    depthWrite={true}
+                  />
+                </lineSegments>
+              )}
+            </mesh>
+          ),
       )}
-      {mergedGeometries.meshline && (
-        <mesh geometry={mergedGeometries.meshline}>
-          <meshLineMaterial
-            lineWidth={1}
-            color={colors.default}
-            // transparent={true}
-            // opacity={opacity}
-            transparent
-            depthTest={false}
-            // depthWrite={false}
-            // polygonOffset={true}
-            polygonOffsetUnits={1}
-            polygonOffsetFactor={-64}
-          />
-        </mesh>
+      {mergedGeometries.meshline.map(
+        ({ colors, geometry: mergedGeometry }, i) =>
+          mergedGeometry &&
+          colors && (
+            <mesh key={i} geometry={mergedGeometry}>
+              <meshLineMaterial
+                lineWidth={1}
+                color={colors.default}
+                // transparent={true}
+                // opacity={opacity}
+                transparent
+                depthTest={false}
+                // depthWrite={false}
+                // polygonOffset={true}
+                polygonOffsetUnits={1}
+                polygonOffsetFactor={-64}
+              />
+            </mesh>
+          ),
       )}
       {geometries && <SelectableLayer geometries={geometries} />}
     </>

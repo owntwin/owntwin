@@ -186,6 +186,21 @@ const testTouch = () => {
   return window.matchMedia("(pointer: coarse)").matches ? true : false;
 };
 
+// https://qiita.com/nagtkk/items/e1cc3f929b61b1882bd1
+const groupBy = <K, V>(
+  array: readonly V[],
+  getKey: (cur: V, idx: number, src: readonly V[]) => K,
+): [K, V[]][] =>
+  Array.from(
+    array.reduce((map, cur, idx, src) => {
+      const key = getKey(cur, idx, src);
+      const list = map.get(key);
+      if (list) list.push(cur);
+      else map.set(key, [cur]);
+      return map;
+    }, new Map<K, V[]>()),
+  );
+
 export {
   coordToPlane,
   planeToCoord,
@@ -193,4 +208,5 @@ export {
   // getTerrainAltitude,
   coordSorter,
   testTouch,
+  groupBy,
 };
