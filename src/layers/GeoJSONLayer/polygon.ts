@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import ElevatedShapeGeometry from "../../lib/components/ElevatedShapeGeometry";
 
-import * as util from "../../lib/util";
+import { coordSorter } from "../../lib/util";
 
 import { FieldState } from "../../types";
 
@@ -59,7 +59,7 @@ function createElevatedShapeGeometry({
 
   const elevatation = _coordinates
     .slice()
-    .sort(util.coordSorter)
+    .sort(coordSorter)
     .map((v) => {
       const p = fieldState.coordToPlane(v[0], v[1]);
       const z = fieldState.getAltitude(p.x + 1024 / 2, p.y + 1024 / 2) || 0;

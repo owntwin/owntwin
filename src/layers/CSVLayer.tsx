@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import axios from "axios";
 
-import * as util from "../lib/util";
+import { CANVAS } from "../lib/constants";
 
 import {
   // SphereAnchor,
@@ -58,10 +58,10 @@ function Anchor({
   // TODO: Fix
   if (
     clip &&
-    (origin.x < -util.canvas.width / 2 ||
-      util.canvas.width / 2 <= origin.x ||
-      origin.y < -util.canvas.height / 2 ||
-      util.canvas.height / 2 <= origin.y)
+    (origin.x < -CANVAS.width / 2 ||
+      CANVAS.width / 2 <= origin.x ||
+      origin.y < -CANVAS.height / 2 ||
+      CANVAS.height / 2 <= origin.y)
   )
     return null;
 

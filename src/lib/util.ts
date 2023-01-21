@@ -166,19 +166,6 @@ function coordToLocalPlane(
   };
 }
 
-function localPlaneToCoord(bbox: BBox, x: number, y: number) {
-  let bboxW = bbox.maxlng - bbox.minlng;
-  let bboxH = bbox.maxlat - bbox.minlat;
-  let ratioW = bboxW / canvas.width;
-  let ratioH = bboxH / canvas.height;
-  let lng = (x + canvas.width / 2) * ratioW;
-  let lat = (y + canvas.height / 2) * ratioH;
-  return {
-    lng: bbox.minlng + lng,
-    lat: bbox.minlat + lat,
-  };
-}
-
 // function getTerrainAltitude(terrain: any, x: number, y: number) {
 //   if (!terrain.vertices) return 0;
 //   let pos =
@@ -200,13 +187,9 @@ const testTouch = () => {
 };
 
 export {
-  canvas,
-  coordToPixel,
-  pixelToPlane,
   coordToPlane,
   planeToCoord,
   coordToLocalPlane,
-  localPlaneToCoord,
   // getTerrainAltitude,
   coordSorter,
   testTouch,
