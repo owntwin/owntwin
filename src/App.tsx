@@ -35,10 +35,10 @@ async function getModel(): Promise<{
   if (params.has("twin")) {
     basePath = params.get("twin");
     if (typeof basePath !== "string") return { model: null, basePath: null };
-    path = new URL("./twinmodel.json", basePath).toString();
+    path = new URL("./twin.json", basePath).toString();
   } else {
     basePath = null;
-    path = "./twinmodel.json";
+    path = "./twin.json";
   }
   let modelData = await axios
     .get(path)

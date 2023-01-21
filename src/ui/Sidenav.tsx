@@ -58,7 +58,7 @@ function HelpMenuButton() {
         >
           <DropdownMenu.Item asChild>
             <a
-              href="./twinmodel.json"
+              href="./twin.json"
               target="_blank"
               rel="noopener"
               className="block w-32 text-sm px-4 py-2 hover:bg-gray-100 focus-visible:outline-none"
