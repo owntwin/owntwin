@@ -76,6 +76,7 @@ function App() {
   const [detailEntity, setDetailEntity] = useAtom(store.detailEntityAtom);
 
   const [, setLayersState] = useAtom(store.layersStateAtom);
+  const [, setLayerProperties] = useAtom(store.layerPropertiesAtom);
   const [, setField] = useAtom(store.fieldAtom);
 
   useEffect(() => {
@@ -100,6 +101,7 @@ function App() {
         const layers = module.layers || [];
         layers.forEach((layer) => {
           acc[`${layer.id}`] = {
+            ...(acc[`${layer.id}`] || {}),
             enabled:
               model.properties &&
               (model.properties[`${id}:layers.${layer.id}.enabled`] || false),
@@ -109,7 +111,27 @@ function App() {
 
       return acc;
     });
-  }, [setLayersState, model.modules, model.properties]);
+
+    setLayerProperties(() => {
+      const acc: Partial<Layer> = {};
+
+      if (!model.modules) return acc;
+
+      // TODO: Refactoring
+      Object.entries(model.modules).forEach(([id, module]) => {
+        const layers = module.layers || [];
+        layers.forEach((layer) => {
+          if (!model.properties) return;
+          acc[`${layer.id}`] = {
+            ...(acc[`${layer.id}`] || {}),
+            ...(model.properties[`${id}:layers.${layer.id}`] || {}),
+          };
+        });
+      });
+
+      return acc;
+    });
+  }, [model.modules, model.properties]);
 
   // TODO: refactoring
   useEffect(() => {

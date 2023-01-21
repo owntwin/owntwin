@@ -93,6 +93,7 @@ function ModelView({
   basePath?: string;
 }) {
   const [layersState] = useAtom(store.layersStateAtom);
+  const [layerProperties] = useAtom(store.layerPropertiesAtom);
 
   const [levelmap, setLevelmap] = useState<Levelmap>(
     Array(1000).fill([0, 0, 0]),
@@ -150,7 +151,10 @@ function ModelView({
             if (!layersState[layer.id] || !layersState[layer.id].enabled) {
               return null;
             }
-            return <Layer key={layer.id} layer={layer} basePath={basePath} />;
+            const mergedLayer = { ...layer, ...layerProperties[layer.id] };
+            return (
+              <Layer key={layer.id} layer={mergedLayer} basePath={basePath} />
+            );
           })}
         {addons.includes("discuss") && <DiscussAddon />}
         {addons.includes("draw") && <DrawAddon />}

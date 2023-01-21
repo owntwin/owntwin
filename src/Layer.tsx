@@ -7,14 +7,7 @@ import CSVLayer from "./layers/CSVLayer";
 
 import { Layer as ILayer } from "./types";
 
-function Layer({
-  layer,
-  basePath,
-  ...props
-}: {
-  layer: ILayer;
-  basePath?: string;
-}) {
+function Layer({ layer, basePath }: { layer: ILayer; basePath?: string }) {
   // console.log("layer", layer);
 
   if (layer.path && basePath) {

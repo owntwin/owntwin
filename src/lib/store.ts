@@ -19,6 +19,7 @@ const layersStateAtom = atom<
     }
   >
 >({});
+const layerPropertiesAtom = atom<Record<string, any>>({});
 
 const fieldAtom = atom<{
   canvas: { width: number; height: number; segments: number };
@@ -41,13 +42,14 @@ const hoveredEntityAtom = atom<{ id: string | null; entity: any | null }>({
 const entityStoreAtom = atom<Record<string, { name: undefined } & any>>({});
 
 export {
+  controlsStateAtom,
+  closeupAtom,
+  debugAtom,
   layersStateAtom,
+  layerPropertiesAtom,
+  fieldAtom,
   entityAtom,
   detailEntityAtom,
-  debugAtom,
-  closeupAtom,
   hoveredEntityAtom,
-  controlsStateAtom,
-  fieldAtom,
   entityStoreAtom,
 };
