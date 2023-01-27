@@ -6,12 +6,12 @@ import { useAtom } from "jotai";
 import { useAtomCallback } from "jotai/utils";
 import * as store from "../../lib/store";
 
-import * as types from "./types";
+import type { ObjectData } from "./types";
 
 export default function SelectableLayer({
   geometries,
 }: {
-  geometries: types.ObjectData[];
+  geometries: ObjectData[];
 }) {
   const [entities, setEntities] = useState(
     geometries.map(({ id, geometry, visibility }) => {
@@ -34,6 +34,13 @@ export default function SelectableLayer({
 
   const handleClick = useAtomCallback(
     useCallback((get, _set, { ev, id }: { ev: any; id?: string }) => {
+      // const hoveredEntity = get(store.hoveredEntityAtom);
+      // console.log(hoveredEntity.id, id);
+      // if (hoveredEntity.id === id) {
+      //   console.log(id);
+      //   window.open(`http://localhost:8001/plateau:${id}`);
+      // }
+      // return;
     }, []),
   );
 
@@ -120,6 +127,7 @@ export default function SelectableLayer({
                 color={0xf3f4f6}
                 transparent={true}
                 opacity={0.75}
+                depthTest={false}
               />
             </mesh>
           );

@@ -3,15 +3,15 @@ import { useContext } from "react";
 import { useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 
-import { TerrainContext } from "../Terrain";
+import { FieldContext } from "../core/components/Field";
 
 function PNGLayer({ url, ...props }: { url: string; opacity?: number }) {
-  const terrain = useContext(TerrainContext);
+  const field = useContext(FieldContext);
 
   const texture = useLoader(THREE.TextureLoader, url);
 
-  return terrain.geometry ? (
-    <mesh geometry={terrain.geometry}>
+  return field.geometry ? (
+    <mesh geometry={field.geometry}>
       <meshBasicMaterial
         map={texture}
         transparent={true}

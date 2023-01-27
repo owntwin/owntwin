@@ -1,9 +1,9 @@
 import * as THREE from "three";
-import ElevatedShapeGeometry from "../../lib/components/ElevatedShapeGeometry";
+import { ElevatedShapeGeometry } from "../../core/lib/components";
 
-import { coordSorter } from "../../lib/util";
+import { coordSorter } from "../../core/lib/utils";
 
-import { FieldState } from "../../types";
+import type { FieldState } from "../../core";
 
 function computeShape({
   coordinates,
@@ -21,8 +21,8 @@ function computeShape({
 
   const origin = fieldState.coordToPlane(originLng, originLat);
   // const z = 0; // _coordinates[0][2]; // TODO: z from GeoJSON?
-  // TODO: Fix: terrain is [0,1023], origin.x/y is [-512,512]
-  // const z = getTerrainAltitude(origin.x + 1024 / 2, origin.y + 1024 / 2) || 0;
+  // TODO: Fix: field is [0,1023], origin.x/y is [-512,512]
+  // const z = getFieldAltitude(origin.x + 1024 / 2, origin.y + 1024 / 2) || 0;
 
   const shape = new THREE.Shape();
 
@@ -41,7 +41,6 @@ function computeShape({
 function createElevatedShapeGeometry({
   coordinates,
   fieldState,
-  ...props
 }: {
   coordinates: GeoJSON.Position[][];
   fieldState: FieldState;
@@ -96,7 +95,7 @@ function createExtrudeGeometry({
 
   const origin = fieldState.coordToPlane(originLng, originLat);
   // const z = 0; // _coordinates[0][2]; // TODO: z from GeoJSON?
-  // TODO: Fix: terrain is [0,1023], origin.x/y is [-512,512]
+  // TODO: Fix: field is [0,1023], origin.x/y is [-512,512]
   const z =
     fieldState.getAltitude(origin.x + 1024 / 2, origin.y + 1024 / 2) || 0;
 
@@ -118,7 +117,6 @@ export function createGeometry(
   feature: GeoJSON.Feature<GeoJSON.Polygon>,
   extrude: boolean,
   fieldState: FieldState,
-  // { bbox, getTerrainAltitude }: { bbox: BBox; getTerrainAltitude: Function },
 ) {
   let geometry: THREE.BufferGeometry;
 

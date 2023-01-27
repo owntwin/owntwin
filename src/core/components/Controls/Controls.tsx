@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
+
 import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -6,9 +7,9 @@ import debounce from "just-debounce-it";
 // import { KeyboardKeyHold } from "hold-event";
 
 import { useAtom } from "jotai";
-import * as store from "./lib/store";
+import { closeupAtom, controlsStateAtom } from "../../store";
 
-import { CameraControls } from "./lib/components/CameraControls";
+import { CameraControls } from "./CameraControls";
 import CameraControlsDefault from "camera-controls";
 
 const ZERO = new THREE.Vector3(0, 0, 0);
@@ -16,38 +17,10 @@ const ZERO = new THREE.Vector3(0, 0, 0);
 const isTouch = () =>
   window.matchMedia("(pointer: coarse)").matches ? true : false;
 
-/*
-function ExtendedOrbitControls({ ...props }) {
-  const CLOSEUP_THRESHOLD = 400000;
-
-  const [, setCloseup] = useAtom(store.closeupAtom);
-  const { camera } = useThree();
-
-  return (
-    <OrbitControls
-      attach="orbitControls"
-      target={[0, 0, 0]}
-      minDistance={100}
-      maxDistance={1500}
-      maxPolarAngle={Math.PI / 2 - 0.1}
-      zoomSpeed={0.5}
-      onEnd={() => {
-        const dist2 =
-          camera.position.x ** 2 +
-          camera.position.y ** 2 +
-          camera.position.z ** 2;
-        // console.log(dist2);
-        dist2 < CLOSEUP_THRESHOLD ? setCloseup(true) : setCloseup(false);
-      }}
-    />
-  );
-}
-*/
-
 export function ExtendedCameraControls({ ...props }) {
-  const CLOSEUP_THRESHOLD = 1000;
-  const [, setCloseup] = useAtom(store.closeupAtom);
-  const [controlsState] = useAtom(store.controlsStateAtom);
+  const CLOSEUP_THRESHOLD = 1000; // TODO: remove constants
+  const [, setCloseup] = useAtom(closeupAtom);
+  const [controlsState] = useAtom(controlsStateAtom);
 
   const { camera, performance, regress } = useThree(
     ({ camera, performance }) => ({

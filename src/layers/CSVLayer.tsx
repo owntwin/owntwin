@@ -7,11 +7,11 @@ import { CANVAS } from "../lib/constants";
 import {
   // SphereAnchor,
   BeamAnchor,
-} from "../Anchor";
+} from "../core/components/anchors";
 
 import { parse as parseCSV } from "csv-parse/browser/esm/sync";
 
-import { useFieldState } from "../lib/hooks";
+import { useFieldState } from "../core/components/Field/hooks";
 
 function Anchor({
   coordinates,
@@ -40,7 +40,7 @@ function Anchor({
       return { origin: { x: undefined, y: undefined }, z: undefined };
 
     // const z = 0; // coordinates[0][2]; // TODO: z from GeoJSON?
-    // TODO: Fix: terrain is [0,1023], origin.x/y is [-512,512]
+    // TODO: Fix: field is [0,1023], origin.x/y is [-512,512]
     const z =
       fieldState.getAltitude(origin.x + 1024 / 2, origin.y + 1024 / 2) || 0;
 
@@ -54,7 +54,7 @@ function Anchor({
 
   if (!origin.x || !origin.y) return null;
 
-  // NOTE: Clip off-terrain anchors
+  // NOTE: Clip off-field anchors
   // TODO: Fix
   if (
     clip &&

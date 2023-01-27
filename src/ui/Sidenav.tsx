@@ -24,7 +24,7 @@ import { useAtom } from "jotai";
 import * as appStore from "../lib/store";
 import * as drawStore from "../addon/draw/store";
 
-import { testTouch } from "../lib/util";
+import { testTouch } from "../lib/utils";
 
 import { Z_INDEX } from "../lib/constants";
 

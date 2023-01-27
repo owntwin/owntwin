@@ -1,17 +1,15 @@
 import { atom } from "jotai";
 
-import { CANVAS } from "./constants";
+import type { Layer } from "../core";
 
-const controlsStateAtom = atom<{ enableRotate: boolean; truckMode: boolean }>({
-  enableRotate: true,
-  truckMode: false,
-});
-const closeupAtom = atom(false);
+import { controlsStateAtom, closeupAtom, fieldAtom } from "../core/store";
 
-const debugAtom = atom<string | null>(null);
-// const zoomAtom = atom(0xffff);
+export { controlsStateAtom, closeupAtom, fieldAtom };
 
-const layersStateAtom = atom<
+export const debugAtom = atom<string | null>(null);
+
+export const layersAtom = atom<Record<string, Layer>>({});
+export const layersStateAtom = atom<
   Record<
     string,
     {
@@ -19,37 +17,15 @@ const layersStateAtom = atom<
     }
   >
 >({});
-const layerPropertiesAtom = atom<Record<string, any>>({});
 
-const fieldAtom = atom<{
-  canvas: { width: number; height: number; segments: number };
-  vertices?: any[];
-  bbox?: { minlng: number; minlat: number; maxlng: number; maxlat: number };
-  ready: boolean;
+export const hoveredEntityAtom = atom<{
+  id: string | null;
+  entity: any | null;
 }>({
-  canvas: CANVAS,
-  vertices: undefined,
-  bbox: undefined,
-  ready: false,
-});
-
-const entityAtom = atom<Record<string, any> | null>(null);
-const detailEntityAtom = atom(null);
-const hoveredEntityAtom = atom<{ id: string | null; entity: any | null }>({
   id: null,
   entity: null,
 });
-const entityStoreAtom = atom<Record<string, { name: undefined } & any>>({});
 
-export {
-  controlsStateAtom,
-  closeupAtom,
-  debugAtom,
-  layersStateAtom,
-  layerPropertiesAtom,
-  fieldAtom,
-  entityAtom,
-  detailEntityAtom,
-  hoveredEntityAtom,
-  entityStoreAtom,
-};
+export const entityStoreAtom = atom<Record<string, { name: undefined } & any>>(
+  {},
+);

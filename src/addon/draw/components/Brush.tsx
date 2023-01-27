@@ -86,11 +86,11 @@ function Brush({ color }: { color?: number | string }) {
   }, []);
 
   // TODO: useMemo?
-  const terrain = scene.getObjectByName("terrain");
+  const field = scene.getObjectByName("field");
 
   useFrame((_, delta) => {
-    if (!raycaster || !scene || !terrain) return;
-    const intersects = raycaster.intersectObject(terrain);
+    if (!raycaster || !scene || !field) return;
+    const intersects = raycaster.intersectObject(field);
     if (intersects.length > 0) {
       // console.log(intersects);
       const closest = intersects[0];

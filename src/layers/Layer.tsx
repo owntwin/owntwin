@@ -1,13 +1,19 @@
 import { Suspense } from "react";
 
-import PNGLayer from "./layers/PNGLayer";
-import SVGMeshLayer from "./layers/SVGMeshLayer";
-import GeoJSONLayer from "./layers/GeoJSONLayer";
-import CSVLayer from "./layers/CSVLayer";
+import PNGLayer from "./PNGLayer";
+import SVGMeshLayer from "./SVGMeshLayer";
+import GeoJSONLayer from "./GeoJSONLayer";
+import CSVLayer from "./CSVLayer";
 
-import { Layer as ILayer } from "./types";
+import type { Layer as OTLayer } from "../core";
 
-function Layer({ layer, basePath }: { layer: ILayer; basePath?: string }) {
+export function Layer({
+  layer,
+  basePath,
+}: {
+  layer: OTLayer;
+  basePath?: string;
+}) {
   // console.log("layer", layer);
 
   if (layer.path && basePath) {
@@ -15,6 +21,7 @@ function Layer({ layer, basePath }: { layer: ILayer; basePath?: string }) {
       ? new URL(layer.path, basePath).toString()
       : layer.path;
   }
+
   if (layer.format === "svg") {
     return <SVGMeshLayer url={layer.path} color={layer.color} />;
   } else if (layer.format === "png") {
@@ -50,5 +57,3 @@ function Layer({ layer, basePath }: { layer: ILayer; basePath?: string }) {
     return null;
   }
 }
-
-export default Layer;

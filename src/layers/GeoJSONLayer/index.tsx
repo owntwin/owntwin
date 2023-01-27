@@ -1,25 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 
 import axios from "axios";
-import { groupBy } from "../../lib/util";
+import { groupBy } from "../../core/lib/utils";
 
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 import { extend, Object3DNode } from "@react-three/fiber";
 
-import { CANVAS } from "../../lib/constants";
-
-import { useAtom } from "jotai";
-import * as store from "../../lib/store";
-
-import { useFieldState } from "../../lib/hooks";
+import { useFieldState } from "../../core/components/Field/hooks";
+import { CANVAS } from "../../core/constants";
 
 import SelectableLayer from "./SelectableLayer";
 
 import polygon from "./polygon";
 import lineString from "./line-string";
 
-import * as types from "./types";
+import type { ObjectData } from "./types";
+
+import { useAtom } from "jotai";
+import * as store from "../../lib/store";
 
 import {
   MeshLineGeometry,
@@ -97,7 +96,7 @@ function GeoJSONLayer({
       return undefined;
     }
 
-    const geometries: types.ObjectData[] = [];
+    const geometries: ObjectData[] = [];
 
     const isGeometryCovered = (geometry: GeoJSON.Geometry) => {
       let originLng: number, originLat: number;

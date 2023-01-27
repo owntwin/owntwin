@@ -1,4 +1,4 @@
-const model = {
+export const model = {
   id: null,
   name: null,
   type: null,
@@ -15,9 +15,5 @@ const model = {
     width: 1024,
     height: 1024,
   },
-  terrain: null,
-  building: null,
-  modules: {},
+  field: null,
 };
-
-export { model };

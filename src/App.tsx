@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import { Transition } from "react-transition-group";
+import { useEffect, useState } from "react";
+
+import "./App.css";
+
 import clsx from "clsx";
 
 import { useAtom } from "jotai";
@@ -12,15 +14,13 @@ import Sidenav from "./ui/Sidenav";
 import ItemInfo from "./ui/ItemInfo";
 import Clock from "./ui/Clock";
 import ExportButton from "./ui/ExportButton";
-import ModelView from "./ModelView";
-import DetailView from "./DetailView";
-import Debug from "./Debug";
 
-import "./App.css";
-import { mdiArrowLeftThinCircleOutline } from "@mdi/js";
+import ModelView from "./components/ModelView";
+import Debug from "./components/Debug";
 
 import { model as defaultModel } from "./model";
-import { Model, Layer } from "./types";
+
+import type { InternalModel as Model, Layer } from "./core";
 
 async function getModel(): Promise<{
   model: Partial<Model> | null;
@@ -31,7 +31,7 @@ async function getModel(): Promise<{
   const url = new URL(window.location.href);
   const params = new URLSearchParams(url.search);
 
-  // TODO: Debug only
+  // TODO: debug only
   if (params.has("twin")) {
     basePath = params.get("twin");
     if (typeof basePath !== "string") return { model: null, basePath: null };
@@ -40,16 +40,10 @@ async function getModel(): Promise<{
     basePath = null;
     path = "./twin.json";
   }
-  let modelData = await axios
+  const model = await axios
     .get(path)
     .then((resp) => resp.data)
     .catch(() => defaultModel);
-
-  let model = modelData;
-
-  if (params.has("no-terrain")) {
-    model.terrain = null;
-  }
 
   model.bbox = {
     minlng: model.bbox[0],
@@ -64,19 +58,15 @@ async function getModel(): Promise<{
 function App() {
   const [model, setModel] = useState<Partial<Model>>({
     id: undefined,
-    name: undefined,
+    displayName: undefined,
     type: undefined,
     description: undefined,
-    modules: {},
   });
   const [basePath, setBasePath] = useState<string>();
   const [modelLoaded, setModelLoaded] = useState(false);
 
-  const [entity, setEntity] = useAtom(store.entityAtom);
-  const [detailEntity, setDetailEntity] = useAtom(store.detailEntityAtom);
-
+  const [, setLayers] = useAtom(store.layersAtom);
   const [, setLayersState] = useAtom(store.layersStateAtom);
-  const [, setLayerProperties] = useAtom(store.layerPropertiesAtom);
   const [, setField] = useAtom(store.fieldAtom);
 
   useEffect(() => {
@@ -91,47 +81,33 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (!model.layers) return;
+    const layers = model.layers.reduce((prev, curr) => {
+      return {
+        ...prev,
+        [curr.id]: curr,
+      };
+    }, {});
+    setLayers(layers);
+  }, [model.layers]);
+
+  useEffect(() => {
     setLayersState(() => {
-      const acc: Partial<Layer> = {};
+      const newState: Partial<Layer> = {};
 
-      if (!model.modules) return acc;
-
-      // TODO: Refactoring
-      Object.entries(model.modules).forEach(([id, module]) => {
-        const layers = module.layers || [];
-        layers.forEach((layer) => {
-          acc[`${layer.id}`] = {
-            ...(acc[`${layer.id}`] || {}),
-            enabled:
-              model.properties &&
-              (model.properties[`${id}:layers.${layer.id}.enabled`] || false),
-          };
-        });
-      });
-
-      return acc;
-    });
-
-    setLayerProperties(() => {
-      const acc: Partial<Layer> = {};
-
-      if (!model.modules) return acc;
+      if (!model.layers) return newState;
 
       // TODO: Refactoring
-      Object.entries(model.modules).forEach(([id, module]) => {
-        const layers = module.layers || [];
-        layers.forEach((layer) => {
-          if (!model.properties) return;
-          acc[`${layer.id}`] = {
-            ...(acc[`${layer.id}`] || {}),
-            ...(model.properties[`${id}:layers.${layer.id}`] || {}),
-          };
-        });
+      model.layers.forEach((layer) => {
+        newState[layer.id] = {
+          ...(newState[layer.id] || {}),
+          enabled: layer.enabled === undefined ? true : layer.enabled,
+        };
       });
 
-      return acc;
+      return newState;
     });
-  }, [model.modules, model.properties]);
+  }, [model.layers]);
 
   const [, updateEntityStore] = useAtom(store.entityStoreAtom);
 
@@ -154,95 +130,26 @@ function App() {
     });
   }, [model.entities]);
 
-  // TODO: refactoring
-  useEffect(() => {
-    if (!model) return;
-    if (!entity) {
-      setEntity(model);
-    }
-  }, [entity, model]);
-
-  const transitionRef = useRef(null);
-
   return (
     <div
       id="App"
       className={clsx("App", "fixed top-0 bottom-0 left-0 right-0")}
     >
-      <Helmet>{model.name && <title>{model.name} - OwnTwin</title>}</Helmet>
-      {/* <div
-        className={clsx(
-          "absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center text-sm text-gray-400 pointer-events-none",
-          !detailEntity ? "flex" : "hidden",
-        )}
-      >
-        <div>表示されない場合は再読み込み</div>
-      </div> */}
+      <Helmet>
+        {model.displayName && <title>{model.displayName} - OwnTwin</title>}
+      </Helmet>
       <div className="absolute top-0 bottom-0 left-0 right-0">
         {modelLoaded && <ModelView model={model} basePath={basePath} />}
       </div>
-      <Transition nodeRef={transitionRef} in={!!detailEntity} timeout={1}>
-        {(state) => (
-          <div
-            ref={transitionRef}
-            className={clsx(
-              "detail-view",
-              "absolute top-0 bottom-0 left-0 right-0",
-              ["entering", "entered"].includes(state) ? "block" : "hidden",
-            )}
-          >
-            <div
-              className={clsx(
-                "w-full h-full",
-                state === "entered" ? "block" : "hidden",
-              )}
-            >
-              {modelLoaded && (
-                <DetailView
-                  model={model}
-                  type={"building"}
-                  entity={detailEntity}
-                />
-              )}
-            </div>
-          </div>
-        )}
-      </Transition>
       {modelLoaded && (
         <ItemInfo
+          displayName={model.displayName}
           type={model.type}
           homepage={model.homepage}
-          name={model.name}
           description={model.description}
-          modules={model.modules}
           properties={model.properties}
-          back={
-            entity &&
-            detailEntity && (
-              <div
-                className="text-sm text-gray-600 px-2 py-2 cursor-pointer flex items-center bg-gray-50 hover:bg-gray-100"
-                onClick={(ev) => {
-                  ev.stopPropagation();
-                  if (detailEntity.id === entity.id) {
-                    setDetailEntity(null);
-                    setEntity(null);
-                  } else {
-                    setEntity(detailEntity);
-                  }
-                }}
-              >
-                <div className="mr-1">
-                  <svg
-                    style={{ width: "18px", height: "18px" }}
-                    viewBox="0 0 24 24"
-                  >
-                    <path fill="#888" d={mdiArrowLeftThinCircleOutline} />
-                  </svg>
-                </div>
-                <div>戻る</div>
-              </div>
-            )
-          }
+          actions={model.actions}
+          layers={model.layers}
         />
       )}
       <Debug />

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import throttle from "just-throttle";
 
-import * as types from "../types";
+import type * as types from "../types";
 
 import { useAtom } from "jotai";
 import * as store from "../store";

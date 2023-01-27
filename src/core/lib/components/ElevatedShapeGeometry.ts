@@ -1,9 +1,9 @@
 import * as THREE from "three";
 import split from "just-split";
 
-import { coordSorter } from "../util";
+import { coordSorter } from "../utils";
 
-export default class ElevatedShapeGeometry extends THREE.ShapeGeometry {
+export class ElevatedShapeGeometry extends THREE.ShapeGeometry {
   constructor(
     shape: THREE.Shape,
     curveSegments: number,

@@ -10,7 +10,7 @@ import {
   //  MeshLineRaycast
 } from "meshline";
 
-import * as types from "../types";
+import type * as types from "../types";
 
 import { drawState } from "../share";
 

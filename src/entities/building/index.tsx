@@ -1,6 +1,18 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
+
 import * as THREE from "three";
 import { MeshProps } from "@react-three/fiber";
+
+// export type Building = {
+//   id: string;
+//   name: string;
+//   path: string;
+//   base: [number, number][];
+//   z: number;
+//   depth: number;
+//   type: string;
+//   data?: any;
+// };
 
 export function Building({
   id,

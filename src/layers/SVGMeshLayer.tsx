@@ -4,9 +4,9 @@ import { SVGLoader } from "three-stdlib/loaders/SVGLoader.js"; // NOTE: needs .j
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 import * as THREE from "three";
 
-import { CANVAS } from "../lib/constants";
+import { useFieldState } from "../core/components/Field/hooks";
 
-import { useFieldState } from "../lib/hooks";
+import { CANVAS } from "../core/constants";
 
 const loader = new SVGLoader();
 

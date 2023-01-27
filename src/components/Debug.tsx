@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+
 import clsx from "clsx";
 
 import { useAtom } from "jotai";
-import * as store from "./lib/store";
+import * as store from "../lib/store";
 
 import { mdiCloseCircle } from "@mdi/js";
 

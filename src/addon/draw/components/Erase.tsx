@@ -18,7 +18,7 @@ import { controlsStateAtom } from "../../../lib/store";
 
 import { drawState } from "../share";
 
-import { Line } from "../types";
+import type { Line } from "../types";
 
 function Eraser({
   position,
@@ -100,11 +100,11 @@ export function Erase({ linesData }: { linesData: Line[] }) {
   }, []);
 
   // TODO: useMemo?
-  const terrain = scene.getObjectByName("terrain");
+  const field = scene.getObjectByName("field");
 
   useFrame((_, delta) => {
-    if (!raycaster || !scene || !terrain) return;
-    const intersects = raycaster.intersectObject(terrain);
+    if (!raycaster || !scene || !field) return;
+    const intersects = raycaster.intersectObject(field);
     if (intersects.length > 0) {
       // console.log(intersects);
       const closest = intersects[0];

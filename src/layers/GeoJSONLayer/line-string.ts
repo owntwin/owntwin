@@ -1,6 +1,6 @@
 import { MeshLineGeometry } from "meshline";
 
-import { FieldState } from "../../types";
+import type { FieldState } from "../../core";
 
 export function createGeometry(
   feature: GeoJSON.Feature<GeoJSON.LineString>,
