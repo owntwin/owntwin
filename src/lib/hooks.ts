@@ -6,7 +6,12 @@ import * as store from "./store";
 import axios from "axios";
 
 // import { Model } from "../core";
-import type { Model as OTModel, InternalModel as Model, Layer } from "../core";
+import type {
+  Model as OTModel,
+  InternalModel as Model,
+  Layer,
+  ElevationMap,
+} from "../core";
 
 import { model as defaultModel } from "../model";
 
@@ -15,7 +20,7 @@ type ModelLoad = {
   basePath: string | null;
 };
 
-export function useModel(): ModelLoad {
+export function useModelFetch(): ModelLoad {
   const [model, setModel] = useState<Partial<Model>>({});
 
   const [result, setResult] = useState<ModelLoad>({
@@ -128,4 +133,46 @@ export function useModel(): ModelLoad {
   }, [model?.entities]);
 
   return result;
+}
+
+export function useFieldFetch({
+  field,
+  baseUrl,
+}: {
+  field: Model["field"];
+  baseUrl?: string;
+}) {
+  const [elevationMap, setElevationMap] = useState<ElevationMap>();
+
+  const fetchFieldData = async (
+    definition: Model["field"],
+    baseUrl?: string,
+  ) => {
+    const blankField: [] = [];
+
+    if (definition && definition.path) {
+      definition.path = baseUrl
+        ? new URL(definition.path, baseUrl).toString()
+        : definition.path;
+      const data = await axios
+        .get(definition.path)
+        .then((resp) => resp.data)
+        .catch(() => blankField);
+      return data;
+    } else {
+      // TODO: fix
+      return blankField;
+    }
+  };
+  useEffect(() => {
+    (async () => {
+      if (field) {
+        // TODO: this is not a field data but elevation data
+        const fieldData = await fetchFieldData(field, baseUrl);
+        fieldData && setElevationMap(fieldData);
+      }
+    })();
+  }, [field, baseUrl]);
+
+  return { elevationMap };
 }

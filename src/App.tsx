@@ -10,10 +10,10 @@ import ExportButton from "./ui/ExportButton";
 import ModelView from "./components/ModelView";
 import Debug from "./components/Debug";
 
-import { useModel } from "./lib/hooks";
+import { useModelFetch } from "./lib/hooks";
 
 function App() {
-  const { model, basePath } = useModel();
+  const { model, basePath } = useModelFetch();
 
   return (
     <div id="App" className="App fixed top-0 bottom-0 left-0 right-0">
