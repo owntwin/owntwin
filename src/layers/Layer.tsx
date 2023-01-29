@@ -9,17 +9,15 @@ import type { Layer as OTLayer } from "../core";
 
 export function Layer({
   layer,
-  basePath,
+  baseUrl,
 }: {
   layer: OTLayer;
-  basePath?: string;
+  baseUrl?: string;
 }) {
   // console.log("layer", layer);
 
-  if (layer.path && basePath) {
-    layer.path = basePath
-      ? new URL(layer.path, basePath).toString()
-      : layer.path;
+  if (layer.path && baseUrl) {
+    layer.path = baseUrl ? new URL(layer.path, baseUrl).toString() : layer.path;
   }
 
   if (layer.format === "svg") {

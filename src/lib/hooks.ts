@@ -17,7 +17,7 @@ import { model as defaultModel } from "../model";
 
 type ModelLoad = {
   model: Partial<Model> | null;
-  basePath: string | null;
+  baseUrl: string | null;
 };
 
 export function useModelFetch(): ModelLoad {
@@ -25,7 +25,7 @@ export function useModelFetch(): ModelLoad {
 
   const [result, setResult] = useState<ModelLoad>({
     model: null,
-    basePath: null,
+    baseUrl: null,
   });
 
   const [, setField] = useAtom(store.fieldAtom);
@@ -34,18 +34,18 @@ export function useModelFetch(): ModelLoad {
   const [, updateEntityStore] = useAtom(store.entityStoreAtom);
 
   useEffect(() => {
-    let basePath: string | null, path: string;
+    let baseUrl: string | null, path: string;
 
     const url = new URL(window.location.href);
     const params = new URLSearchParams(url.search);
 
     // TODO: debug only
     if (params.has("twin")) {
-      basePath = params.get("twin");
-      if (typeof basePath !== "string") return;
-      path = new URL("./twin.json", basePath).toString();
+      baseUrl = params.get("twin");
+      if (typeof baseUrl !== "string") return;
+      path = new URL("./twin.json", baseUrl).toString();
     } else {
-      basePath = null;
+      baseUrl = null;
       path = "./twin.json";
     }
 
@@ -70,7 +70,7 @@ export function useModelFetch(): ModelLoad {
         .catch(() => defaultModel);
 
       setModel(model);
-      setResult({ model, basePath });
+      setResult({ model, baseUrl });
     })();
   }, [window?.location?.href]);
 

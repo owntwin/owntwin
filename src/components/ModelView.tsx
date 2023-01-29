@@ -15,7 +15,7 @@ import type { InternalModel as Model } from "../core";
 
 export default function ModelView({
   model,
-  basePath,
+  baseUrl,
   width = 1024,
   height = 1024,
   addons = [],
@@ -24,7 +24,7 @@ export default function ModelView({
   },
 }: {
   model: Partial<Model>;
-  basePath?: string;
+  baseUrl?: string;
   width?: number;
   height?: number;
   addons?: string[];
@@ -38,7 +38,7 @@ export default function ModelView({
 
   const { elevationMap } = useFieldFetch({
     field: model.field,
-    baseUrl: basePath,
+    baseUrl: baseUrl,
   });
 
   return (
@@ -53,7 +53,7 @@ export default function ModelView({
           if (!layersState[id] || !layersState[id].enabled) {
             return null;
           }
-          return <Layer key={id} layer={layer} basePath={basePath} />;
+          return <Layer key={id} layer={layer} baseUrl={baseUrl} />;
         })}
         {addons.includes("discuss") && <DiscussAddon />}
         {addons.includes("draw") && <DrawAddon />}

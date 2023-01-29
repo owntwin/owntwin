@@ -20,7 +20,7 @@ const addons = import.meta.env.VITE_ADDONS
   : [];
 
 function App() {
-  const { model, basePath } = useModelFetch();
+  const { model, baseUrl } = useModelFetch();
 
   return (
     <div id="App" className="App fixed top-0 bottom-0 left-0 right-0">
@@ -28,10 +28,10 @@ function App() {
         {model?.displayName && <title>{model.displayName} - OwnTwin</title>}
       </Helmet>
       <div className="absolute top-0 bottom-0 left-0 right-0">
-        {model && basePath && (
+        {model && baseUrl && (
           <ModelView
             model={model}
-            basePath={basePath}
+            baseUrl={baseUrl}
             width={CANVAS.width}
             height={CANVAS.height}
             addons={addons}
