@@ -58,6 +58,7 @@ function LayerItem({ id, layer }: { id: string; layer: any }) {
             className="mr-1.5"
             type="checkbox"
             checked={layersState[id]?.enabled}
+            readOnly
             // onChange={(ev) => {
             //   ev.preventDefault();
             //   ev.stopPropagation();
