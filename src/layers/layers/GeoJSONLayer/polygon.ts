@@ -1,9 +1,9 @@
 import * as THREE from "three";
-import { ElevatedShapeGeometry } from "../../core/lib/components";
+import { ElevatedShapeGeometry } from "../../../core/lib/components";
 
-import { coordSorter } from "../../core/lib/utils";
+import { coordSorter } from "../../../core/lib/utils";
 
-import type { FieldState } from "../../core";
+import type { FieldState } from "../../../core";
 
 function computeShape({
   coordinates,

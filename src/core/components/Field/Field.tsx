@@ -5,7 +5,6 @@ import * as THREE from "three";
 import { useAtom } from "jotai";
 import { fieldAtom } from "./store";
 
-import { CANVAS } from "../../constants";
 import { useFieldState } from "./hooks";
 
 import type { Field as OTField, ElevationMap } from "../../types";
@@ -57,9 +56,9 @@ export function Field({
   }
 
   const [, setField] = useAtom(fieldAtom);
-  const segments = CANVAS.segments;
 
   const fieldState = useFieldState();
+  const segments = fieldState.canvas._segments;
 
   const geometry = useMemo(() => {
     return new THREE.PlaneGeometry(width, height, segments - 1, segments - 1);

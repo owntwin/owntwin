@@ -1,9 +1,6 @@
 import { Suspense } from "react";
 
-import PNGLayer from "./PNGLayer";
-import SVGMeshLayer from "./SVGMeshLayer";
-import GeoJSONLayer from "./GeoJSONLayer";
-import CSVLayer from "./CSVLayer";
+import { CSVLayer, GeoJSONLayer, PNGLayer, SVGMeshLayer } from "./layers";
 
 import type { Layer as OTLayer } from "../core";
 

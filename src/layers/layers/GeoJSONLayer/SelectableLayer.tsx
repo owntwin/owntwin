@@ -4,7 +4,10 @@ import { Html } from "@react-three/drei";
 
 import { useAtom } from "jotai";
 import { useAtomCallback } from "jotai/utils";
-import * as store from "../../lib/store";
+import {
+  entityStoreAtom,
+  hoveredEntityAtom,
+} from "../../../core/components/CanvasView/store";
 
 import type { ObjectData } from "./types";
 
@@ -23,8 +26,8 @@ export default function SelectableLayer({
     }),
   );
 
-  const [entityStore] = useAtom(store.entityStoreAtom);
-  const [hoveredEntity, setHoveredEntity] = useAtom(store.hoveredEntityAtom);
+  const [entityStore] = useAtom(entityStoreAtom);
+  const [hoveredEntity, setHoveredEntity] = useAtom(hoveredEntityAtom);
 
   const [meshes, setMeshes] = useState<any[]>([]);
   const [isPending, startTransition] = useTransition();
@@ -62,7 +65,7 @@ export default function SelectableLayer({
         // }
         return;
       }
-      const hoveredEntity = get(store.hoveredEntityAtom);
+      const hoveredEntity = get(hoveredEntityAtom);
       if (hoveredEntity.id === id) return;
       ev.object.visible = true;
       // return { id, entity: ev.object };

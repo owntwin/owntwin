@@ -3,9 +3,15 @@ import { useContext } from "react";
 import { useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 
-import { FieldContext } from "../core/components/Field";
+import { FieldContext } from "../../core/components/Field";
 
-function PNGLayer({ url, ...props }: { url: string; opacity?: number }) {
+export function PNGLayer({
+  url,
+  opacity = 0.5,
+}: {
+  url: string;
+  opacity?: number;
+}) {
   const field = useContext(FieldContext);
 
   const texture = useLoader(THREE.TextureLoader, url);
@@ -16,10 +22,8 @@ function PNGLayer({ url, ...props }: { url: string; opacity?: number }) {
         map={texture}
         transparent={true}
         color={0xffffff}
-        opacity={props.opacity ? props.opacity : 0.5}
+        opacity={opacity}
       />
     </mesh>
   ) : null;
 }
-
-export default PNGLayer;

@@ -1,5 +1,7 @@
 import { useAtom } from "jotai";
-import * as store from "./store";
+import { fieldAtom } from "./store";
+
+import { useCanvas } from "../CanvasView/hooks";
 
 // @ts-ignore
 import SphericalMercator from "@mapbox/sphericalmercator";
@@ -7,11 +9,21 @@ import SphericalMercator from "@mapbox/sphericalmercator";
 const sm = new SphericalMercator();
 
 export const useFieldState = () => {
-  const [{ canvas, vertices, bbox }] = useAtom(store.fieldAtom);
+  const canvas = useCanvas();
+  const [{ vertices, bbox }] = useAtom(fieldAtom);
+
+  if (!canvas) {
+    throw new Error("CanvasView context is missing");
+  }
 
   if (!bbox) {
     return {
       pixelPerMeter: 0.5, // TODO: Fix
+      canvas: {
+        width: canvas.width,
+        height: canvas.height,
+        _segments: canvas._segments,
+      },
       coordToPlane: (lng: number, lat: number) => undefined,
       getAltitude: (x: number, y: number) => undefined,
     };
@@ -33,6 +45,11 @@ export const useFieldState = () => {
 
   return {
     pixelPerMeter: (pxPerMeter.horizontal + pxPerMeter.vertical) / 2, // Mean of the two; to be reconsidered
+    canvas: {
+      width: canvas.width,
+      height: canvas.height,
+      _segments: canvas._segments,
+    },
     coordToPlane: (lng: number, lat: number) => {
       const coordXY = sm.forward([lng, lat]);
       // console.log(bboxXY, originXY, sizeXY, pxPerMeter, coordXY);
@@ -48,11 +65,11 @@ export const useFieldState = () => {
       if (!vertices) return undefined;
 
       const pos =
-        Math.floor(x / (canvas.width / canvas.segments)) +
-        canvas.segments *
-          (canvas.segments -
+        Math.floor(x / (canvas.width / canvas._segments)) +
+        canvas._segments *
+          (canvas._segments -
             1 -
-            Math.floor(y / (canvas.height / canvas.segments)));
+            Math.floor(y / (canvas.height / canvas._segments)));
       if (pos < 0 || vertices.length <= pos) {
         // console.log(x, y, pos);
         return 0;

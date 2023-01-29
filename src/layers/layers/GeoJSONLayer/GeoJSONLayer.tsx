@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 
 import axios from "axios";
-import { groupBy } from "../../core/lib/utils";
+import { groupBy } from "../../../core/lib/utils";
 
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 import { extend, Object3DNode } from "@react-three/fiber";
 
-import { useFieldState } from "../../core/components/Field/hooks";
-import { CANVAS } from "../../core/constants";
+import { useFieldState } from "../../../core/components/Field/hooks";
 
 import SelectableLayer from "./SelectableLayer";
 
@@ -18,7 +17,8 @@ import lineString from "./line-string";
 import type { ObjectData } from "./types";
 
 import { useAtom } from "jotai";
-import * as store from "../../lib/store";
+import { entityStoreAtom } from "../../../core/components/CanvasView/store";
+import { fieldAtom } from "../../../core/components/Field/store";
 
 import {
   MeshLineGeometry,
@@ -36,7 +36,7 @@ declare global {
   }
 }
 
-function GeoJSONLayer({
+export function GeoJSONLayer({
   url,
   data,
   clip = true,
@@ -66,10 +66,11 @@ function GeoJSONLayer({
   // NOTE: for backward compatibility; to fix
   edges = extrude;
 
-  const [field] = useAtom(store.fieldAtom);
+  // TODO: remove dependency on fieldAtom
+  const [field] = useAtom(fieldAtom);
   const fieldState = useFieldState();
 
-  const [entityStore, updateEntityStore] = useAtom(store.entityStoreAtom);
+  const [entityStore, updateEntityStore] = useAtom(entityStoreAtom);
   const [geojson, setGeojson] = useState<GeoJSON.FeatureCollection>();
 
   // Load JSON from URL
@@ -117,10 +118,10 @@ function GeoJSONLayer({
 
       if (
         clip &&
-        (origin.x < -CANVAS.width / 2 ||
-          CANVAS.width / 2 <= origin.x ||
-          origin.y < -CANVAS.height / 2 ||
-          CANVAS.height / 2 <= origin.y)
+        (origin.x < -fieldState.canvas.width / 2 ||
+          fieldState.canvas.width / 2 <= origin.x ||
+          origin.y < -fieldState.canvas.height / 2 ||
+          fieldState.canvas.height / 2 <= origin.y)
       )
         return false;
       else return true;
@@ -306,5 +307,3 @@ function GeoJSONLayer({
     </>
   );
 }
-
-export default GeoJSONLayer;

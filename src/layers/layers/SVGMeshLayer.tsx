@@ -4,9 +4,7 @@ import { SVGLoader } from "three-stdlib/loaders/SVGLoader.js"; // NOTE: needs .j
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 import * as THREE from "three";
 
-import { useFieldState } from "../core/components/Field/hooks";
-
-import { CANVAS } from "../core/constants";
+import { useFieldState } from "../../core/components/Field/hooks";
 
 const loader = new SVGLoader();
 
@@ -31,13 +29,7 @@ async function loadSVG(url: string) {
 
           points = points.map((p) => {
             let x = p.x;
-            // TODO: Improve
-            // if (x < 0) x = 0;
-            // if (x >= widthSVG) x = widthSVG - 1;
             let y = heightSVG - p.y;
-            // TODO: Improve
-            // if (y < 0) y = 0;
-            // if (y >= heightSVG) y = heightSVG - 1;
             p.x = x;
             p.y = y;
             return p;
@@ -54,7 +46,7 @@ async function loadSVG(url: string) {
     });
 }
 
-function SVGMeshLayer({
+export function SVGMeshLayer({
   url,
   color = 0xdadce0,
   ...props
@@ -84,7 +76,11 @@ function SVGMeshLayer({
           }
         });
         const geometry = new THREE.BufferGeometry().setFromPoints(_points);
-        geometry.scale(CANVAS.width / svg.width, CANVAS.height / svg.height, 1);
+        geometry.scale(
+          fieldState.canvas.width / svg.width,
+          fieldState.canvas.height / svg.height,
+          1,
+        );
         _lines.push(geometry);
       });
 
@@ -110,7 +106,11 @@ function SVGMeshLayer({
 
       // let bbox = new THREE.Box3().setFromObject(obj);
       // let size = bbox.getSize(new THREE.Vector3());
-      const size = new THREE.Vector3(CANVAS.width, CANVAS.height, 0); // TODO: Improve
+      const size = new THREE.Vector3(
+        fieldState.canvas.width,
+        fieldState.canvas.height,
+        0,
+      ); // TODO: Improve
 
       obj.position.set(-size.x / 2, -size.y / 2, 0);
       // obj.translateX(-size.x / 2);
@@ -148,5 +148,3 @@ function SVGMeshLayer({
     </group>
   );
 }
-
-export default SVGMeshLayer;

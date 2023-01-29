@@ -5,6 +5,12 @@ import { Canvas } from "@react-three/fiber";
 import { Camera } from "../Camera";
 import { ExtendedCameraControls } from "../Controls";
 
+import { useAtom } from "jotai";
+import { canvasAtom } from "./store";
+
+// TODO: Remove constants
+const _segments = 100;
+
 export function CanvasView({
   width = 1024,
   height = 1024,
@@ -15,6 +21,16 @@ export function CanvasView({
   height?: number;
   children?: ReactNode;
 }) {
+  const [, setCanvas] = useAtom(canvasAtom);
+
+  useEffect(() => {
+    setCanvas({
+      width,
+      height,
+      _segments,
+    });
+  }, [width, height]);
+
   useEffect(() => {
     // NOTE: https://stackoverflow.com/a/43321596/10954858
     const handler = (ev: any) => {

@@ -2,16 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 
 import axios from "axios";
 
-import { CANVAS } from "../lib/constants";
-
 import {
   // SphereAnchor,
   BeamAnchor,
-} from "../core/components/anchors";
+} from "../../core/components/anchors";
 
 import { parse as parseCSV } from "csv-parse/browser/esm/sync";
 
-import { useFieldState } from "../core/components/Field/hooks";
+import { useFieldState } from "../../core/components/Field/hooks";
 
 function Anchor({
   coordinates,
@@ -58,10 +56,10 @@ function Anchor({
   // TODO: Fix
   if (
     clip &&
-    (origin.x < -CANVAS.width / 2 ||
-      CANVAS.width / 2 <= origin.x ||
-      origin.y < -CANVAS.height / 2 ||
-      CANVAS.height / 2 <= origin.y)
+    (origin.x < -fieldState.canvas.width / 2 ||
+      fieldState.canvas.width / 2 <= origin.x ||
+      origin.y < -fieldState.canvas.height / 2 ||
+      fieldState.canvas.height / 2 <= origin.y)
   )
     return null;
 
@@ -77,7 +75,7 @@ function Anchor({
   ) : null;
 }
 
-export default function CSVLayer({
+export function CSVLayer({
   url,
   clip = true,
   ...props
