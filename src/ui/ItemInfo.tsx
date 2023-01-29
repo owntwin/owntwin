@@ -65,7 +65,11 @@ function LayerItem({ id, layer }: { id: string; layer: any }) {
             //   handleCheck();
             // }}
           />
-          <label htmlFor={`layer-${id}-checkbox`}>{layer.displayName}</label>
+          <label
+          // htmlFor={`layer-${id}-checkbox`}
+          >
+            {layer.displayName}
+          </label>
           {["csv"].includes(layer.format) && ( // TODO: Improve
             <span className="ml-1">
               <a href={layer.path}>
