@@ -13,24 +13,24 @@ import { useFieldFetch } from "../lib/hooks";
 // TODO: type InternalModel should not be in core but in app
 import type { InternalModel as Model } from "../core";
 
-// NOTE: this constant is unproblematic as it is of app
-import { CANVAS } from "../lib/constants";
-
-/* Constants */
-// TODO: improve
-const defaultElevationZoom = 2;
-const width = CANVAS.width,
-  height = CANVAS.height;
-const addons = import.meta.env.VITE_ADDONS
-  ? import.meta.env.VITE_ADDONS.split(",")
-  : [];
-
 export default function ModelView({
   model,
   basePath,
+  width = 1024,
+  height = 1024,
+  addons = [],
+  options = {
+    elevationZoom: 1,
+  },
 }: {
   model: Partial<Model>;
   basePath?: string;
+  width?: number;
+  height?: number;
+  addons?: string[];
+  options?: {
+    elevationZoom?: number;
+  };
 }) {
   // TODO: layer/entities logics must be called in ModelView, not in App!
   const [layers] = useAtom(store.layersAtom);
@@ -47,7 +47,7 @@ export default function ModelView({
         width={width}
         height={height}
         elevationMap={elevationMap}
-        elevationZoom={defaultElevationZoom}
+        elevationZoom={options?.elevationZoom || 1}
       >
         {Object.entries(layers || {}).map(([id, layer]) => {
           if (!layersState[id] || !layersState[id].enabled) {

@@ -12,6 +12,13 @@ import Debug from "./components/Debug";
 
 import { useModelFetch } from "./lib/hooks";
 
+// NOTE: this constant is unproblematic as it is of app
+import { CANVAS } from "./lib/constants";
+
+const addons = import.meta.env.VITE_ADDONS
+  ? import.meta.env.VITE_ADDONS.split(",")
+  : [];
+
 function App() {
   const { model, basePath } = useModelFetch();
 
@@ -21,7 +28,18 @@ function App() {
         {model?.displayName && <title>{model.displayName} - OwnTwin</title>}
       </Helmet>
       <div className="absolute top-0 bottom-0 left-0 right-0">
-        {model && basePath && <ModelView model={model} basePath={basePath} />}
+        {model && basePath && (
+          <ModelView
+            model={model}
+            basePath={basePath}
+            width={CANVAS.width}
+            height={CANVAS.height}
+            addons={addons}
+            options={{
+              elevationZoom: 2,
+            }}
+          />
+        )}
       </div>
       <ItemInfo
         displayName={model?.displayName}
