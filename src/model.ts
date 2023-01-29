@@ -1,10 +1,10 @@
 export const model = {
-  id: null,
-  name: null,
-  type: null,
-  homepage: null,
-  community: null,
-  description: null,
+  id: undefined,
+  name: undefined,
+  type: undefined,
+  homepage: undefined,
+  community: undefined,
+  description: undefined,
   bbox: {
     minlng: 139.647216796875,
     minlat: 35.550105335885505,
@@ -15,5 +15,5 @@ export const model = {
     width: 1024,
     height: 1024,
   },
-  field: null,
+  field: undefined,
 };

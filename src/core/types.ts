@@ -48,7 +48,7 @@ export type Field = {
 
 // NOTE: internal
 export type InternalModel = Omit<Model, "bbox"> & {
-  bbox: BBox;
+  bbox?: BBox;
 };
 
 // NOTE: internal
