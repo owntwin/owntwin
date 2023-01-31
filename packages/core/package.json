@@ -75,7 +75,7 @@
   },
   "dependencies": {
     "@mapbox/sphericalmercator": "^1.2.0",
-    "@react-three/drei": "^9.46.7",
+    "@react-three/drei": "9.56.6",
     "camera-controls": "^1.37.4",
     "hold-event": "^0.2.0",
     "jotai": "^1.11.2",

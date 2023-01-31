@@ -9,7 +9,7 @@ import debounce from "just-debounce-it";
 import { useAtom } from "jotai";
 import { closeupAtom, controlsStateAtom } from "../../store";
 
-import { CameraControls } from "./CameraControls";
+import { CameraControls } from "@react-three/drei";
 import CameraControlsDefault from "camera-controls";
 
 const ZERO = new THREE.Vector3(0, 0, 0);
@@ -190,7 +190,8 @@ export function ExtendedCameraControls() {
 
   return (
     <CameraControls
-      attach="cameraControls" // NOTE: -> scene.cameraControls
+      // attach="cameraControls" // NOTE: -> scene.cameraControls
+      makeDefault
       ref={ref}
       minDistance={100}
       maxDistance={1500}

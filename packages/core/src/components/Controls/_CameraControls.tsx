@@ -79,8 +79,9 @@ export const CameraControls = forwardRef<
   const explDomElement = (events.connected ||
     renderer.domElement) as HTMLElement;
   useEffect(() => {
+    cameraControls.current?.disconnect();
     cameraControls.current?.connect(explDomElement);
-    return () => void cameraControls.current?.dispose();
+    return () => void cameraControls.current?.disconnect();
   }, [cameraControls.current, ref, explDomElement]);
 
   useFrame((_, delta) => cameraControls.current?.update(delta));
