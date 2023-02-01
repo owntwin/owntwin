@@ -197,10 +197,10 @@ function InteractionToolbar() {
   // TODO: fix invalid button inside button
   // TODO: toggle cursor mode depending modifier keys
   return (
-    <Toolbar.Root>
+    <Toolbar.Root className="ml-3 flex items-center bg-white rounded-full border px-3 py-1 h-9">
       <Toolbar.ToggleGroup
         type="single"
-        className="ml-3 flex items-center relative gap-1.5 bg-white rounded-full border px-3 py-1 h-9"
+        className="flex items-center gap-1.5"
         value={value}
         onValueChange={(value) => {
           setValue(value);
@@ -261,6 +261,28 @@ function InteractionToolbar() {
           </>
         )}
       </Toolbar.ToggleGroup>
+      {addons.includes("discuss") && (
+        <>
+          <Toolbar.Separator className="bg-gray-200 w-0.5 h-1/2 mx-2" />
+          <Toolbar.ToggleGroup
+            type="single"
+            className="flex items-center gap-1.5"
+            // value={value}
+            // onValueChange={(value) => {
+            //   setValue(value);
+            // }}
+          >
+            <Toolbar.ToggleItem
+              value="comment"
+              // className="hover:border-b-2 radix-state-on:border-b-2"
+            >
+              <div className="flex items-center relative">
+                <DiscussButton size="22px" />
+              </div>
+            </Toolbar.ToggleItem>
+          </Toolbar.ToggleGroup>
+        </>
+      )}
     </Toolbar.Root>
   );
 }
@@ -275,7 +297,7 @@ function Sidenav({ communityURL, ...props }: { communityURL?: string }) {
 
   return (
     <div
-      className="fixed bottom-4 left-4 right-4 sm:right-auto flex items-center h-10"
+      className="fixed bottom-4 left-4 right-4 md:right-auto flex items-center h-10"
       style={{ zIndex: Z_INDEX.sidenav }}
     >
       <div className="flex items-center">
@@ -296,23 +318,9 @@ function Sidenav({ communityURL, ...props }: { communityURL?: string }) {
         </div>
       )}
       <InteractionToolbar />
-      {/* {addons.includes("draw") && (
-        <div className="ml-3 flex items-center relative gap-1.5 bg-white/75 rounded-full border px-3 py-1">
-          <DrawButton size="24px" />
-          // <BrushButton size="24px" />
-          <EraseButton size="24px" />
-        </div>
-      )} */}
-      {addons.includes("discuss") && (
-        <>
-          <div className="ml-3 flex items-center relative">
-            <DiscussButton width="24px" height="24px" />
-          </div>
-          <div className="absolute sm:static bottom-14 sm:bottom-auto w-full sm:w-auto sm:ml-3 flex items-center">
-            <DiscussInput />
-          </div>
-        </>
-      )}
+      <div className="absolute md:relative bottom-14 md:bottom-auto w-full md:ml-3 flex items-center">
+        <DiscussInput className="relative w-full md:w-96" />
+      </div>
     </div>
   );
 }

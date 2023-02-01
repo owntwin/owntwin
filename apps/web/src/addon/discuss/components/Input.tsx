@@ -7,7 +7,7 @@ import * as store from "../store";
 
 import { twinId } from "../index";
 
-function Input({ ...props }) {
+function Input({ className, ...props }: { className?: string }) {
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -50,10 +50,10 @@ function Input({ ...props }) {
   };
 
   return enabled ? (
-    <div className="relative w-full md:w-[32rem]">
+    <div className={className}>
       <input
         ref={inputRef}
-        className="w-full h-10 px-6 text-sm text-gray-700 placeholder-gray-400 bg-gray-50 appearance-none border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:border-purple-500"
+        className="w-full h-10 px-6 text-sm text-gray-700 placeholder-gray-400 bg-white appearance-none border border-gray-200 rounded-lg focus:outline-none focus:border-purple-500"
         type="text"
         placeholder="場所をダブルクリックしてコメント..." // コメント...
         value={value}

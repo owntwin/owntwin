@@ -1,17 +1,16 @@
 import clsx from "clsx";
 
 import { mdiCommentTextMultipleOutline } from "@mdi/js";
+import Icon from "@mdi/react";
 
 import { useAtom } from "jotai";
 import * as store from "../store";
 
 export default function DiscussButton({
-  width,
-  height,
+  size,
   ...props
 }: {
-  width: string;
-  height: string;
+  size: string | number;
 }) {
   const [enabled, setEnabled] = useAtom(store.enabledAtom);
   const [status] = useAtom(store.statusAtom);
@@ -28,9 +27,11 @@ export default function DiscussButton({
         className="focus:outline-none"
         onClick={() => setEnabled(!enabled)}
       >
-        <svg style={{ width, height }} viewBox="0 0 24 24">
-          <path fill="#000000" d={mdiCommentTextMultipleOutline} />
-        </svg>
+        <Icon
+          className="fill-current text-gray-600 hover:text-black"
+          path={mdiCommentTextMultipleOutline}
+          size={size}
+        />
       </button>
       {(enabled || status === "ERROR") && (
         <span className="flex absolute h-3 w-3 top-0 right-0 -mt-1 -mr-1">
