@@ -66,12 +66,16 @@ export const CameraControls = forwardRef<
   CameraControlsDefault,
   Overwrite<
     Partial<CameraControlsDefault>,
-    NodeProps<CameraControlsDefault, typeof CameraControlsDefault>
+    NodeProps<CameraControlsDefault, typeof CameraControlsDefault> & {
+      makeDefault: boolean;
+    }
   >
->((props, ref) => {
+>(({ makeDefault = false, ...props }, ref) => {
   const cameraControls = useRef<CameraControlsDefault | null>(null);
   const camera = useThree((state) => state.camera);
   const renderer = useThree((state) => state.gl);
+  const get = useThree((state) => state.get);
+  const set = useThree((state) => state.set);
 
   // NOTE: wee need following lines to make CameraControls work in a module
   // Refer to https://github.com/pmndrs/drei/blob/master/src/core/OrbitControls.tsx
@@ -84,8 +88,18 @@ export const CameraControls = forwardRef<
     return () => void cameraControls.current?.disconnect();
   }, [cameraControls.current, ref, explDomElement]);
 
-  useFrame((_, delta) => cameraControls.current?.update(delta));
-  // useFrame((_, delta) => cameraControls.current?.update(delta), -1);
+  useEffect(() => {
+    if (!cameraControls.current) return;
+    const controls = cameraControls.current;
+    if (makeDefault) {
+      const old = get().controls;
+      set({ controls: controls as unknown as THREE.EventDispatcher });
+      return () => set({ controls: old });
+    }
+  }, [makeDefault, cameraControls.current]);
+
+  // useFrame((_, delta) => cameraControls.current?.update(delta));
+  useFrame((_, delta) => cameraControls.current?.update(delta), -1);
 
   useEffect(() => () => cameraControls.current?.dispose(), []);
 

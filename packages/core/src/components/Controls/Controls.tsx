@@ -9,6 +9,7 @@ import debounce from "just-debounce-it";
 import { useAtom } from "jotai";
 import { closeupAtom, controlsStateAtom } from "../../store";
 
+// import { CameraControls } from "./_CameraControls";
 import { CameraControls } from "@react-three/drei";
 import CameraControlsDefault from "camera-controls";
 
@@ -192,6 +193,9 @@ export function ExtendedCameraControls() {
     <CameraControls
       // attach="cameraControls" // NOTE: -> scene.cameraControls
       makeDefault
+      // NOTE: onPointerUp won't work without events={true};
+      // See https://github.com/pmndrs/drei#controls
+      events
       ref={ref}
       minDistance={100}
       maxDistance={1500}
