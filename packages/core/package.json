@@ -5,7 +5,8 @@
   "author": "Kentaro Ozeki",
   "license": "MIT",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite build --watch",
+    "serve": "vite",
     "build": "(tsc || exit 0) && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.cjs ./src/index.ts ./src/components/index.ts",
     "preview": "vite preview"
   },
