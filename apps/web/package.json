@@ -1,5 +1,5 @@
 {
-  "name": "owntwin",
+  "name": "@owntwin/web",
   "private": true,
   "version": "0.1.0",
   "type": "module",
