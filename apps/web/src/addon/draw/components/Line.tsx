@@ -4,6 +4,8 @@ import { extend, Object3DNode, ThreeEvent } from "@react-three/fiber";
 import { Sphere } from "@react-three/drei";
 import * as THREE from "three";
 
+import { Detailed } from "../../../lib/components/Detailed";
+
 import {
   MeshLineGeometry,
   MeshLineMaterial,
@@ -81,7 +83,7 @@ export const LinePen = forwardRef(
       color?: string | number;
       opacity?: number;
     },
-    ref: Ref<THREE.Mesh>,
+    ref: Ref<THREE.Group>,
   ) => {
     // const { scene } = useThree();
 
@@ -146,6 +148,13 @@ export const LinePen = forwardRef(
             setTimeout(() => {
               // console.log(pt);
               setPoints((pts) => {
+                if (
+                  pts.length > 0 &&
+                  pts[pts.length - 1].x === pt.x &&
+                  pts[pts.length - 1].y === pt.y &&
+                  pts[pts.length - 1].z === pt.z
+                )
+                  return pts;
                 return [...pts, pt];
               });
             }, 0);
@@ -157,8 +166,7 @@ export const LinePen = forwardRef(
 
     return (
       <>
-        <Sphere
-          args={[10]}
+        <group
           position={position}
           ref={ref}
           // onDoubleClick={() => {
@@ -168,8 +176,23 @@ export const LinePen = forwardRef(
           onPointerUp={handlePointerUp}
           onPointerMove={handlePointerMove}
         >
-          <meshBasicMaterial attach="material" color="#f3f3f3" />
-        </Sphere>
+          <Detailed distances={[0, 512]}>
+            <Sphere args={[2]}>
+              <meshBasicMaterial
+                color="#f3f3f3"
+                depthWrite={false}
+                depthTest={false}
+              />
+            </Sphere>
+            <Sphere args={[10]}>
+              <meshBasicMaterial
+                color="#f3f3f3"
+                depthWrite={false}
+                depthTest={false}
+              />
+            </Sphere>
+          </Detailed>
+        </group>
         {enabled && (
           <Line
             points={points}
