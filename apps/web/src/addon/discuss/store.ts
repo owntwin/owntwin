@@ -9,7 +9,7 @@ export type Comment = {
 
 const commentPromptInitialValue = { position: undefined, content: undefined };
 
-const enabledAtom = atom(true);
+const enabledAtom = atom(false);
 const clientAtom = atom<any>(undefined);
 const statusAtom = atom<"DISCONNECTED" | "CONNECTED" | "ERROR">("DISCONNECTED");
 const commentPromptAtom = atom<Comment | Partial<Comment>>(
