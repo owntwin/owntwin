@@ -146,7 +146,7 @@ export function Erase({ linesData }: { linesData: Line[] }) {
           <mesh
             visible={false}
             key={uuid}
-            onPointerOver={() => handlePointerOver(uuid)}
+            onPointerMove={() => handlePointerOver(uuid)}
           >
             <tubeGeometry args={[curve, 32, 16, 4]} />
             <meshBasicMaterial color={0x000000} />
