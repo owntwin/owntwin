@@ -181,7 +181,11 @@ function InteractionToolbar() {
     }
     if (
       (selectedTool === null &&
-        !["cursor-control", "cursor-move"].includes(value)) ||
+        ![
+          "draw", // Draw has popover
+          "cursor-control",
+          "cursor-move",
+        ].includes(value)) ||
       !value
     ) {
       setValue("cursor-control");
@@ -194,6 +198,12 @@ function InteractionToolbar() {
     }
   }, [value, selectedTool]);
 
+  useEffect(() => {
+    if (["draw", "brush", "erase", null].includes(value)) {
+      setSelectedTool(value as any); // TODO: fix
+    }
+  }, [value]);
+
   // TODO: fix invalid button inside button
   // TODO: toggle cursor mode depending modifier keys
   return (
@@ -202,8 +212,13 @@ function InteractionToolbar() {
         type="single"
         className="flex items-center gap-1.5"
         value={value}
-        onValueChange={(value) => {
-          setValue(value);
+        onValueChange={(newValue) => {
+          // Keep as is if the present item has popover
+          if (["draw"].includes(value) && newValue === "") {
+            setValue(value);
+            return;
+          }
+          setValue(newValue);
         }}
       >
         <Toolbar.ToggleItem
@@ -224,7 +239,8 @@ function InteractionToolbar() {
           <>
             <Toolbar.ToggleItem
               value="draw"
-              className="hover:border-b-2 radix-state-on:border-b-2"
+              className="hover:border-b-2 radix-state-on:border-b-2 relative flex items-center"
+              asChild
             >
               <DrawButton size="24px" />
             </Toolbar.ToggleItem>
