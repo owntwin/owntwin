@@ -1,6 +1,6 @@
 import { forwardRef, useRef, useState, useCallback, Ref, useMemo } from "react";
 
-import { extend, Object3DNode, ThreeEvent } from "@react-three/fiber";
+import { extend, Object3DNode, ThreeEvent, useFrame } from "@react-three/fiber";
 import { Sphere } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -124,41 +124,41 @@ export const LinePen = forwardRef(
       });
     }, [points, lineWidth, color, opacity]);
 
+    useFrame((_, delta) => {
+      if (!enabled || !ref.current) return;
+
+      // NOTE: The line below could be slow, but what can we do?
+      // const pt = ref.current.position.clone();
+      const pt = {
+        x: ref.current.position.x,
+        y: ref.current.position.y,
+        z: ref.current.position.z,
+      };
+      // const pt = ev.eventObject.position.clone(); // Seems slower
+
+      // NOTE: setTimeout here makes little sense, but we keep it for future improvements;
+      // The problem is that onPointerMove() call seems to be dropped when the pointer moves fast.
+      // We need performance tuning and/or something like getCoalescedEvents().
+      setTimeout(() => {
+        // console.log(pt);
+        setPoints((pts) => {
+          if (
+            pts.length > 0 &&
+            pts[pts.length - 1].x === pt.x &&
+            pts[pts.length - 1].y === pt.y &&
+            pts[pts.length - 1].z === pt.z
+          )
+            return pts;
+          return [...pts, pt];
+        });
+      }, 0);
+    });
+
     const handlePointerMove = useCallback(
       (ev: ThreeEvent<PointerEvent>) => {
-        // ev.stopPropagation();
-        if (["touch", "pen"].includes(ev.pointerType) && !enabled) {
+        if (!enabled && ["touch", "pen"].includes(ev.pointerType)) {
           setPoints([]);
           setEnabled(true);
-        }
-        if (enabled) {
-          if (ref.current) {
-            // NOTE: The line below could be slow, but what can we do?
-            // const pt = ref.current.position.clone();
-            const pt = {
-              x: ref.current.position.x,
-              y: ref.current.position.y,
-              z: ref.current.position.z,
-            };
-            // const pt = ev.eventObject.position.clone(); // Seems slower
-
-            // NOTE: setTimeout here makes little sense, but we keep it for future improvements;
-            // The problem is that onPointerMove() call seems to be dropped when the pointer moves fast.
-            // We need performance tuning and/or something like getCoalescedEvents().
-            setTimeout(() => {
-              // console.log(pt);
-              setPoints((pts) => {
-                if (
-                  pts.length > 0 &&
-                  pts[pts.length - 1].x === pt.x &&
-                  pts[pts.length - 1].y === pt.y &&
-                  pts[pts.length - 1].z === pt.z
-                )
-                  return pts;
-                return [...pts, pt];
-              });
-            }, 0);
-          }
         }
       },
       [enabled],
