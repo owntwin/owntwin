@@ -52,10 +52,11 @@ export function ModelView({
 
   return (
     <Canvas
-      linear={false} // NOTE: see https://github.com/pmndrs/react-three-fiber/releases/tag/v8.0.0
+      linear={false} // NOTE: just for explicity; see https://github.com/pmndrs/react-three-fiber/releases/tag/v8.0.0
       flat={true} // TODO: reconsideration
-      dpr={Math.min(2, window.devicePixelRatio)}
-      gl={{ powerPreference: "default", antialias: false }}
+      // dpr={Math.min(2, window.devicePixelRatio)}
+      // gl={{ powerPreference: "default", antialias: false }}
+      gl={{ powerPreference: "high-performance", antialias: false }}
       // frameloop="demand"
     >
       <Camera width={width} height={height} />
