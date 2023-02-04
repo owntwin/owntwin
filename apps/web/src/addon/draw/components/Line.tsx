@@ -4,6 +4,8 @@ import { extend, Object3DNode, ThreeEvent, useFrame } from "@react-three/fiber";
 import { Sphere } from "@react-three/drei";
 import * as THREE from "three";
 
+import { simplify } from "../utils";
+
 import { Detailed } from "../../../lib/components/Detailed";
 
 import {
@@ -111,10 +113,12 @@ export const LinePen = forwardRef(
 
     const handlePointerUp = useCallback(() => {
       setEnabled(false);
-      const size = Math.log(points.length) * 10;
-      const curvePoints = new THREE.CatmullRomCurve3(
+      const size = points.length;
+      const curvePointVectors = new THREE.CatmullRomCurve3(
         points.map((p) => new THREE.Vector3(p.x, p.y, p.z)),
       ).getPoints(size);
+      // TODO: reconsider tolerance constant
+      const curvePoints = simplify(curvePointVectors, 0.1, false);
       drawState.drawings.push({
         points: curvePoints.map((p) => ({ x: p.x, y: p.y, z: p.z })),
         lineWidth,
@@ -142,17 +146,17 @@ export const LinePen = forwardRef(
       setTimeout(() => {
         // console.log(pt);
         setPoints((pts) => {
-          if (
-            pts.length > 0 &&
-            pts[pts.length - 1].x === pt.x &&
-            pts[pts.length - 1].y === pt.y &&
-            pts[pts.length - 1].z === pt.z
-          )
-            return pts;
+          // if (
+          //   pts.length > 0 &&
+          //   pts[pts.length - 1].x === pt.x &&
+          //   pts[pts.length - 1].y === pt.y &&
+          //   pts[pts.length - 1].z === pt.z
+          // )
+          //   return pts;
           return [...pts, pt];
         });
       }, 0);
-    });
+    }, -1);
 
     const handlePointerMove = useCallback(
       (ev: ThreeEvent<PointerEvent>) => {
