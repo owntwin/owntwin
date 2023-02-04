@@ -197,7 +197,7 @@ export function ExtendedCameraControls() {
       // See https://github.com/pmndrs/drei#controls
       events
       ref={ref}
-      minDistance={100}
+      minDistance={80}
       maxDistance={1500}
       maxPolarAngle={Math.PI / 2 - 0.1}
       dollyToCursor={true}
