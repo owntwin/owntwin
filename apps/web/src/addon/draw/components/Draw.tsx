@@ -17,7 +17,7 @@ export function Draw() {
   const scene = three.scene as THREE.Scene;
   const raycaster = three.raycaster;
 
-  const pen = useRef<THREE.Mesh>(null);
+  const pen = useRef<THREE.Group>(null);
 
   const { setState: setControlsState } = useControls();
   useEffect(() => {
