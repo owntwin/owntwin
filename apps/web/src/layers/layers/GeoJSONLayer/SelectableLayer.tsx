@@ -2,7 +2,9 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 
 import { Html } from "@react-three/drei";
 
-import { useAtom } from "jotai";
+import { useControls } from "@owntwin/core";
+
+import { atom, useAtom } from "jotai";
 import { useAtomCallback } from "jotai/utils";
 import {
   entityStoreAtom,
@@ -10,6 +12,8 @@ import {
 } from "@owntwin/core/components/ModelView/store";
 
 import type { ObjectData } from "./types";
+
+const selectionActiveAtom = atom(true);
 
 export default function SelectableLayer({
   geometries,
@@ -29,11 +33,18 @@ export default function SelectableLayer({
   const [entityStore] = useAtom(entityStoreAtom);
   const [hoveredEntity, setHoveredEntity] = useAtom(hoveredEntityAtom);
 
+  const controls = useControls();
+  const [, setSelectionActive] = useAtom(selectionActiveAtom);
+
   const [meshes, setMeshes] = useState<any[]>([]);
   const [isPending, startTransition] = useTransition();
 
   const [, setTimer] = useState<number>();
   const [showPopup, setShowPopup] = useState<boolean>(false);
+
+  useEffect(() => {
+    setSelectionActive(controls.state?.enableRotate);
+  }, [controls.state?.enableRotate]);
 
   const handleClick = useAtomCallback(
     useCallback((get, _set, { ev, id }: { ev: any; id?: string }) => {
@@ -49,6 +60,11 @@ export default function SelectableLayer({
 
   const handlePointerMove = useAtomCallback(
     useCallback((get, _set, { ev, id }: { ev: any; id?: string }) => {
+      // NOTE: do nothing when drawing using controls.state?.enableRotate
+      // We need a proxy atom to use the value inside useAtomCallback (dirty hack!)
+      // TODO: fix properly
+      if (!get(selectionActiveAtom)) return;
+
       // NOTE: using onPointerMove (not onPointerOver) to handle moving between overlapping entities
       // NOTE: return if not the front object
       // TODO: check object type in future
