@@ -1,11 +1,6 @@
 import { Suspense } from "react";
 
-import {
-  CSVLayer,
-  GeoJSONLayer,
-  PNGLayer,
-  SVGMeshLayer,
-} from "./layers";
+import { CSVLayer, GeoJSONLayer, PNGLayer, SVGMeshLayer } from "./layers";
 
 import type { Layer as OTLayer } from "@owntwin/core";
 
@@ -19,7 +14,11 @@ export function Layer({
   // console.log("layer", layer);
 
   if (layer.path && baseUrl) {
-    layer.path = baseUrl ? new URL(layer.path, baseUrl).toString() : layer.path;
+    // TODO: fix
+    layer.path =
+      baseUrl && !layer.path.startsWith("http")
+        ? new URL(layer.path, baseUrl).toString()
+        : layer.path;
   }
 
   if (layer.format === "svg") {
@@ -51,6 +50,7 @@ export function Layer({
         labelVisibility={layer.labelVisibility}
         size={layer.size}
         opacity={0.5}
+        anchor={layer.anchor}
       />
     );
   } else {

@@ -5,6 +5,7 @@ import axios from "axios";
 import {
   // SphereAnchor,
   BeamAnchor,
+  SphereAnchor,
 } from "@owntwin/core/components";
 import { useFieldState } from "@owntwin/core/components/Field/hooks";
 
@@ -12,6 +13,7 @@ import { parse as parseCSV } from "csv-parse/browser/esm/sync";
 
 function Anchor({
   coordinates,
+  type,
   label,
   labelVisibility = "auto",
   clip = true,
@@ -19,10 +21,12 @@ function Anchor({
   ...props
 }: {
   coordinates: [number | string, number | string, number | string];
+  type: string;
   label?: string;
   labelVisibility?: "auto" | "always";
   clip?: boolean;
   size?: { height?: number };
+  radius?: number;
   color?: number | string;
   opacity?: number;
 }) {
@@ -63,20 +67,34 @@ function Anchor({
     return null;
 
   return z ? (
-    <BeamAnchor
-      position={[origin.x, origin.y, z]}
-      label={label}
-      labelVisibility={labelVisibility}
-      height={size.height}
-      radius={2}
-      color={props.color}
-    />
+    type === "sphere" ? (
+      <SphereAnchor
+        position={[origin.x, origin.y, z]}
+        label={label}
+        // labelVisibility={labelVisibility}
+        // height={size.height}
+        radius={props.radius}
+        color={props.color}
+      />
+    ) : (
+      <BeamAnchor
+        position={[origin.x, origin.y, z]}
+        label={label}
+        labelVisibility={labelVisibility}
+        height={size.height}
+        radius={2}
+        color={props.color}
+      />
+    )
   ) : null;
 }
 
 export function CSVLayer({
   url,
   clip = true,
+  anchor = {
+    type: "beam",
+  },
   ...props
 }: {
   url: string;
@@ -86,6 +104,7 @@ export function CSVLayer({
   opacity?: number;
   color?: string | number;
   size?: { height?: number };
+  anchor?: { type: "beam" } | { type: "sphere"; radius?: number };
 }) {
   const [data, setData] = useState<Record<string, any>>();
 
@@ -120,6 +139,7 @@ export function CSVLayer({
               color={props.color}
               size={props.size}
               opacity={props.opacity ? props.opacity : 0.5}
+              {...anchor}
             />
           );
         })}
