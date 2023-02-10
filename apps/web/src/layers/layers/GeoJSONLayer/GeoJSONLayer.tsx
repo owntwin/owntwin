@@ -79,7 +79,10 @@ export function GeoJSONLayer({
 
   // Load JSON from URL
   useEffect(() => {
-    if (url) {
+    // Prioritizing data
+    if (data) {
+      setGeojson(data);
+    } else if (url) {
       (async () => {
         const data: GeoJSON.FeatureCollection = await axios
           .get(url)
@@ -87,10 +90,8 @@ export function GeoJSONLayer({
         // console.log(data);
         setGeojson(data);
       })();
-    } else if (data) {
-      setGeojson(data);
     }
-  }, [url]);
+  }, [url, data]);
 
   const geometries = useMemo(() => {
     if (!geojson || !geojson.features) return undefined;
