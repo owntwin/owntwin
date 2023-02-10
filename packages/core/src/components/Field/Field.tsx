@@ -86,7 +86,7 @@ export function Field({
 
     const vertices = Array.from(positionAttributeArray);
     setField((current) =>
-      Object.assign(current, {
+      Object.assign({}, current, {
         vertices,
         geometry,
         bbox: canvas?.bbox,

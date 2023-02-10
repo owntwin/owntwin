@@ -150,7 +150,7 @@ function CursorMoveButton({
       className={`focus:outline-none ${className}`}
       onClick={() => {
         setControlsState((state) => {
-          return Object.assign(state, { truckMode: !state.truckMode });
+          return { ...state, truckMode: !state.truckMode };
         });
       }}
       {...props}
@@ -193,7 +193,7 @@ function InteractionToolbar() {
     // TODO: performance fix
     if (value !== "cursor-move") {
       setControlsState((state) => {
-        return Object.assign(state, { truckMode: false });
+        return { ...state, truckMode: false };
       });
     }
   }, [value, selectedTool]);
