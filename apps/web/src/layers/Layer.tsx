@@ -1,6 +1,12 @@
 import { Suspense } from "react";
 
-import { CSVLayer, GeoJSONLayer, PNGLayer, SVGMeshLayer } from "./layers";
+import {
+  CSVLayer,
+  GeoJSONLayer,
+  PNGLayer,
+  SVGMeshLayer,
+  FlatGeobufLayer,
+} from "./layers";
 
 import type { Layer as OTLayer } from "@owntwin/core";
 
@@ -51,6 +57,15 @@ export function Layer({
         size={layer.size}
         opacity={0.5}
         anchor={layer.anchor}
+      />
+    );
+  } else if (layer.format === "fgb" || layer.format === "flatgeobuf") {
+    return (
+      <FlatGeobufLayer
+        url={layer.path}
+        opacity={0.5}
+        colors={layer.colors}
+        extrude={layer.extrude}
       />
     );
   } else {
