@@ -45,7 +45,8 @@ function Anchor({
     const z =
       fieldState.getAltitude(origin.x + 1024 / 2, origin.y + 1024 / 2) || 0;
 
-    return { origin, z };
+    // Need a small z offset to avoid z-fighting (disappearing)
+    return { origin, z: z + 1 };
   }, [coordinates]);
 
   // const geom = new THREE.SphereBufferGeometry(1, 20, 20);
