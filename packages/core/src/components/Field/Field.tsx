@@ -49,14 +49,14 @@ export function Field({
 }) {
   if (!elevationMap) {
     // TODO: why 1000?
-    elevationMap = Array(1000).fill([0, 0, 0]);
+    elevationMap = useMemo(() => Array(1000).fill([0, 0, 0]), []);
   }
 
   const [, setField] = useAtom(fieldAtom);
 
   const canvas = useCanvas();
   const fieldState = useFieldState();
-  const segments = fieldState.canvas._segments;
+  const segments = useMemo(() => fieldState.canvas._segments, []);
 
   const geometry = useMemo(() => {
     return new THREE.PlaneGeometry(width, height, segments - 1, segments - 1);
