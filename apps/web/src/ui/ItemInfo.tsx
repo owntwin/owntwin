@@ -275,7 +275,7 @@ function ItemInfo({
               })
             ) : (
               <li>
-                <span className="text-gray-600">未登録</span>
+                <span className="py-1 px-3 text-gray-600">未登録</span>
               </li>
             )}
           </ul>
