@@ -70,10 +70,6 @@ export function GeoJSONLayer({
   const field = useField();
   const fieldState = useFieldState();
 
-  useEffect(() => {
-    console.log(field);
-  }, [field]);
-
   const [entityStore, updateEntityStore] = useAtom(entityStoreAtom);
   const [geojson, setGeojson] = useState<GeoJSON.FeatureCollection>();
 
