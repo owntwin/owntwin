@@ -1,4 +1,4 @@
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { fieldAtom } from "./store";
 
 import { useCanvas } from "../ModelView/hooks";
@@ -9,7 +9,7 @@ import SphericalMercator from "@mapbox/sphericalmercator";
 const sm = new SphericalMercator();
 
 export const useField = () => {
-  const [field] = useAtom(fieldAtom);
+  const field = useAtomValue(fieldAtom);
   // console.log("useField", field);
   return field;
 };
