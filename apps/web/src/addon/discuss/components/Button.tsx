@@ -1,7 +1,8 @@
 import clsx from "clsx";
 
 import { mdiCommentTextMultipleOutline } from "@mdi/js";
-import Icon from "@mdi/react";
+// NOTE: MUST be a named export, raises an error after a build if not
+import { Icon } from "@mdi/react";
 
 import { useAtom } from "jotai";
 import * as store from "../store";

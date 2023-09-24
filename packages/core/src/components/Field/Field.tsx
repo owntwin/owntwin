@@ -10,6 +10,8 @@ import { useFieldState } from "./hooks";
 import type { ElevationMap } from "../../types";
 import { useCanvas } from "../ModelView/hooks";
 
+const blankElevationMap = Array(10000).fill([0, 0, 0]);
+
 function BlankPlane({
   width,
   height,
@@ -33,7 +35,7 @@ function BlankPlane({
 }
 
 export function Field({
-  elevationMap,
+  elevationMap = blankElevationMap,
   elevationZoom = 1,
   width,
   height,
@@ -47,10 +49,9 @@ export function Field({
   color?: number | string;
   children?: ReactNode;
 }) {
-  if (!elevationMap) {
-    // TODO: why 1000?
-    elevationMap = useMemo(() => Array(1000).fill([0, 0, 0]), []);
-  }
+  // useEffect(() => {
+  //   console.log({ elevationMap });
+  // }, [elevationMap]);
 
   const [, setField] = useAtom(fieldAtom);
 
@@ -64,6 +65,8 @@ export function Field({
 
   useEffect(() => {
     if (!Array.isArray(elevationMap) || elevationMap.length === 0) return;
+
+    // console.log("elevationMap", elevationMap.slice(0, 1));
 
     const positionAttributeArray = new Float32Array(
       geometry.getAttribute("position").array,
@@ -93,7 +96,11 @@ export function Field({
         ready: true,
       }),
     );
-  }, [elevationMap, elevationZoom, canvas?.bbox]);
+  }, [
+    elevationMap,
+    elevationZoom,
+    // canvas?.bbox
+  ]);
 
   return (
     <>

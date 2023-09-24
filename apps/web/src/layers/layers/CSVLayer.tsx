@@ -26,6 +26,7 @@ function Anchor({
   labelVisibility?: "auto" | "always";
   clip?: boolean;
   size?: { height?: number };
+  height?: number;
   radius?: number;
   color?: number | string;
   opacity?: number;
@@ -47,7 +48,7 @@ function Anchor({
 
     // Need a small z offset to avoid z-fighting (disappearing)
     return { origin, z: z + 1 };
-  }, [coordinates]);
+  }, [coordinates, fieldState.getAltitude]);
 
   // const geom = new THREE.SphereBufferGeometry(1, 20, 20);
   // geom.translate(origin.x, origin.y, z);
@@ -72,7 +73,7 @@ function Anchor({
       <SphereAnchor
         position={[origin.x, origin.y, z]}
         label={label}
-        // labelVisibility={labelVisibility}
+        labelVisibility={labelVisibility}
         // height={size.height}
         radius={props.radius}
         color={props.color}
@@ -82,8 +83,8 @@ function Anchor({
         position={[origin.x, origin.y, z]}
         label={label}
         labelVisibility={labelVisibility}
-        height={size.height}
-        radius={2}
+        height={props.height}
+        radius={props.radius}
         color={props.color}
       />
     )

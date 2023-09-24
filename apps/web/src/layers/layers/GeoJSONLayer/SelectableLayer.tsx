@@ -20,15 +20,20 @@ export default function SelectableLayer({
 }: {
   geometries: ObjectData[];
 }) {
-  const [entities, setEntities] = useState(
-    geometries.map(({ id, geometry, visibility }) => {
-      return {
-        id,
-        geometry,
-        visibility: visibility || "auto",
-      };
-    }),
-  );
+  const [entities, setEntities] =
+    useState<{ id?: string; geometry: any; visibility: string }[]>();
+
+  useEffect(() => {
+    setEntities(
+      geometries.map(({ id, geometry, visibility }) => {
+        return {
+          id,
+          geometry,
+          visibility: visibility || "auto",
+        };
+      }),
+    );
+  }, [geometries]);
 
   const [entityStore] = useAtom(entityStoreAtom);
   const [hoveredEntity, setHoveredEntity] = useAtom(hoveredEntityAtom);
@@ -94,6 +99,8 @@ export default function SelectableLayer({
 
   // TODO: use respective entity components here depending entity types, rather than <mesh>
   useEffect(() => {
+    console.log("changed entities");
+    if (!entities) return;
     startTransition(() => {
       setMeshes(
         entities.map(({ id, geometry, visibility }, i) => {
@@ -153,7 +160,10 @@ export default function SelectableLayer({
         }),
       );
     });
-  }, []);
+  }, [
+    // geometries,
+    entities
+  ]);
 
   useEffect(() => {
     setTimer((currentTimer) => {
@@ -198,34 +208,35 @@ export default function SelectableLayer({
             : hoveredEntity.id}
         </Html>
       )}
-      {entities.map(({ id, geometry, visibility }) => {
-        if (!id || visibility !== "always") return null;
-        return (
-          <Html
-            key={id}
-            className="bg-gray-400 text-white rounded-full px-2 py-1"
-            style={{
-              pointerEvents: "none",
-              userSelect: "none",
-              transform: "translate3d(-50%,-100%,0)",
-              width: "max-content",
-              fontSize: "0.75rem",
-            }}
-            // distanceFactor={1000}
-            position={(() => {
-              // TODO: better performance
-              geometry.computeBoundingBox();
-              // const center = new THREE.Vector3();
-              // hoveredEntity.entity.geometry.boundingBox?.getCenter(center);
-              const max = geometry.boundingBox.max;
-              const { x, y, z } = max;
-              return [x, y, z];
-            })()}
-          >
-            {entityStore[id]?.name ? entityStore[id]?.name : id}
-          </Html>
-        );
-      })}
+      {entities &&
+        entities.map(({ id, geometry, visibility }) => {
+          if (!id || visibility !== "always") return null;
+          return (
+            <Html
+              key={id}
+              className="bg-gray-400 text-white rounded-full px-2 py-1"
+              style={{
+                pointerEvents: "none",
+                userSelect: "none",
+                transform: "translate3d(-50%,-100%,0)",
+                width: "max-content",
+                fontSize: "0.75rem",
+              }}
+              // distanceFactor={1000}
+              position={(() => {
+                // TODO: better performance
+                geometry.computeBoundingBox();
+                // const center = new THREE.Vector3();
+                // hoveredEntity.entity.geometry.boundingBox?.getCenter(center);
+                const max = geometry.boundingBox.max;
+                const { x, y, z } = max;
+                return [x, y, z];
+              })()}
+            >
+              {entityStore[id]?.name ? entityStore[id]?.name : id}
+            </Html>
+          );
+        })}
     </>
   );
 }

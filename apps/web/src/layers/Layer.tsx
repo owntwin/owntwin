@@ -6,6 +6,7 @@ import {
   PNGLayer,
   SVGMeshLayer,
   FlatGeobufLayer,
+  GeoJSONTileLayer,
 } from "./layers";
 
 import type { Layer as OTLayer } from "@owntwin/core";
@@ -44,6 +45,7 @@ export function Layer({
           opacity={0.5}
           colors={layer.colors}
           extrude={layer.extrude}
+          selectable={layer.selectable}
         />
       </Suspense>
     );
@@ -66,6 +68,18 @@ export function Layer({
         opacity={0.5}
         colors={layer.colors}
         extrude={layer.extrude}
+        {...layer}
+      />
+    );
+  } else if (layer.format === "geojsontile") {
+    return (
+      <GeoJSONTileLayer
+        url={layer.path}
+        zoom={layer.zoom}
+        opacity={0.5}
+        colors={layer.colors}
+        extrude={layer.extrude}
+        {...layer}
       />
     );
   } else {

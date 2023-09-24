@@ -30,10 +30,6 @@ import { testTouch } from "../lib/utils";
 
 import { Z_INDEX } from "../lib/constants";
 
-const addons = import.meta.env.VITE_ADDONS
-  ? import.meta.env.VITE_ADDONS.split(",")
-  : [];
-
 function HelpMenuButton() {
   const HELP_URL = "https://beta.owntwin.com/docs/about";
 
@@ -164,7 +160,7 @@ function CursorMoveButton({
   );
 }
 
-function InteractionToolbar() {
+function InteractionToolbar({ addons = [] }: { addons?: string[] }) {
   const [value, setValue] = useState("cursor-control");
   const [selectedTool, setSelectedTool] = useAtom(drawStore.selectedToolAtom);
   const { setState: setControlsState } = useControls();
@@ -303,7 +299,14 @@ function InteractionToolbar() {
   );
 }
 
-function Sidenav({ communityURL, ...props }: { communityURL?: string }) {
+function Sidenav({
+  communityURL,
+  addons = [],
+  ...props
+}: {
+  communityURL?: string;
+  addons?: string[];
+}) {
   const [isFullscreenAvailable, setIsFullscreenAvailable] = useState(true);
 
   useEffect(() => {
@@ -333,7 +336,7 @@ function Sidenav({ communityURL, ...props }: { communityURL?: string }) {
           <FullscreenButton />
         </div>
       )}
-      <InteractionToolbar />
+      <InteractionToolbar addons={addons} />
       <div className="absolute md:relative bottom-14 md:bottom-auto w-full md:ml-3 flex items-center">
         <DiscussInput className="relative w-full md:w-96" />
       </div>

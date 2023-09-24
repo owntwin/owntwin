@@ -1,5 +1,7 @@
 import "./App.css";
 
+import { useMemo } from "react";
+
 import { Helmet } from "react-helmet-async";
 
 import Sidenav from "./ui/Sidenav";
@@ -15,12 +17,12 @@ import { useModelFetch } from "./lib/hooks";
 // NOTE: this constant is unproblematic as it is of app
 import { CANVAS } from "./lib/constants";
 
-const addons = import.meta.env.VITE_ADDONS
-  ? import.meta.env.VITE_ADDONS.split(",")
-  : [];
+const ADDONS = import.meta.env.VITE_ADDONS;
 
 function App() {
   const { model, baseUrl } = useModelFetch();
+
+  const addons = useMemo(() => (ADDONS ? ADDONS.split(",") : []), [ADDONS]);
 
   return (
     <div id="App" className="App fixed top-0 bottom-0 left-0 right-0">
@@ -28,7 +30,7 @@ function App() {
         {model?.displayName && <title>{model.displayName} - OwnTwin</title>}
       </Helmet>
       <div className="absolute top-0 bottom-0 left-0 right-0">
-        {model && baseUrl && (
+        {model && (
           <Viwer
             model={model}
             baseUrl={baseUrl}
@@ -55,7 +57,7 @@ function App() {
         <ExportButton homepage={model?.homepage} />
         <Clock />
       </div>
-      <Sidenav communityURL={model?.community} />
+      <Sidenav communityURL={model?.community} addons={addons} />
       <a href="//beta.owntwin.com" className="cursor-pointer">
         <div className="Logo absolute bottom-4 left-auto right-4 opacity-75 font-bold text-white bg-gray-500 rounded px-3 py-2">
           <div>OwnTwin</div>

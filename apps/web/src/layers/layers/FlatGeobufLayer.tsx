@@ -37,12 +37,14 @@ export function FlatGeobufLayer({
       // TODO: fix
       for await (let feature of iter) {
         // TODO: remove
-        feature.properties.attributes = JSON.parse(
-          feature.properties.attributes,
-        );
+        if (feature.properties?.attributes) {
+          feature.properties.attributes = JSON.parse(
+            feature.properties.attributes,
+          );
+        }
         fc.features.push(feature);
       }
-      console.log(fc);
+      // console.log(fc);
       setData(fc);
     })();
   }, [field.bbox]);

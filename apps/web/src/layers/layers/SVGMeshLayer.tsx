@@ -4,7 +4,7 @@ import { SVGLoader } from "three-stdlib/loaders/SVGLoader"; // NOTE: needs .js t
 import * as BufferGeometryUtils from "three-stdlib/utils/BufferGeometryUtils";
 import * as THREE from "three";
 
-import { useFieldState } from "@owntwin/core/components/Field/hooks";
+import { useFieldState, useField } from "@owntwin/core/components/Field/hooks";
 
 const loader = new SVGLoader();
 
@@ -54,6 +54,7 @@ export function SVGMeshLayer({
   url: string;
   color?: string | number;
 }) {
+  const field = useField();
   const fieldState = useFieldState();
 
   const [lines, setLines] = useState<ReactNode[]>([]);
@@ -139,7 +140,7 @@ export function SVGMeshLayer({
 
       setVisible(true);
     },
-    [lines],
+    [lines, field.vertices],
   );
 
   return (
