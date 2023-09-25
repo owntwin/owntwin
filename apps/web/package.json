@@ -5,9 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build:self": "(tsc || exit 0) && vite build",
-    "build": "(tsc || exit 0) && vite build --base=/app/",
-    "export": "npm run build; cp -R ./dist/* ../../../owntokyo/owntokyo-viewserver-pages/public/app/",
+    "build": "(tsc || exit 0) && vite build",
     "preview": "vite preview",
     "postinstall": "patch-package"
   },
