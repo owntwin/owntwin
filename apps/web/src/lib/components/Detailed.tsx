@@ -3,7 +3,7 @@
 import * as React from "react";
 import { LOD, Object3D } from "three";
 import { useFrame } from "@react-three/fiber";
-import mergeRefs from "react-merge-refs";
+import { mergeRefs } from "react-merge-refs";
 
 type Props = JSX.IntrinsicElements["lOD"] & {
   children: React.ReactElement<Object3D>[];
