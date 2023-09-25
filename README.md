@@ -8,10 +8,22 @@ See <https://beta.owntwin.com/docs/>.
 
 ## Development
 
+This monorepo is managed with Turborepo.
+
+### Build
+
+To build all apps and packages, run the following command:
+
+```
+npm install
+npm run build
+```
+
+### Develop
+
+To develop all apps and packages, run the following command:
+
 ```
 npm install
 npm run dev
 ```
-
-This project was bootstrapped with [Vite](https://vitejs.dev/).
-You can learn more in the [Vite documentation](https://vitejs.dev/guide/).
