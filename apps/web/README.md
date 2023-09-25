@@ -1,6 +1,6 @@
 # OwnTwin
 
-OwnTwin is a user-driven digital twin framework.
+OwnTwin is a framework for User-driven micro digital twins.
 
 ## Documentation
 
